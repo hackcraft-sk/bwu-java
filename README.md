@@ -35,3 +35,7 @@ Set<Unit> myFlyers = bot.getMyUnits().isFlyer();
 ## Future
 
 In the future, this layer is supposed to support developers by providing nice and comfortable API and utility classes to JNIBWAPI so that they can focus on artificial intelligence rather than coding in an uncomfortable and messy environment.
+
+### License
+
+This software is released under BSD license (as seen in LICENSE.md file). It uses parts of LGPL licensed software (JNIBWAPI).
