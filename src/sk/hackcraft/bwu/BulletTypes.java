@@ -1,0 +1,82 @@
+package sk.hackcraft.bwu;
+
+import javabot.JNIBWAPI;
+import javabot.types.BulletType;
+
+public class BulletTypes {
+	final public BulletType Melee;
+	final public BulletType Fusion_Cutter_Hit;
+	final public BulletType Gauss_Rifle_Hit;
+	final public BulletType C_10_Canister_Rifle_Hit;
+	final public BulletType Gemini_Missiles;
+	final public BulletType Fragmentation_Grenade;
+	final public BulletType Longbolt_Missile;
+	final public BulletType ATS_ATA_Laser_Battery;
+	final public BulletType Burst_Lasers;
+	final public BulletType Arclite_Shock_Cannon_Hit;
+	final public BulletType EMP_Missile;
+	final public BulletType Dual_Photon_Blasters_Hit;
+	final public BulletType Particle_Beam_Hit;
+	final public BulletType Anti_Matter_Missile;
+	final public BulletType Pulse_Cannon;
+	final public BulletType Psionic_Shockwave_Hit;
+	final public BulletType Psionic_Storm;
+	final public BulletType Yamato_Gun;
+	final public BulletType Phase_Disruptor;
+	final public BulletType STA_STS_Cannon_Overlay;
+	final public BulletType Sunken_Colony_Tentacle;
+	final public BulletType Acid_Spore;
+	final public BulletType Glave_Wurm;
+	final public BulletType Seeker_Spores;
+	final public BulletType Queen_Spell_Carrier;
+	final public BulletType Plague_Cloud;
+	final public BulletType Consume;
+	final public BulletType Needle_Spine_Hit;
+	final public BulletType Invisible;
+	final public BulletType Optical_Flare_Grenade;
+	final public BulletType Halo_Rockets;
+	final public BulletType Subterranean_Spines;
+	final public BulletType Corrosive_Acid_Shot;
+	final public BulletType Neutron_Flare;
+	final public BulletType None;
+	final public BulletType Unknown;
+	
+	protected BulletTypes(JNIBWAPI jnibwapi) {
+		Melee = jnibwapi.getBulletType(0);
+		Fusion_Cutter_Hit = jnibwapi.getBulletType(141);
+		Gauss_Rifle_Hit = jnibwapi.getBulletType(142);
+		C_10_Canister_Rifle_Hit = jnibwapi.getBulletType(143);
+		Gemini_Missiles = jnibwapi.getBulletType(144);
+		Fragmentation_Grenade = jnibwapi.getBulletType(145);
+		Longbolt_Missile = jnibwapi.getBulletType(146);
+		ATS_ATA_Laser_Battery = jnibwapi.getBulletType(148);
+		Burst_Lasers = jnibwapi.getBulletType(149);
+		Arclite_Shock_Cannon_Hit = jnibwapi.getBulletType(150);
+		EMP_Missile = jnibwapi.getBulletType(151);
+		Dual_Photon_Blasters_Hit = jnibwapi.getBulletType(152);
+		Particle_Beam_Hit = jnibwapi.getBulletType(153);
+		Anti_Matter_Missile = jnibwapi.getBulletType(154);
+		Pulse_Cannon = jnibwapi.getBulletType(155);
+		Psionic_Shockwave_Hit = jnibwapi.getBulletType(156);
+		Psionic_Storm = jnibwapi.getBulletType(157);
+		Yamato_Gun = jnibwapi.getBulletType(158);
+		Phase_Disruptor = jnibwapi.getBulletType(159);
+		STA_STS_Cannon_Overlay = jnibwapi.getBulletType(160);
+		Sunken_Colony_Tentacle = jnibwapi.getBulletType(161);
+		Acid_Spore = jnibwapi.getBulletType(163);
+		Glave_Wurm = jnibwapi.getBulletType(165);
+		Seeker_Spores = jnibwapi.getBulletType(166);
+		Queen_Spell_Carrier = jnibwapi.getBulletType(167);
+		Plague_Cloud = jnibwapi.getBulletType(168);
+		Consume = jnibwapi.getBulletType(169);
+		Needle_Spine_Hit = jnibwapi.getBulletType(171);
+		Invisible = jnibwapi.getBulletType(172);
+		Optical_Flare_Grenade = jnibwapi.getBulletType(201);
+		Halo_Rockets = jnibwapi.getBulletType(202);
+		Subterranean_Spines = jnibwapi.getBulletType(203);
+		Corrosive_Acid_Shot = jnibwapi.getBulletType(204);
+		Neutron_Flare = jnibwapi.getBulletType(206);
+		None = jnibwapi.getBulletType(209);
+		Unknown = jnibwapi.getBulletType(210);
+	}
+}
