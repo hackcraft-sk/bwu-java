@@ -2,6 +2,10 @@
 
 bwu-java is supposed to add a layer above traditional JNIBWAPI trying to make it more comfortable to work with.
 
+### Current version
+
+This project is currently under heavy development. It is far from finished and also far from alpha version.
+
 ## Overview
 
 Why to write
