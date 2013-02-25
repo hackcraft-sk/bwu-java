@@ -42,8 +42,4 @@ In the future, this layer is supposed to support developers by providing nice an
 
 ### License
 
-<<<<<<< HEAD
-Original author of this project is Martin "nixone" Olešnaník. It is licen
-=======
 This software is released under BSD license (as seen in LICENSE.md file). It uses parts of LGPL licensed software (JNIBWAPI).
->>>>>>> 0be33a4177be1e42faf2e85ffe2ca56bd4fd37d4
