@@ -35,3 +35,7 @@ Set<Unit> myFlyers = bot.getMyUnits().isFlyer();
 ## Future
 
 In the future, this layer is supposed to support developers by providing nice and comfortable API and utility classes to JNIBWAPI so that they can focus on artificial intelligence rather than coding in an uncomfortable and messy environment.
+
+### License
+
+Original author of this project is Martin "nixone" Olešnaník. It is licen

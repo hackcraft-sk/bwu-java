@@ -1,21 +1,19 @@
 package sk.hackcraft.bwu;
 
-import java.util.HashMap;
-
 import javabot.BWAPIEventListener;
 import javabot.JNIBWAPI;
 import javabot.model.Player;
 
 abstract public class Bot {
 	abstract public void onConnected();
-	abstract public void onGameStarted();
+	abstract public void onGameStarted(Game game);
 	abstract public void onGameEnded();
 	abstract public void onDisconnected();
 	abstract public void onGameUpdate();
 	abstract public void onKeyPressed(int keyCode);
 	abstract public void onMatchEnded(boolean isWinner);
 	abstract public void onPlayerLeft(Player player);
-	abstract public void onNukeDetected(Position position);
+	abstract public void onNukeDetected(Vector2D position);
 	abstract public void onUnitDiscovered(Unit unit);
 	abstract public void onUnitDestroyed(Unit unit);
 	abstract public void onUnitEvaded(Unit unit);
@@ -25,7 +23,6 @@ abstract public class Bot {
 	abstract public void onUnitHidden(Unit unit);
 
 	private BWAPIEventListener listener = new BWAPIEventListener() {
-		@Override
 		public void connected() {
 			try {
 				onConnected();
@@ -37,10 +34,10 @@ abstract public class Bot {
 			}
 		}
 
-		@Override
 		public void gameStarted() {
 			try {
-				onGameStarted();
+				game = new Game(Bot.this);
+				onGameStarted(game);
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -49,7 +46,6 @@ abstract public class Bot {
 			}
 		}
 
-		@Override
 		public void gameUpdate() {
 			try {
 				onGameUpdate();
@@ -61,10 +57,10 @@ abstract public class Bot {
 			}
 		}
 		
-		@Override
 		public void gameEnded() {
 			try {
 				onGameEnded();
+				game = null;
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -95,7 +91,6 @@ abstract public class Bot {
 			}
 		}
 		
-		@Override
 		public void playerLeft(int id) {
 			try {
 				onPlayerLeft(BWAPI.getPlayer(id));
@@ -109,7 +104,7 @@ abstract public class Bot {
 		
 		public void nukeDetect(int x, int y) {
 			try {
-				onNukeDetected(new Position(x, y));
+				onNukeDetected(new Vector2D(x, y));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -131,7 +126,10 @@ abstract public class Bot {
 		
 		public void unitDiscover(int unitID) {
 			try {
-				onUnitDiscovered(getUnit(unitID));
+				if(game == null)
+					return;
+				
+				onUnitDiscovered(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -142,7 +140,10 @@ abstract public class Bot {
 		
 		public void unitEvade(int unitID) {
 			try {
-				onUnitEvaded(getUnit(unitID));
+				if(game == null)
+					return;
+				
+				onUnitEvaded(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -153,7 +154,10 @@ abstract public class Bot {
 		
 		public void unitShow(int unitID) {
 			try {
-				onUnitShown(getUnit(unitID));
+				if(game == null)
+					return;
+				
+				onUnitShown(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -164,7 +168,10 @@ abstract public class Bot {
 		
 		public void unitHide(int unitID) {
 			try {
-				onUnitHidden(getUnit(unitID));
+				if(game == null)
+					return;
+				
+				onUnitHidden(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -175,7 +182,10 @@ abstract public class Bot {
 		
 		public void unitCreate(int unitID) {
 			try {
-				onUnitCreated(getUnit(unitID));
+				if(game == null)
+					return;
+				
+				onUnitCreated(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -186,7 +196,12 @@ abstract public class Bot {
 		
 		public void unitDestroy(int unitID) {
 			try {
-				onUnitDestroyed(getUnit(unitID));
+				if(game == null)
+					return;
+				
+				onUnitDestroyed(game.getUnit(unitID));
+				
+				game.removeUnit(unitID);
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -197,7 +212,10 @@ abstract public class Bot {
 		
 		public void unitMorph(int unitID) {
 			try {
-				onUnitMorphed(getUnit(unitID));
+				if(game == null)
+					return;
+				
+				onUnitMorphed(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -207,15 +225,18 @@ abstract public class Bot {
 		}
 	};
 	
-	private HashMap<Integer, Unit> units = new HashMap<Integer, Unit>();
-	
+	private Game game = null;
 	private boolean failFast = true;
 	private int failFastReturnCode = 1;
 	
-	final public JNIBWAPI BWAPI;
+	final protected JNIBWAPI BWAPI;
 	
 	public Bot() {
 		BWAPI = new JNIBWAPI(listener);
+	}
+	
+	public JNIBWAPI getBWAPI() {
+		return BWAPI;
 	}
 	
 	public void setFailFast(boolean failFast) {
@@ -235,12 +256,5 @@ abstract public class Bot {
 				System.exit(failFastReturnCode);
 			}
 		}
-	}
-	
-	public Unit getUnit(int unitID) {
-		if(!units.containsKey(unitID)) {
-			units.put(unitID, new Unit(BWAPI, BWAPI.getUnit(unitID)));
-		}
-		return units.get(unitID);
 	}
 }
