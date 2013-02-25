@@ -2,6 +2,10 @@
 
 bwu-java is supposed to add a layer above traditional JNIBWAPI trying to make it more comfortable to work with.
 
+### Current version
+
+This project is currently under heavy development. It is far from finished and also far from alpha version.
+
 ## Overview
 
 Why to write
@@ -38,4 +42,8 @@ In the future, this layer is supposed to support developers by providing nice an
 
 ### License
 
+<<<<<<< HEAD
 Original author of this project is Martin "nixone" Olešnaník. It is licen
+=======
+This software is released under BSD license (as seen in LICENSE.md file). It uses parts of LGPL licensed software (JNIBWAPI).
+>>>>>>> 0be33a4177be1e42faf2e85ffe2ca56bd4fd37d4
