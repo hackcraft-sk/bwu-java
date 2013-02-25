@@ -2,8 +2,10 @@ package sk.hackcraft.bwu;
 
 import java.util.HashMap;
 
+import javabot.model.Map;
 import javabot.model.Player;
 
+import sk.hackcraft.bwu.selection.UnitSet;
 import sk.hackcraft.bwu.types.BulletTypes;
 import sk.hackcraft.bwu.types.DamageTypes;
 import sk.hackcraft.bwu.types.ExplosionTypes;
@@ -33,7 +35,12 @@ public class Game {
 	final private UnitTypes unitTypes;
 	final private WeaponTypes weaponTypes;
 	
-	protected Game(Bot bot) {
+	final private UnitSet enemyUnits = new UnitSet();
+	final private UnitSet myUnits = new UnitSet();
+	final private UnitSet neutralUnits = new UnitSet();
+	final private UnitSet allyUnits = new UnitSet();
+	
+	protected Game(Bot bot, boolean bwta) {
 		this.bot = bot;
 		
 		bot.BWAPI.loadTypeData();
@@ -45,6 +52,8 @@ public class Game {
 		techTypes = new TechTypes(bot.BWAPI);
 		unitTypes = new UnitTypes(bot.BWAPI);
 		weaponTypes = new WeaponTypes(bot.BWAPI);
+		
+		bot.BWAPI.loadMapData(bwta);
 	}
 	
 	/**
@@ -57,13 +66,39 @@ public class Game {
 	
 	protected Unit getUnit(int unitID) {
 		if(!units.containsKey(unitID)) {
-			units.put(unitID, new Unit(this, bot.BWAPI.getUnit(unitID)));
+			Unit unit = new Unit(this, bot.BWAPI.getUnit(unitID));
+			
+			units.put(unitID, unit);
+			
+			if(unit.getPlayer().isSelf()) {
+				myUnits.add(unit);
+			}
+			if(unit.getPlayer().isNeutral()) {
+				neutralUnits.add(unit);
+			}
+			if(unit.getPlayer().isEnemy()) {
+				enemyUnits.add(unit);
+			}
+			if(unit.getPlayer().isAlly()) {
+				allyUnits.add(unit);
+			}
+				
+			return unit;
 		}
 		return units.get(unitID);
 	}
 	
 	protected void removeUnit(int unitID) {
-		units.remove(unitID);
+		if(units.containsKey(unitID)) {
+			Unit unit = units.get(unitID);
+			
+			myUnits.remove(unit);
+			neutralUnits.remove(unit);
+			enemyUnits.remove(unit);
+			allyUnits.remove(unit);
+			
+			units.remove(unitID);
+		}
 	}
 	
 	/**
@@ -128,5 +163,45 @@ public class Game {
 	 */
 	public Player getSelf() {
 		return bot.BWAPI.getSelf();
+	}
+	
+	/**
+	 * Returns <code>UnitSet</code> containing all current accessible ally units.
+	 * @return
+	 */
+	public UnitSet getAllyUnits() {
+		return allyUnits;
+	}
+	
+	/**
+	 * Returns <code>UnitSet</code> containing all current accessible my units.
+	 * @return
+	 */
+	public UnitSet getMyUnits() {
+		return myUnits;
+	}
+	
+	/**
+	 * Returns <code>UnitSet</code> containing all current accessible enemy units.
+	 * @return
+	 */
+	public UnitSet getEnemyUnits() {
+		return enemyUnits;
+	}
+	
+	/**
+	 * Returns <code>UnitSet</code> containing all current accessible neutral units.
+	 * @return
+	 */
+	public UnitSet getNeutralUnits() {
+		return neutralUnits;
+	}
+	
+	/**
+	 * Get map info for this game
+	 * @return
+	 */
+	public Map getMap() {
+		return bot.BWAPI.getMap();
 	}
 }

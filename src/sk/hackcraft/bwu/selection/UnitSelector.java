@@ -49,4 +49,25 @@ public interface UnitSelector {
 		 */
 		public double getValue(Unit unit);
 	}
+	
+	static public final BooleanInformation IS_GROUND = new BooleanInformation() {
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return !unit.getType().isFlyer();
+		}
+	};
+	
+	static public final BooleanInformation IS_FLYER = new BooleanInformation() {
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return unit.getType().isFlyer();
+		}
+	};
+	
+	static public final IntegerInformation HIT_POINTS = new IntegerInformation() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getHitPoints();
+		}
+	};
 }

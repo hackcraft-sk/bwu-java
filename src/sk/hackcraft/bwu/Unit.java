@@ -518,7 +518,7 @@ public class Unit {
      */
     public int getNumLarva() {
         return originalUnit.getNumLarva();
-    }
+	}
 
     /**
      * 3 cases to consider:
@@ -909,5 +909,62 @@ public class Unit {
      */
     public boolean isUnderAttack() {
         return originalUnit.isUnderAttack();
+    }
+    
+    /**
+	 * Orders the unit to attack move to a specified location.
+	 * @param position
+     */
+    public void attack(Vector2D position) {
+    	game.bot.BWAPI.attack(originalUnit.getID(), (int)Math.round(position.x), (int)Math.round(position.y));
+    }
+    
+    /**
+     * Orders the unit to attack a single unit.
+     * @param unit
+     */
+    public void attack(Unit target) {
+    	game.bot.BWAPI.attack(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to build the given unit type at the given position. Note that if the player does not have enough resources when the unit attempts to place the building down, the order will fail. The tile position specifies where the top left corner of the building will be placed. After issuing the unit's order will become <code>OrderTypes.PlaceBuilding</code>.
+     * @param tilePosition
+     * @param buildingType
+     */
+    public void build(Vector2D tilePosition, UnitType buildingType) {
+    	game.bot.BWAPI.build(originalUnit.getID(), (int)Math.round(tilePosition.x), (int)Math.round(tilePosition.y), buildingType.getID());
+    }
+    
+    /**
+     * Orders the unit to build the given add-on. The unit must be a Terran building that can have an add-on and the specified unit type must be an add-on unit type. The build() command can also be used to build add-ons.
+     * @param addonType
+     */
+    public void buildAddon(UnitType addonType) {
+    	game.bot.BWAPI.buildAddon(originalUnit.getID(), addonType.getID());
+    }
+    
+    /**
+     * Orders this unit to add the specified unit type to the training queue. Note that the player must have sufficient resources to train. If you wish to make units from a hatchery, use getLarva to get the larva associated with the hatchery and then call morph on the larva you want to morph. This command can also be used to make interceptors and scarabs.
+     * @param unitType
+     */
+    public void train(UnitType unitType) {
+    	game.bot.BWAPI.train(originalUnit.getID(), unitType.getID());
+    }
+    
+    /**
+     * Orders the unit to morph into the specified unit type.
+     * @param type
+     */
+    public void morph(UnitType unitType) {
+    	game.bot.BWAPI.morph(originalUnit.getID(), unitType.getID());
+    }
+    
+    /**
+     * Orders the unit to research the given tech type.
+     * @param techType
+     */
+    public void research(TechType techType) {
+    	game.bot.BWAPI.research(originalUnit.getID(), techType.getID());
     }
 }

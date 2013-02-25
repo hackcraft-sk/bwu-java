@@ -36,7 +36,7 @@ abstract public class Bot {
 
 		public void gameStarted() {
 			try {
-				game = new Game(Bot.this);
+				game = new Game(Bot.this, bwta);
 				onGameStarted(game);
 			} catch(Throwable t) {
 				t.printStackTrace();
@@ -228,6 +228,7 @@ abstract public class Bot {
 	private Game game = null;
 	private boolean failFast = true;
 	private int failFastReturnCode = 1;
+	private boolean bwta = false;
 	
 	final protected JNIBWAPI BWAPI;
 	
@@ -245,6 +246,10 @@ abstract public class Bot {
 	
 	public void setFailFastReturnCode(int returnCode) {
 		this.failFastReturnCode = returnCode;
+	}
+	
+	public void setBWTA(boolean enabled) {
+		this.bwta = enabled;
 	}
 	
 	public void start() {
