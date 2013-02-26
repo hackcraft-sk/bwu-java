@@ -13,7 +13,7 @@ public interface UnitSelector {
 	 * @author nixone
 	 *
 	 */
-	public interface BooleanInformation {
+	public interface BooleanSelector {
 		/**
 		 * Get a value for this selector from a unit
 		 * @param unit
@@ -27,7 +27,7 @@ public interface UnitSelector {
 	 * @author nixone
 	 *
 	 */
-	public interface IntegerInformation {
+	public interface IntegerSelector {
 		/**
 		 * Get a value for this selector from a unit
 		 * @param unit
@@ -41,7 +41,7 @@ public interface UnitSelector {
 	 * @author nixone
 	 *
 	 */
-	public interface RealInformation {
+	public interface RealSelector {
 		/**
 		 * Get a value for this selector from a unit
 		 * @param unit
@@ -50,21 +50,30 @@ public interface UnitSelector {
 		public double getValue(Unit unit);
 	}
 	
-	static public final BooleanInformation IS_GROUND = new BooleanInformation() {
+	/**
+	 * Selector for units that are not flyers (therefore are on a ground).
+	 */
+	static public final BooleanSelector IS_GROUND = new BooleanSelector() {
 		@Override
 		public boolean isTrueFor(Unit unit) {
 			return !unit.getType().isFlyer();
 		}
 	};
 	
-	static public final BooleanInformation IS_FLYER = new BooleanInformation() {
+	/**
+	 * Selector for units that are flyers (therefore are not on a ground).
+	 */
+	static public final BooleanSelector IS_FLYER = new BooleanSelector() {
 		@Override
 		public boolean isTrueFor(Unit unit) {
 			return unit.getType().isFlyer();
 		}
 	};
 	
-	static public final IntegerInformation HIT_POINTS = new IntegerInformation() {
+	/**
+	 * Selector for units by hit points.
+	 */
+	static public final IntegerSelector HIT_POINTS = new IntegerSelector() {
 		@Override
 		public int getValue(Unit unit) {
 			return unit.getHitPoints();

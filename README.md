@@ -1,6 +1,6 @@
 # JNIBWAPI Utility Layer (bwu-java)
 
-bwu-java is supposed to add a layer above traditional JNIBWAPI trying to make it more comfortable to work with.
+In the future, bwu-java layer is supposed to support developers by providing nice and comfortable API and utility classes to JNIBWAPI so that they can focus on artificial intelligence rather than coding in an uncomfortable and messy environment.
 
 ### Current version
 
@@ -36,9 +36,66 @@ if you can write
 Set<Unit> myFlyers = bot.getMyUnits().isFlyer();
 ```
 
-## Future
+## Sample bot
 
-In the future, this layer is supposed to support developers by providing nice and comfortable API and utility classes to JNIBWAPI so that they can focus on artificial intelligence rather than coding in an uncomfortable and messy environment.
+```java
+package sk.hackcraft.bwu.sample;
+
+import java.util.Random;
+
+import javabot.model.Player;
+import sk.hackcraft.bwu.Bot;
+import sk.hackcraft.bwu.Game;
+import sk.hackcraft.bwu.Unit;
+import sk.hackcraft.bwu.Vector2D;
+
+public class SampleBot extends Bot {	
+	static public void main(String [] arguments) {
+		Bot bot = new SampleBot();
+		bot.start();
+	}
+	
+	private Random random = new Random();
+	private Game game = null;
+	
+	@Override
+	public void onGameStarted(Game game) {
+		this.game = game;
+	}
+
+	@Override
+	public void onGameEnded() {
+		game = null;
+	}
+	
+	@Override
+	public void onGameUpdate() {
+		for(Unit unit : game.getMyUnits()) {
+			if(unit.isIdle()) {
+				unit.attack(new Vector2D(
+					random.nextDouble()*game.getMap().getWidth(),
+					random.nextDouble()*game.getMap().getHeight()
+				));
+			}
+		}
+	}
+	
+	public void onConnected() {}
+	public void onDisconnected() {}
+	public void onKeyPressed(int keyCode) {}
+	public void onMatchEnded(boolean isWinner) {}
+	public void onPlayerLeft(Player player) {}
+	public void onNukeDetected(Vector2D position) {}
+	public void onUnitDiscovered(Unit unit) {}
+	public void onUnitDestroyed(Unit unit) {}
+	public void onUnitEvaded(Unit unit) {}
+	public void onUnitCreated(Unit unit) {}
+	public void onUnitMorphed(Unit unit) {}
+	public void onUnitShown(Unit unit) {}
+	public void onUnitHidden(Unit unit) {}
+}
+
+```
 
 ### License
 

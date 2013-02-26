@@ -967,4 +967,290 @@ public class Unit {
     public void research(TechType techType) {
     	game.bot.BWAPI.research(originalUnit.getID(), techType.getID());
     }
+    
+    /**
+     * Orders the unit to upgrade the given upgrade type.
+     * @param upgradeType
+     */
+    public void upgrade(UpgradeType upgradeType) {
+    	game.bot.BWAPI.upgrade(originalUnit.getID(), upgradeType.getID());
+    }
+    
+    /**
+     * Orders the unit to set its rally position to the specified position.
+     * @param position
+     */
+    public void setRallyPoint(Vector2D position) {
+    	game.bot.BWAPI.setRallyPoint(originalUnit.getID(), (int)Math.round(position.x), (int)Math.round(position.y));
+    }
+    
+    /**
+     * Orders the unit to set its rally position to the specified target.
+     * @param position
+     */
+    public void setRallyPoint(Unit target) {
+    	game.bot.BWAPI.setRallyPoint(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to move to the specified position.
+     * @param position
+     */
+    public void move(Vector2D position) {
+    	game.bot.BWAPI.move(originalUnit.getID(), (int)Math.round(position.x), (int)Math.round(position.y));
+    }
+    
+    /**
+     * Orders the unit to patrol between its current position and the specified position.
+     * @param position
+     */
+    public void patrol(Vector2D position) {
+    	game.bot.BWAPI.patrol(originalUnit.getID(), (int)Math.round(position.x), (int)Math.round(position.y));
+    }
+    
+    /**
+     * Orders the unit to hold its position. Note: Reavers and Carriers can only hold position if they have at least one Scarab or Interceptor.
+     */
+    public void holdPosition() {
+    	game.bot.BWAPI.holdPosition(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to stop. After issuing, the unit's order will become <code>OrderTypes.Stop</code>.
+     */
+    public void stop() {
+    	game.bot.BWAPI.stop(originalUnit.getID());
+    }
+
+    /**
+     * Orders the unit to follow the specified unit. After issuing, the unit's order will become <code>OrderTypes.Follow</code>.
+     * @param target
+     */
+    public void follow(Unit target) {
+    	game.bot.BWAPI.follow(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to gather the specified unit. Only workers can be ordered to gather, and the target must be a mineral patch, Refinery, Assimilator, or Extractor.
+     * @param target
+     */
+    public void gather(Unit target) {
+    	game.bot.BWAPI.gather(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to return its cargo to a nearby resource depot such as a Command Center. Only workers that are carrying minerals or gas can be ordered to return cargo.
+     * @param target
+     */
+    public void returnCargo() {
+    	game.bot.BWAPI.returnCargo(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to repair the specified unit. Only Terran SCVs can be ordered to repair, and the target must be a mechanical Terran unit or building. After issuing, the unit's order will become <code>OrderTypes.Repair</code>.
+     * @param target
+     */
+    public void repair(Unit target) {
+    	game.bot.BWAPI.repair(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to burrow. Either the unit must be a Zerg Lurker, or the unit must be a Zerg ground unit and burrow tech must be researched. After issuing, the unit's order will become <code>OrderTypes.Burrowing</code> while the unit transitions.
+     * @param target
+     */
+    public void burrow() {
+    	game.bot.BWAPI.burrow(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the burrowed unit to unburrow. After issuing, the unit's order will become <code>OrderTypes.Unburrowing</code> while the unit transitions.
+     * @param target
+     */
+    public void unburrow() {
+    	game.bot.BWAPI.unburrow(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to cloak.
+     * @param target
+     */
+    public void cloak() {
+    	game.bot.BWAPI.cloak(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to decloak.
+     * @param target
+     */
+    public void decloak() {
+    	game.bot.BWAPI.decloak(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to siege. Note: unit must be a Terran siege tank. After issuing, the unit's order will become <code>OrderTypes.Sieging</code> while the siege tank transitions.
+     * @param target
+     */
+    public void siege() {
+    	game.bot.BWAPI.siege(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to unsiege. Note: unit must be a Terran siege tank. After issuing, the unit's order will become <code>OrderTypes.Unsieging</code> while the siege tank transitions.
+     * @param target
+     */
+    public void unsiege() {
+    	game.bot.BWAPI.unsiege(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to lift. Note: unit must be a Terran building that can be lifted.
+     * @param target
+     */
+    public void lift() {
+    	game.bot.BWAPI.lift(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to land. Note: unit must be a Terran building that is currently lifted.
+     * @param target
+     */
+    public void land(Vector2D tilePosition) {
+    	game.bot.BWAPI.land(originalUnit.getID(), (int)Math.round(tilePosition.x), (int)Math.round(tilePosition.y));
+    }
+    
+    /**
+     * Orders the unit to load the target unit.
+     * @param target
+     */
+    public void load(Unit target) {
+    	game.bot.BWAPI.load(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to unload the target unit.
+     * @param target
+     */
+    public void unload(Unit target) {
+    	game.bot.BWAPI.load(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to unload all loaded units at the unit's current position.
+     * @param target
+     */
+    public void unloadAll() {
+    	game.bot.BWAPI.unloadAll(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to unload all loaded units at the specified location. Unit should be a Terran Dropship, Protoss Shuttle, or Zerg Overlord. If the unit is a Terran Bunker, the units will be unloaded right outside the bunker, like in the first version of unloadAll.
+     * @param target
+     */
+    public void unloadAll(Vector2D position) {
+    	game.bot.BWAPI.unloadAll(originalUnit.getID(), (int)Math.round(position.x), (int)Math.round(position.y));
+    }
+    
+    /**
+     * Works like the right click in the GUI. Right click on a mineral patch to order a worker to mine, right click on an enemy to attack it.
+     * @param target
+     */
+    public void rightClick(Vector2D targetPosition) {
+    	game.bot.BWAPI.rightClick(originalUnit.getID(), (int)Math.round(targetPosition.x), (int)Math.round(targetPosition.y));
+    }
+    
+    /**
+     * Works like the right click in the GUI. Right click on a mineral patch to order a worker to mine, right click on an enemy to attack it.
+     * @param target
+     */
+    public void rightClick(Unit target) {
+    	game.bot.BWAPI.rightClick(originalUnit.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the SCV to stop constructing the building, and the building is left in a partially complete state until it is canceled, destroyed, or completed.
+     * @param target
+     */
+    public void haltConstruction() {
+    	game.bot.BWAPI.haltConstruction(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the building to stop being constructed.
+     * @param target
+     */
+    public void cancelConstruction() {
+    	game.bot.BWAPI.cancelConstruction(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to stop making the addon.
+     * @param target
+     */
+    public void cancelAddon() {
+    	game.bot.BWAPI.cancelAddon(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to remove the last unit from the training queue. Same as <code>cancelTrain(-2)</code>
+     * @param target
+     */
+    public void cancelTrain() {
+    	cancelTrain(-2);
+    }
+    
+    /**
+     * Orders the unit to remove the specified unit from its training queue.
+     * @param target
+     */
+    public void cancelTrain(int slot) {
+    	game.bot.BWAPI.cancelTrain(originalUnit.getID(), slot);
+    }
+    
+    /**
+     * Orders the unit to stop morphing.
+     * @param target
+     */
+    public void cancelMorph() {
+    	game.bot.BWAPI.cancelMorph(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to cancel a research in progress.
+     * @param target
+     */
+    public void cancelResearch() {
+    	game.bot.BWAPI.cancelResearch(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to cancel an upgrade in progress.
+     * @param target
+     */
+    public void cancelUpgrade() {
+    	game.bot.BWAPI.cancelUpgrade(originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to use a technology not requiring a target (i.e. Stim Pack).
+     * @param target
+     */
+    public void useTech(TechType techType) {
+    	game.bot.BWAPI.useTech(originalUnit.getID(), techType.getID());
+    }
+    
+    /**
+     * Orders the unit to use a technology requiring a target unit (i.e. Irradiate).
+     * @param target
+     */
+    public void useTech(TechType techType, Unit target) {
+    	game.bot.BWAPI.useTech(originalUnit.getID(), techType.getID(), target.originalUnit.getID());
+    }
+    
+    /**
+     * Orders the unit to use a technology requiring a target position (i.e. Spider Mines).
+     * @param target
+     */
+    public void useTech(TechType techType, Vector2D position) {
+    	game.bot.BWAPI.useTech(originalUnit.getID(), techType.getID(), (int)Math.round(position.x), (int)Math.round(position.y));
+    }
 }
