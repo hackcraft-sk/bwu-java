@@ -1,19 +1,30 @@
 # BWU-Java (JNIBWAPI Utility Layer)
 
-In the future, **bwu-java layer** is supposed to support developers by providing nice and comfortable API and utility classes to JNIBWAPI so that they can focus on artificial intelligence rather than coding in an uncomfortable and messy environment.
+**BWU-Java** uses [JNIBWAPI](https://code.google.com/p/jnibwapi/) (which uses
+[BWAPI](https://code.google.com/p/bwapi/)) to create a simple API for controlling 
+StarCraft: Broodwar mainly for purposes of creating and testing artificial intelligence
+algorithms. 
+
+In the future, I believe in creating a very simple and comfortable API for accesing SC:BW
+and possibly a framework to support unit control and management. I honestly hope it does many
+things from the goal right now.
 
 ### Current version
 
-This project is currently under heavy development. It can be used to write simple micro bots, but it's not recommended for huge full game bot
-development yet. It has been used in [StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk) to build fully functional bot that achieved 2nd place in the 
-Experienced part of the tournament.
+This project is currently under heavy development. It can be used to write simple micro bots,
+but it's not recommended for huge full game bot development yet. It has been used in
+[StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk) to build fully functional bot
+that achieved 2nd place in the Experienced part of the tournament.
 
 ## What is where
 
 This repository contains few other things apart from pure bwu-java (package ``sk.hackcraft.bwu``).
 
-*	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk), package ``sk.hackcraft.bwu.sample``
-*	Sample bot written in pure JNIBWAPI that took 2nd place in [StarCraft Micro AI Tournament 1](http://hackcraft.sk/article/default/starcraft-micro-ai-tournament-2013-report), package ``sk.nixone.microqueen``
+*	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk),
+	package ``sk.hackcraft.bwu.sample``
+*	Sample bot written in pure JNIBWAPI that took 2nd place in
+	[StarCraft Micro AI Tournament 1](http://hackcraft.sk/article/default/starcraft-micro-ai-tournament-2013-report),
+	package ``sk.nixone.microqueen``
 *	Pure JNIBWAPI which bwu-java uses as a backbone, package ``javabot``
 
 ## Code samples
@@ -21,7 +32,7 @@ This repository contains few other things apart from pure bwu-java (package ``sk
 Is my unit of a certain type? (Really crappy in pure JNIBWAPI)
 
 ```java
-return myUnits.getType() == game.getUnitTypes().Terran_Marine; // that's the way i like it!
+return myUnit.getType() == game.getUnitTypes().Terran_Marine; // that's the way i like it!
 ```
 
 You want to get a center of all visible enemy units? Easy!
@@ -53,7 +64,8 @@ Unit lockdownTarget = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector
 );
 ```
 
-Are my units at a certain specified position? Decides, if the average distance of all units from certain position is less or equal than tolerance.
+Are my units at a certain specified position? Decides, if the average distance of all units from certain position
+is less or equal than tolerance.
 
 ```java
 // obvious, but clean
