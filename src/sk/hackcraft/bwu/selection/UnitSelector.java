@@ -79,4 +79,32 @@ public interface UnitSelector {
 			return unit.getHitPoints();
 		}
 	};
+	
+	static public final IntegerSelector ENERGY = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getEnergy();
+		}
+	};
+	
+	static public final BooleanSelector IS_LOCKED_DOWN = new BooleanSelector() {
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return unit.isLockedDown();
+		}
+	};
+	
+	static public final BooleanSelector IS_VISIBLE = new BooleanSelector() {
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return unit.isVisible();
+		}
+	};
+	
+	static public final BooleanSelector IS_UNDER_ATTACK = new BooleanSelector() {
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return unit.isUnderAttack();
+		}
+	};
 }

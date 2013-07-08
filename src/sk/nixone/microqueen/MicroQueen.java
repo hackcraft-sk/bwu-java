@@ -112,6 +112,8 @@ public class MicroQueen implements BWAPIEventListener {
 		return agents.get(unit);
 	}
 	
+	private int color = 100;
+	
 	private void update() {
 		LinkedList<Unit> toRemove = new LinkedList<Unit>();
 		for(Unit unit : agents.keySet()) {

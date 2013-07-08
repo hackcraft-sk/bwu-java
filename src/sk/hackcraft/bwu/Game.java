@@ -23,6 +23,8 @@ import sk.hackcraft.bwu.types.WeaponTypes;
  *
  */
 public class Game {
+	static public final int TILE_SIZE = 32;
+	
 	final protected Bot bot;
 	
 	private HashMap<Integer, Unit> units = new HashMap<Integer, Unit>();
@@ -66,7 +68,11 @@ public class Game {
 	
 	protected Unit getUnit(int unitID) {
 		if(!units.containsKey(unitID)) {
-			Unit unit = new Unit(this, bot.BWAPI.getUnit(unitID));
+			javabot.model.Unit originalUnit = bot.BWAPI.getUnit(unitID);
+			if(originalUnit == null) {
+				return null;
+			}
+			Unit unit = new Unit(this, originalUnit);
 			
 			units.put(unitID, unit);
 			
@@ -203,5 +209,25 @@ public class Game {
 	 */
 	public Map getMap() {
 		return bot.BWAPI.getMap();
+	}
+	
+	/**
+	 * Sets game speed
+	 * @param speed game speed
+	 */
+	public void setSpeed(int speed) {
+		bot.BWAPI.setGameSpeed(speed);
+	}
+	
+	public void enableUserInput() {
+		bot.BWAPI.enableUserInput();
+	}
+	
+	public void enablePerfectInformation() {
+		bot.BWAPI.enablePerfectInformation();
+	}
+	
+	public int getFrameCount() {
+		return bot.BWAPI.getFrameCount();
 	}
 }

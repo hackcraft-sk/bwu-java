@@ -21,7 +21,8 @@ abstract public class Bot {
 	abstract public void onUnitMorphed(Unit unit);
 	abstract public void onUnitShown(Unit unit);
 	abstract public void onUnitHidden(Unit unit);
-
+	abstract public void onDraw(Graphics graphics);
+	
 	private BWAPIEventListener listener = new BWAPIEventListener() {
 		public void connected() {
 			try {
@@ -38,6 +39,10 @@ abstract public class Bot {
 			try {
 				game = new Game(Bot.this, bwta);
 				onGameStarted(game);
+				
+				for(javabot.model.Unit jUnit : BWAPI.getAllUnits()) {
+					onUnitDiscovered(game.getUnit(jUnit.getID()));
+				}
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -49,6 +54,7 @@ abstract public class Bot {
 		public void gameUpdate() {
 			try {
 				onGameUpdate();
+				onDraw(graphics);
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -229,11 +235,13 @@ abstract public class Bot {
 	private boolean failFast = true;
 	private int failFastReturnCode = 1;
 	private boolean bwta = false;
+	private Graphics graphics;
 	
 	final protected JNIBWAPI BWAPI;
 	
 	public Bot() {
 		BWAPI = new JNIBWAPI(listener);
+		graphics = new Graphics(this);
 	}
 	
 	public JNIBWAPI getBWAPI() {

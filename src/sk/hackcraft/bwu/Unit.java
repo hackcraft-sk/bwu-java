@@ -26,6 +26,9 @@ public class Unit {
 	final protected javabot.model.Unit originalUnit;
 	
 	protected Unit(Game game, javabot.model.Unit originalUnit) {
+		if(originalUnit == null) {
+			throw new RuntimeException("Cannot create unit from null original JNIBWAPI unit.");
+		}
 		this.game = game;
 		this.originalUnit = originalUnit;
 	}
