@@ -1,18 +1,18 @@
-# JNIBWAPI Utility Layer (bwu-java)
+# BWU-Java (JNIBWAPI Utility Layer)
 
 In the future, **bwu-java layer** is supposed to support developers by providing nice and comfortable API and utility classes to JNIBWAPI so that they can focus on artificial intelligence rather than coding in an uncomfortable and messy environment.
 
 ### Current version
 
 This project is currently under heavy development. It can be used to write simple micro bots, but it's not recommended for huge full game bot
-development yet. It has been used in [StarCraft Micro AI Tournament 2 (5.-7. July 2013)](http://scmai.hackcraft.sk) to build fully functional bot that achieved 2nd place in the 
+development yet. It has been used in [StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk) to build fully functional bot that achieved 2nd place in the 
 Experienced part of the tournament.
 
 ## What is where
 
-This repository contains few other things apart from pure bwu-java (package sk.hackcraft.bwu).
+This repository contains few other things apart from pure bwu-java (package ``sk.hackcraft.bwu``).
 
-*	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 2 (5.-7. July 2013)](http://scmai.hackcraft.sk), package ``sk.hackcraft.bwu.sample``
+*	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk), package ``sk.hackcraft.bwu.sample``
 *	Sample bot written in pure JNIBWAPI that took 2nd place in [StarCraft Micro AI Tournament 1](http://hackcraft.sk/article/default/starcraft-micro-ai-tournament-2013-report), package ``sk.nixone.microqueen``
 *	Pure JNIBWAPI which bwu-java uses as a backbone, package ``javabot``
 
