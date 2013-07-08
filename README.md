@@ -4,36 +4,52 @@ In the future, bwu-java layer is supposed to support developers by providing nic
 
 ### Current version
 
-This project is currently under heavy development. It is far from finished and also far from alpha version.
+This project is currently under heavy development. It can be used to write simple micro bots, but it's not recommended for huge full game bot
+development yet. It has been used in StarCraft Micro AI Tournament 2 (5.-7. July 2013) to build fully functional bot that achieved 2nd place in the 
+Experienced part of the tournament.
 
-## Overview
+## Code samples
 
-Why to write
-
-```java
-int hitpoints = bwapi.getUnitType(unit.getTypeID()).getMaxHitPoints();
-```
-if you could write
+Is my unit of a certain type? (Really crappy in pure JNIBWAPI)
 
 ```java
-int hitpoints = unit.getType().getMaxHitPoints();
+return myUnits.getType() == game.getUnitTypes().Terran_Marine; // that's the way i like it!
 ```
 
-Or why to write
+You want to get a center of all visible enemy units? Easy!
 
 ```java
-Set<Unit> myFlyers = new HashSet<Unit>();
-for(Unit unit : bwapi.getMyUnits()) {
-  if(bwapi.getUnitType(unit.getTypeID()).isFlyer()) {
-    myFlyers.add(unit);
-  }
-}
+Vector2D enemyCenter = game.getEnemyUnits().where(UnitSelector.IS_VISIBLE).getArithmeticCenter(); // yes, this easy
 ```
 
-if you can write
+Are there more than 3 units in range of my sieged tank?
 
 ```java
-Set<Unit> myFlyers = bot.getMyUnits().isFlyer();
+// just, say it...
+return game.getEnemyUnits()
+		.whereLessOrEqual(
+			new DistanceSelector(unit), 
+			game.getWeaponTypes().Arclite_Shock_Cannon.getMaxRange()
+		)
+		.size() > 3;
+```
+
+We want first enemy unit in range of our ghost to lock down, prioritized by: Battlecruiser, than Tank
+
+```java
+// simple, but really useful
+Unit lockdownTarget = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(ghost), range).firstOf(
+	game.getUnitTypes().Terran_Battlecruiser,
+	game.getUnitTypes().Terran_Siege_Tank_Siege_Mode,
+	game.getUnitTypes().Terran_Siege_Tank_Tank_Mode
+);
+```
+
+Are my units at a certain specified position? Decides, if the average distance of all units from certain position is less or equal than tolerance.
+
+```java
+// obvious, but clean
+game.getMyUnits().areAt(certainPosition, tolerance);
 ```
 
 ## Sample bot
@@ -48,6 +64,7 @@ import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.Graphics;
 
 public class SampleBot extends Bot {	
 	static public void main(String [] arguments) {
@@ -72,13 +89,16 @@ public class SampleBot extends Bot {
 	public void onGameUpdate() {
 		for(Unit unit : game.getMyUnits()) {
 			if(unit.isIdle()) {
-				unit.attack(new Vector2D(
-					random.nextDouble()*game.getMap().getWidth(),
-					random.nextDouble()*game.getMap().getHeight()
+				unit.attack(Vector2D.random().scale(
+					game.getMap().getWidth(),
+					game.getMap().getHeight()
 				));
 			}
 		}
 	}
+	
+	@Override
+	public void onDraw(Graphics graphics) {}
 	
 	public void onConnected() {}
 	public void onDisconnected() {}
