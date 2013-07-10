@@ -143,13 +143,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereType(UnitType unitType) {
-		UnitSet result = new UnitSet();
-		for(Unit unit : this) {
-			if(unitType == unit.getType()) {
-				result.add(unit);
-			}
-		}
-		return result;
+		return where(new UnitTypeSelector(unitType));
 	}
 	
 	/**
@@ -159,13 +153,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereTypeNot(UnitType unitType) {
-		UnitSet result = new UnitSet();
-		for(Unit unit : this) {
-			if(unitType != unit.getType()) {
-				result.add(unit);
-			}
-		}
-		return result;
+		return this.minus(this.where(new UnitTypeSelector(unitType)));
 	}
 	
 	/**
@@ -204,6 +192,12 @@ public class UnitSet extends HashSet<Unit> {
 		return accumulated/size();
 	}
 	
+	/**
+	 * Returns the first unit of specified types that exists in this set.
+	 * 
+	 * @param unitTypes possible types ordered by preference
+	 * @return
+	 */
 	public Unit firstOf(UnitType... unitTypes) {
 		for(UnitType type : unitTypes) {
 			UnitSet subSet = whereType(type);
@@ -214,6 +208,11 @@ public class UnitSet extends HashSet<Unit> {
 		return null;
 	}
 	
+	/**
+	 * Returns any single (first) unit from this set.
+	 * 
+	 * @return
+	 */
 	public Unit first() {
 		if(size() == 0) {
 			return null;
@@ -221,6 +220,12 @@ public class UnitSet extends HashSet<Unit> {
 		return iterator().next();
 	}
 	
+	/**
+	 * Returns the set of all units that are in this set but are not in the specified set.
+	 * 
+	 * @param units
+	 * @return
+	 */
 	public UnitSet minus(UnitSet units) {
 		UnitSet result = new UnitSet();
 		for(Unit unit : this) {
@@ -231,6 +236,12 @@ public class UnitSet extends HashSet<Unit> {
 		return result;
 	}
 	
+	/**
+	 * Returns the set of all units that are in both this and specified set.
+	 * 
+	 * @param set
+	 * @return
+	 */
 	public UnitSet intersection(UnitSet set) {
 		UnitSet result = new UnitSet();
 		
@@ -243,6 +254,12 @@ public class UnitSet extends HashSet<Unit> {
 		return result;
 	}
 	
+	/**
+	 * Returns all units that are in this set or in the specified set.
+	 * 
+	 * @param set
+	 * @return
+	 */
 	public UnitSet union(UnitSet set) {
 		UnitSet result = new UnitSet(this);
 		
@@ -251,6 +268,14 @@ public class UnitSet extends HashSet<Unit> {
 		return result;
 	}
 	
+	/**
+	 * Decides if these units are at specified position, decides if the average distance of
+	 * all units from specified position in this set is smaller or equal to the tolerance.
+	 * 
+	 * @param position
+	 * @param tolerance
+	 * @return
+	 */
 	public boolean areAt(Vector2D position, double tolerance) {
 		return getAverageDistanceFrom(position) <= tolerance;
 	}

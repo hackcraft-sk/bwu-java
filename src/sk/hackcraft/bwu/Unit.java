@@ -95,7 +95,7 @@ public class Unit {
      * @return
      */
     public Vector2D getTilePosition() {
-    	return new Vector2D(originalUnit.getX(), originalUnit.getY());
+    	return new Vector2D(originalUnit.getTileX(), originalUnit.getTileY());
     }
 
     /**

@@ -51,6 +51,53 @@ public interface UnitSelector {
 	}
 	
 	/**
+	 * Selector for units by hit points.
+	 */
+	static public final IntegerSelector HIT_POINTS = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getHitPoints();
+		}
+	};
+	
+	static public final IntegerSelector SHIELD = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getShield();
+		}
+	};
+	
+	static public final IntegerSelector ENERGY = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getEnergy();
+		}
+	};
+	
+	static public final IntegerSelector RESOURCES = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getResources();
+		}
+	};
+	
+	static public final IntegerSelector INITIAL_HIT_POINTS = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getInitialHitPoints();
+		}
+	};
+	
+	static public final IntegerSelector KILL_COUNT = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getKillCount();
+		}
+	};
+	
+	// TODO
+	
+	/**
 	 * Selector for units that are not flyers (therefore are on a ground).
 	 */
 	static public final BooleanSelector IS_GROUND = new BooleanSelector() {
@@ -70,22 +117,9 @@ public interface UnitSelector {
 		}
 	};
 	
-	/**
-	 * Selector for units by hit points.
-	 */
-	static public final IntegerSelector HIT_POINTS = new IntegerSelector() {
-		@Override
-		public int getValue(Unit unit) {
-			return unit.getHitPoints();
-		}
-	};
+
 	
-	static public final IntegerSelector ENERGY = new IntegerSelector() {
-		@Override
-		public int getValue(Unit unit) {
-			return unit.getEnergy();
-		}
-	};
+
 	
 	static public final BooleanSelector IS_LOCKED_DOWN = new BooleanSelector() {
 		@Override
