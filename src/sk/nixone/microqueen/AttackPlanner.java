@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 import javabot.model.Map;
 import javabot.model.Unit;
-import javabot.util.BWColor;
 
 public class AttackPlanner {
 	static public class Position {
@@ -78,7 +77,7 @@ public class AttackPlanner {
 	
 	public void draw() {
 		for(Position p : knownEnemyPositions) {
-			queen.BWAPI.drawCircle(p.x, p.y, (int)COLLISION_DISTANCE, BWColor.GREEN, false, false);
+			queen.BWAPI.drawCircle(p.x, p.y, (int)COLLISION_DISTANCE, 150, false, false);
 		}
 		queen.BWAPI.drawText(20, 100, "AttackPlanner positions: "+knownEnemyPositions.size(), true);
 	}

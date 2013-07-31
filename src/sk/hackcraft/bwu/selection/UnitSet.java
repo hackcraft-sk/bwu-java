@@ -76,13 +76,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereLessOrEqual(UnitSelector.IntegerSelector selector, int value) {
-		UnitSet result = new UnitSet();
-		for(Unit unit : this) {
-			if(selector.getValue(unit) <= value) {
-				result.add(unit);
-			}
-		}
-		return result;
+		return where(new IntegerComparisonSelector(selector, value, Comparison.LESS_OR_EQUAL));
 	}
 	
 	/**
@@ -93,13 +87,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereLessOrEqual(UnitSelector.RealSelector selector, double value) {
-		UnitSet result = new UnitSet();
-		for(Unit unit : this) {
-			if(selector.getValue(unit) <= value) {
-				result.add(unit);
-			}
-		}
-		return result;
+		return where(new RealComparisonSelector(selector, value, Comparison.LESS_OR_EQUAL));
 	}
 	
 	/**
@@ -110,13 +98,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereGreatherOrEqual(UnitSelector.IntegerSelector selector, int value) {
-		UnitSet result = new UnitSet();
-		for(Unit unit : this) {
-			if(selector.getValue(unit) >= value) {
-				result.add(unit);
-			}
-		}
-		return result;
+		return where(new IntegerComparisonSelector(selector, value, Comparison.GREATHER_OR_EQUAL));
 	}
 	
 	/**
@@ -127,13 +109,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereGreatherOrEqual(UnitSelector.RealSelector selector, double value) {
-		UnitSet result = new UnitSet();
-		for(Unit unit : this) {
-			if(selector.getValue(unit) >= value) {
-				result.add(unit);
-			}
-		}
-		return result;
+		return where(new RealComparisonSelector(selector, value, Comparison.GREATHER_OR_EQUAL));
 	}
 	
 	/**
@@ -153,7 +129,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereTypeNot(UnitType unitType) {
-		return this.minus(this.where(new UnitTypeSelector(unitType)));
+		return this.minus(this.whereType(unitType));
 	}
 	
 	/**

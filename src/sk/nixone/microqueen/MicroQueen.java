@@ -7,7 +7,6 @@ import javabot.BWAPIEventListener;
 import javabot.JNIBWAPI;
 import javabot.model.Unit;
 import javabot.types.UnitType.UnitTypes;
-import javabot.util.BWColor;
 
 public class MicroQueen implements BWAPIEventListener {
 	static final public int TILE_SIZE = 32;
@@ -150,8 +149,8 @@ public class MicroQueen implements BWAPIEventListener {
 		UnitGroup myUnits = getMyUnits();
 		Unit closest = myUnits.getClosest(attackingPosition.x, attackingPosition.y);
 		
-		BWAPI.drawLine(closest.getX(), closest.getY(), attackingPosition.x, attackingPosition.y, BWColor.RED, false);
-		BWAPI.drawCircle(attackingPosition.x, attackingPosition.y, (int)AttackPlanner.COLLISION_DISTANCE, BWColor.RED, false, false);
+		BWAPI.drawLine(closest.getX(), closest.getY(), attackingPosition.x, attackingPosition.y, 113, false);
+		BWAPI.drawCircle(attackingPosition.x, attackingPosition.y, (int)AttackPlanner.COLLISION_DISTANCE, 113, false, false);
 		
 		attackPlanner.draw();
 	}

@@ -244,7 +244,7 @@ abstract public class Bot {
 		graphics = new Graphics(this);
 	}
 	
-	public JNIBWAPI getBWAPI() {
+	protected JNIBWAPI getBWAPI() {
 		return BWAPI;
 	}
 	

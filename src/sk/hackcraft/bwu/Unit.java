@@ -382,7 +382,7 @@ public class Unit {
      * Returns the current researching tech type, or <code>TechTypes.None</code> if none is researching.
      * @return
      */
-    public TechType getResearchingTechID() {
+    public TechType getResearchingTech() {
         return game.bot.BWAPI.getTechType(originalUnit.getResearchingTechID());
     }
 

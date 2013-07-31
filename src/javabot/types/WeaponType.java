@@ -5,7 +5,6 @@ package javabot.types;
  * For a description of fields see: http://code.google.com/p/bwapi/wiki/WeaponType
  */
 public class WeaponType {
-
 	public static final int numAttributes = 24;
 
 	private String name;	
