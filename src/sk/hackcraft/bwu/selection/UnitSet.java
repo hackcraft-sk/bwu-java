@@ -2,12 +2,11 @@ package sk.hackcraft.bwu.selection;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import javabot.types.UnitType;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.selection.UnitSelector.RealSelector;
-import sk.hackcraft.bwu.types.UnitTypes;
 
 /**
  * Represents a set of units and helper operations for unit selection.
@@ -182,6 +181,21 @@ public class UnitSet extends HashSet<Unit> {
 			}
 		}
 		return null;
+	}
+	
+	public UnitSet firstNOf(int n, UnitType... unitTypes) {
+		UnitSet result = new UnitSet();
+		
+		for(UnitType type : unitTypes) {
+			UnitSet subSet = whereType(type);
+			Iterator<Unit> it = subSet.iterator();
+			
+			while(it.hasNext() && result.size() < n) {
+				result.add(it.next());
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
