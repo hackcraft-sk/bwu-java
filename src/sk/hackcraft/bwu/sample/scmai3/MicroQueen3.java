@@ -13,7 +13,7 @@ import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
 
 public class MicroQueen3 extends Bot {
-	static public double IS_AT_TOLERANCE = 200;
+	static public double IS_AT_TOLERANCE = 100;
 	static public double GROUP_DISTANCE_TOLERANCE = 200;
 	
 	static public Vector2D LEFT_BOTTOM_BASE = new Vector2D(520, 2745);
@@ -31,7 +31,7 @@ public class MicroQueen3 extends Bot {
 	
 	static public void main(String [] arguments) {
 		Bot bot = new MicroQueen3();
-		//bot.disableGraphics();
+		bot.disableGraphics();
 		bot.start();
 	}
 	
@@ -89,11 +89,17 @@ public class MicroQueen3 extends Bot {
 			}
 		}
 		
-		// discover new positions if nesessary
-		if(positionsToExplore.size() <= 3) {
-			Vector2D enemyCenter = game.getEnemyUnits().where(UnitSelector.IS_VISIBLE).getArithmeticCenter();
-			if(enemyCenter != null) {
-				positionsToExplore.add(enemyCenter);
+		UnitSet buildingsUnderAttack = getBuildingUnderAttack();
+		
+		if(buildingsUnderAttack.size() > 0) {
+			exploringPosition = buildingsUnderAttack.first().getPosition();
+		} else {
+			// discover new positions if nesessary
+			if(positionsToExplore.size() <= 3) {
+				Vector2D enemyCenter = game.getEnemyUnits().where(UnitSelector.IS_VISIBLE).getArithmeticCenter();
+				if(enemyCenter != null) {
+					positionsToExplore.add(enemyCenter);
+				}
 			}
 		}
 		
@@ -146,7 +152,7 @@ public class MicroQueen3 extends Bot {
 		for(Unit unit : getAttackGroup()) {
 			// if unit is not attacking and is too far
 			if(!unit.isAttackFrame() && game.getFrameCount() % 50 == 17 && shouldBePosition.sub(unit.getPosition()).length > GROUP_DISTANCE_TOLERANCE) {
-				unit.move(shouldBePosition);
+				unit.attack(shouldBePosition);
 			// or, should attack
 			} else if(exploringPosition != null && (unit.isIdle() || unit.isStuck()) && game.getFrameCount() % 30 == 7) {
 				unit.attack(exploringPosition);
@@ -156,6 +162,14 @@ public class MicroQueen3 extends Bot {
 	
 	public UnitSet getAttackGroup() {
 		return game.getMyUnits().whereNot(UnitSelector.IS_BUILDING).whereTypeNot(game.getUnitTypes().Zerg_Larva);
+	}
+	
+	public UnitSet getBuildings() {
+		return game.getMyUnits().whereType(game.getUnitTypes().Zerg_Hatchery);
+	}
+	
+	public UnitSet getBuildingUnderAttack() {
+		return getBuildings().where(UnitSelector.IS_UNDER_ATTACK);
 	}
 	
 	public void say(Object something) {
