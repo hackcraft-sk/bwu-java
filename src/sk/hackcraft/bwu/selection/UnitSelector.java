@@ -141,4 +141,11 @@ public interface UnitSelector {
 			return unit.isUnderAttack();
 		}
 	};
+	
+	static public final BooleanSelector IS_BUILDING = new BooleanSelector() {
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return unit.getType().isBuilding();
+		}
+	};
 }

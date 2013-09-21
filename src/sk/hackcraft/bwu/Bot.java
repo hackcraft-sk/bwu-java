@@ -54,7 +54,9 @@ abstract public class Bot {
 		public void gameUpdate() {
 			try {
 				onGameUpdate();
-				onDraw(graphics);
+				if(graphicsEnabled) {
+					onDraw(graphics);
+				}
 			} catch(Throwable t) {
 				t.printStackTrace();
 				if(failFast) {
@@ -236,6 +238,7 @@ abstract public class Bot {
 	private int failFastReturnCode = 1;
 	private boolean bwta = false;
 	private Graphics graphics;
+	private boolean graphicsEnabled = true;
 	
 	final protected JNIBWAPI BWAPI;
 	
@@ -269,5 +272,9 @@ abstract public class Bot {
 				System.exit(failFastReturnCode);
 			}
 		}
+	}
+	
+	public void disableGraphics() {
+		this.graphicsEnabled = false;
 	}
 }
