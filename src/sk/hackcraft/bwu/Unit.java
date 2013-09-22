@@ -33,6 +33,10 @@ public class Unit {
 		this.originalUnit = originalUnit;
 	}
 	
+	public boolean isAt(Vector2D position, double tolerance) {
+		return getPosition().sub(position).length <= tolerance;
+	}
+	
 	/**
 	 * Current type of the unit.
 	 * @return

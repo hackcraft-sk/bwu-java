@@ -148,4 +148,11 @@ public interface UnitSelector {
 			return unit.getType().isBuilding();
 		}
 	};
+	
+	static public final BooleanSelector CAN_ATTACK_AIR = new BooleanSelector() {
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return unit.getType().isCanAttackAir();
+		}
+	};
 }
