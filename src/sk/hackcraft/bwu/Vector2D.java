@@ -89,6 +89,17 @@ public class Vector2D {
 	}
 	
 	/**
+	 * Scale this vector by specific aspects in specific components. Be careful, this method does change the vector heading if the aspects
+	 * are different.
+	 * 
+	 * @param aspect
+	 * @return
+	 */
+	public Vector2D scale(Vector2D aspect) {
+		return scale(aspect.x, aspect.y);
+	}
+	
+	/**
 	 * Normalizes this vector.
 	 * @return new vector
 	 */

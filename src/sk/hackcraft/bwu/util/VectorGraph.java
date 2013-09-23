@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import sk.hackcraft.bwu.Game;
+import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
 
 public class VectorGraph {
@@ -58,11 +60,25 @@ public class VectorGraph {
 	}
 	
 	private void runFloyd() {
+		for(int i=0; i<vertices.size(); i++) {
+			for(int j=0; j<vertices.size(); j++) {
+				double distance = Double.POSITIVE_INFINITY;
+				if(i == j) {
+					distance = 0;
+				} else if(vertices.get(i).edges.contains(vertices.get(j))) {
+					distance = vertices.get(i).point.sub(vertices.get(j).point).length;
+				}
+				
+				vertices.get(i).distances.put(vertices.get(j), distance);
+				vertices.get(i).successors.put(vertices.get(j), -1);
+			}
+		}
+		
 		for(int k=0; k<vertices.size(); k++) {
 			for(int i=0; i<vertices.size(); i++) {
 				for(int j=0; j<vertices.size(); j++) {
-					double newDistance = vertices.get(i).distances.get(k) + vertices.get(k).distances.get(j);
-					if(newDistance < vertices.get(i).distances.get(j)) {
+					double newDistance = vertices.get(i).distances.get(vertices.get(k)) + vertices.get(k).distances.get(vertices.get(j));
+					if(newDistance < vertices.get(i).distances.get(vertices.get(j))) {
 						vertices.get(i).distances.put(vertices.get(j), newDistance);
 						vertices.get(i).successors.put(vertices.get(j), k);
 					}
@@ -93,11 +109,11 @@ public class VectorGraph {
 	}
 	
 	private List<Vector2D> getShortestPath(int indexFrom, int indexTo) {
-		if(vertices.get(indexFrom).distances.get(indexTo) == Double.POSITIVE_INFINITY) {
+		if(vertices.get(indexFrom).distances.get(vertices.get(indexTo)) == Double.POSITIVE_INFINITY) {
 			return null;
 		}
 		
-		int intermediate = vertices.get(indexFrom).successors.get(indexTo);
+		int intermediate = vertices.get(indexFrom).successors.get(vertices.get(indexTo));
 		if(intermediate == -1) {
 			return new LinkedList<>();
 		} else {
@@ -143,9 +159,36 @@ public class VectorGraph {
 				Iterator<Vertex> it = vertex.edges.iterator();
 				for(int edgeIndex=0; edgeIndex < vertex.edges.size(); edgeIndex++) {
 					Vertex edgeVertex = it.next();
-					
+					// TODO Finish this method.
 				}
 			}
+		}
+	}
+	
+	public void render(Graphics graphics, javabot.model.Map map, Vector2D position, Vector2D size, Vector2D... points) {
+		graphics.setScreenCoordinates();
+		
+		Vector2D scaler = new Vector2D(
+			size.x / (map.getWidth()*Game.TILE_SIZE),
+			size.y / (map.getHeight()*Game.TILE_SIZE)
+		);
+		
+		graphics.setColor(Graphics.Color.YELLOW);
+		graphics.drawBox(position, position.add(size));
+		
+		graphics.setColor(Graphics.Color.WHITE);
+		for(Vertex v : vertices) {
+			for(Vertex e : v.edges) {
+				graphics.drawLine(v.point.scale(scaler).add(position), e.point.scale(scaler).add(position));
+			}
+		}
+		
+		graphics.setColor(Graphics.Color.BLUE);
+		for(Vector2D point : points) {
+			if(point == null) {
+				continue;
+			}
+			graphics.fillCircle(point.scale(scaler).add(position), 5);
 		}
 	}
 }

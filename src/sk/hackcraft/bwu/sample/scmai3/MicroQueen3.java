@@ -14,7 +14,7 @@ import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.LogicalSelector;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
-import sk.hackcraft.bwu.util.RouteFinder;
+import sk.hackcraft.bwu.util.VectorGraph;
 
 public class MicroQueen3 extends Bot {
 	static public double IS_AT_TOLERANCE = 200;
@@ -47,7 +47,7 @@ public class MicroQueen3 extends Bot {
 	private Queue<Vector2D> positionsToExplore = new LinkedList<>();
 	
 	private State state = State.MOVING;
-	private RouteFinder routeFinder = new MQ3RouteFinder();
+	private VectorGraph routeFinder = new MQ3VectorGraph();
 	
 	private Vector2D targetPosition = null;
 	private Vector2D nextToGoPosition = null;
@@ -127,19 +127,6 @@ public class MicroQueen3 extends Bot {
 			nextToGoPosition = currentPath.get(0);
 		}
 		
-		// decide the state
-		UnitSet buildingsUnderAttack = getBuildingUnderAttack();
-		
-		/*if(isUnderAttack()) {
-			state = State.DEFENDING_UNITS;
-			exploringPosition = game.getEnemyUnits().getArithmeticCenter();
-		} else if(buildingsUnderAttack.size() > 0) {
-			state = State.DEFENDING_BUILDING;
-			exploringPosition = buildingsUnderAttack.first().getPosition();
-		} else {*/
-
-		//}
-		
 		handleRegroupingAndAttack();
 		handleScouting();
 	}
@@ -184,6 +171,12 @@ public class MicroQueen3 extends Bot {
 		graphics.setColor(Graphics.Color.PURPLE);
 		graphics.setGameCoordinates();
 		graphics.fillCircle(getAttackGroup().getArithmeticCenter(), 40);
+		
+		routeFinder.render(graphics, game.getMap(), new Vector2D(10, 60), new Vector2D(150, 100),
+			getAttackGroup().getArithmeticCenter(),
+			nextToGoPosition,
+			targetPosition
+		);
 	}
 	
 	public void handleRegroupingAndAttack() {
