@@ -1,5 +1,7 @@
 package sk.hackcraft.bwu;
 
+import javabot.model.Map;
+
 public class Graphics {
 	public enum Color {
 		RED(111), BLUE(165), TEAL(159), PURPLE(164), ORANGE(179),
@@ -131,5 +133,9 @@ public class Graphics {
 	
 	public boolean isGameCoordinates() {
 		return !screen;
+	}
+	
+	public Minimap createMinimap(Map map, Vector2D position, Vector2D size) {
+		return new Minimap(this, map, position, size);
 	}
 }

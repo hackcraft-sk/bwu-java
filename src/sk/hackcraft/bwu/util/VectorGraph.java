@@ -11,6 +11,7 @@ import java.util.Set;
 
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
+import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Vector2D;
 
 public class VectorGraph {
@@ -165,30 +166,12 @@ public class VectorGraph {
 		}
 	}
 	
-	public void render(Graphics graphics, javabot.model.Map map, Vector2D position, Vector2D size, Vector2D... points) {
-		graphics.setScreenCoordinates();
-		
-		Vector2D scaler = new Vector2D(
-			size.x / (map.getWidth()*Game.TILE_SIZE),
-			size.y / (map.getHeight()*Game.TILE_SIZE)
-		);
-		
-		graphics.setColor(Graphics.Color.YELLOW);
-		graphics.drawBox(position, position.add(size));
-		
-		graphics.setColor(Graphics.Color.WHITE);
+	public void render(Minimap minimap) {
+		minimap.setColor(Graphics.Color.WHITE);
 		for(Vertex v : vertices) {
 			for(Vertex e : v.edges) {
-				graphics.drawLine(v.point.scale(scaler).add(position), e.point.scale(scaler).add(position));
+				minimap.drawLine(v.point, e.point);
 			}
-		}
-		
-		graphics.setColor(Graphics.Color.BLUE);
-		for(Vector2D point : points) {
-			if(point == null) {
-				continue;
-			}
-			graphics.fillCircle(point.scale(scaler).add(position), 5);
 		}
 	}
 }

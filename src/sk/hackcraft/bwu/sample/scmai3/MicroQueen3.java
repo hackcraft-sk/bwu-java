@@ -8,6 +8,7 @@ import javabot.model.Player;
 import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
+import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.selection.DistanceSelector;
@@ -44,14 +45,14 @@ public class MicroQueen3 extends Bot {
 	}
 	
 	private Game game = null;
-	private Queue<Vector2D> positionsToExplore = new LinkedList<>();
+	private Queue<Vector2D> positionsToExplore;
 	
-	private State state = State.MOVING;
-	private VectorGraph routeFinder = new MQ3VectorGraph();
+	private State state;
+	private VectorGraph routeFinder;
 	
-	private Vector2D targetPosition = null;
-	private Vector2D nextToGoPosition = null;
-	private List<Vector2D> currentPath = null;
+	private Vector2D targetPosition;
+	private Vector2D nextToGoPosition;
+	private List<Vector2D> currentPath;
 	
 	@Override
 	public void onGameStarted(Game game) {
@@ -59,7 +60,12 @@ public class MicroQueen3 extends Bot {
 		game.enableUserInput();
 		game.setSpeed(20);
 		
-		positionsToExplore.clear();
+		state = State.MOVING;
+		positionsToExplore = new LinkedList<>();
+		routeFinder = new MQ3VectorGraph();
+		targetPosition = null;
+		nextToGoPosition = null;
+		currentPath = null;
 	}
 
 	@Override
@@ -68,7 +74,6 @@ public class MicroQueen3 extends Bot {
 	}
 	
 	private void initialize() {
-		
 		// find my starting position
 		Vector2D startingPosition = null;
 		Vector2D armyPosition = getAttackGroup().getArithmeticCenter();
@@ -172,11 +177,24 @@ public class MicroQueen3 extends Bot {
 		graphics.setGameCoordinates();
 		graphics.fillCircle(getAttackGroup().getArithmeticCenter(), 40);
 		
-		routeFinder.render(graphics, game.getMap(), new Vector2D(10, 60), new Vector2D(150, 100),
-			getAttackGroup().getArithmeticCenter(),
-			nextToGoPosition,
-			targetPosition
-		);
+		graphics.setScreenCoordinates(); // TODO Hack, remove!
+
+		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(10, 60), new Vector2D(150, 100));
+		minimap.setColor(Graphics.Color.YELLOW);
+		minimap.drawBounds();
+		routeFinder.render(minimap);
+		
+		minimap.setColor(Graphics.Color.BLUE);
+		minimap.fillCircle(getAttackGroup().getArithmeticCenter(), 5);
+		
+		if(nextToGoPosition != null) {
+			minimap.setColor(Graphics.Color.ORANGE);
+			minimap.fillCircle(nextToGoPosition, 5);
+		}
+		if(targetPosition != null) {
+			minimap.setColor(Graphics.Color.RED);
+			minimap.fillCircle(targetPosition, 5);
+		}
 	}
 	
 	public void handleRegroupingAndAttack() {
