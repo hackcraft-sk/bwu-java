@@ -118,7 +118,7 @@ public class UnitSet extends HashSet<Unit> {
 	 * @return
 	 */
 	public UnitSet whereType(UnitType unitType) {
-		return where(new UnitTypeSelector(unitType));
+		return where(new UnitSelector.UnitTypeSelector(unitType));
 	}
 	
 	/**

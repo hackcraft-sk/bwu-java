@@ -14,7 +14,6 @@ import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.LogicalSelector;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
-import sk.hackcraft.bwu.selection.UnitTypeSelector;
 import sk.hackcraft.bwu.util.RouteFinder;
 
 public class MicroQueen3 extends Bot {
@@ -245,15 +244,15 @@ public class MicroQueen3 extends Bot {
 	
 	public UnitSet getAttackGroup() {
 		return game.getMyUnits().where(new LogicalSelector.Or(
-			new UnitTypeSelector(game.getUnitTypes().Zerg_Zergling),
-			new UnitTypeSelector(game.getUnitTypes().Zerg_Ultralisk),
-			new UnitTypeSelector(game.getUnitTypes().Zerg_Hydralisk)
+			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Zergling),
+			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Ultralisk),
+			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Hydralisk)
 		));
 	}
 	
 	public UnitSet getScoutGroup() {
 		return game.getMyUnits().where(new LogicalSelector.Or(
-			new UnitTypeSelector(game.getUnitTypes().Zerg_Scourge)
+			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Scourge)
 		));
 	}
 	

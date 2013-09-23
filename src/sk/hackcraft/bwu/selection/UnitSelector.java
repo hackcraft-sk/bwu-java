@@ -1,5 +1,8 @@
 package sk.hackcraft.bwu.selection;
 
+import javabot.model.Player;
+import javabot.types.UnitType;
+import javabot.types.WeaponType;
 import sk.hackcraft.bwu.Unit;
 
 /**
@@ -50,6 +53,65 @@ public interface UnitSelector {
 		public double getValue(Unit unit);
 	}
 	
+	public abstract class ObjectEqualitySelector<C> implements BooleanSelector {
+		private C toBeEqualTo;
+		
+		public ObjectEqualitySelector(C toBeEqualTo) {
+			this.toBeEqualTo = toBeEqualTo;
+		}
+		
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			return getObjectFrom(unit) == toBeEqualTo;
+		}
+		
+		public abstract C getObjectFrom(Unit unit);
+	}
+	
+	static public class AirWeaponTypeSelector extends ObjectEqualitySelector<WeaponType> {
+		public AirWeaponTypeSelector(WeaponType toBeEqualTo) {
+			super(toBeEqualTo);
+		}
+
+		@Override
+		public WeaponType getObjectFrom(Unit unit) {
+			return unit.getAirWeaponType();
+		}
+	}
+	
+	static public class GroundWeaponTypeSelector extends ObjectEqualitySelector<WeaponType> {
+		public GroundWeaponTypeSelector(WeaponType toBeEqualTo) {
+			super(toBeEqualTo);
+		}
+		
+		@Override
+		public WeaponType getObjectFrom(Unit unit) {
+			return unit.getGroundWeaponType();
+		}
+	}
+	
+	static public class PlayerSelector extends ObjectEqualitySelector<Player> {
+		public PlayerSelector(Player toBeEqualTo) {
+			super(toBeEqualTo);
+		}
+		
+		@Override
+		public Player getObjectFrom(Unit unit) {
+			return unit.getPlayer();
+		}
+	}
+	
+	static public class UnitTypeSelector extends ObjectEqualitySelector<UnitType> {
+		public UnitTypeSelector(UnitType toBeEqualTo) {
+			super(toBeEqualTo);
+		}
+		
+		@Override
+		public UnitType getObjectFrom(Unit unit) {
+			return unit.getType();
+		}
+	}
+	
 	/**
 	 * Selector for units by hit points.
 	 */
@@ -95,7 +157,56 @@ public interface UnitSelector {
 		}
 	};
 	
-	// TODO
+	static public final IntegerSelector ACID_SPORE_COUNT = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getAcidSporeCount();
+		}
+	};
+	
+	static public final IntegerSelector INTERCEPTOR_COUNT = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getInterceptorCount();
+		}
+	};
+	
+	static public final IntegerSelector SCARAB_COUNT = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getScarabCount();
+		}
+	};
+	
+	static public final IntegerSelector GROUND_WEAPON_COOLDOWN = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getGroundWeaponCooldown();
+		}
+	};
+	
+	static public final IntegerSelector AIR_WEAPON_COOLDOWN = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getAirWeaponCooldown();
+		}
+	};
+	
+	static public final IntegerSelector SPELL_COOLDOWN = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getSpellCooldown();
+		}
+	};
+	
+	static public final IntegerSelector DEFENSE_MATRIX_POINTS = new IntegerSelector() {
+		@Override
+		public int getValue(Unit unit) {
+			return unit.getDefenseMatrixPoints();
+		}
+	};
+	
+	// TIMERS
 	
 	/**
 	 * Selector for units that are not flyers (therefore are on a ground).
@@ -116,8 +227,6 @@ public interface UnitSelector {
 			return unit.getType().isFlyer();
 		}
 	};
-	
-
 	
 
 	

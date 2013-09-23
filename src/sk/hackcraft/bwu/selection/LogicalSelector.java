@@ -3,6 +3,12 @@ package sk.hackcraft.bwu.selection;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.selection.UnitSelector.BooleanSelector;
 
+/**
+ * Logical selectors of basic logical operations.
+ * 
+ * @author nixone
+ *
+ */
 public class LogicalSelector {
 	static public class Or implements BooleanSelector {
 		BooleanSelector [] selectors;
@@ -11,6 +17,7 @@ public class LogicalSelector {
 			this.selectors = selectors;
 		}
 		
+		@Override
 		public boolean isTrueFor(Unit unit) {
 			for(BooleanSelector s : selectors) {
 				if(s.isTrueFor(unit)) {
@@ -18,6 +25,60 @@ public class LogicalSelector {
 				}
 			}
 			return false;
+		}
+	}
+	
+	static public class And implements BooleanSelector {
+		BooleanSelector [] selectors;
+		
+		public And(BooleanSelector... selectors) {
+			this.selectors = selectors;
+		}
+
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			for(BooleanSelector s : selectors) {
+				if(!s.isTrueFor(unit)) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	
+	static public class Nand implements BooleanSelector {
+		BooleanSelector [] selectors;
+		
+		public Nand(BooleanSelector... selectors) {
+			this.selectors = selectors;
+		}
+
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			for(BooleanSelector s : selectors) {
+				if(!s.isTrueFor(unit)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+	
+	static public class Nor implements BooleanSelector {
+		BooleanSelector [] selectors;
+		
+		public Nor(BooleanSelector... selectors) {
+			this.selectors = selectors;
+		}
+		
+		@Override
+		public boolean isTrueFor(Unit unit) {
+			for(BooleanSelector s : selectors) {
+				if(s.isTrueFor(unit)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }
