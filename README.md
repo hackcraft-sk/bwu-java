@@ -1,26 +1,31 @@
 # BWU-Java (JNIBWAPI Utility Layer)
 
-**BWU-Java** uses [JNIBWAPI](https://code.google.com/p/jnibwapi/) (which uses
-[BWAPI](https://code.google.com/p/bwapi/)) to create a simple API for controlling 
-StarCraft: Broodwar mainly for purposes of creating and testing artificial intelligence
-algorithms. 
-
 In the future, I believe in creating a very simple and comfortable API for accesing SC:BW
 and possibly a framework to support unit control and management. I honestly hope it does many
 things from the goal right now.
+
+**BWU-Java** uses [JNIBWAPI](https://code.google.com/p/jnibwapi/) (which uses
+[BWAPI](https://code.google.com/p/bwapi/)) to create a simple API for controlling 
+StarCraft: Broodwar mainly for purposes of creating and testing artificial intelligence
+algorithms.
 
 ### Current version
 
 This project is currently under heavy development. It can be used to write simple micro bots,
 but it's not recommended for huge full game bot development yet. It has been used in
-[StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk) to build fully functional bot
+[StarCraft Micro AI Tournament 2 & 3](http://scmai.hackcraft.sk) to build fully functional bot
 that achieved 2nd place in the Experienced part of the tournament.
+
+## Where to start (TODO)
+
+If you are new to **BWU-Java**, best start for you is to look in the ``tutorials`` folder in the repository. You will
+find an example to build a simple sample bot capable of playing simple micro match from the scratch.
 
 ## What is where
 
 This repository contains few other things apart from pure bwu-java (package ``sk.hackcraft.bwu``).
 
-*	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 2](http://scmai.hackcraft.sk),
+*	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 3](http://scmai.hackcraft.sk),
 	package ``sk.hackcraft.bwu.sample``
 *	Sample bot written in pure JNIBWAPI that took 2nd place in
 	[StarCraft Micro AI Tournament 1](http://hackcraft.sk/article/default/starcraft-micro-ai-tournament-2013-report),
@@ -70,71 +75,6 @@ is less or equal than tolerance.
 ```java
 // obvious, but clean
 game.getMyUnits().areAt(certainPosition, tolerance);
-```
-
-## Sample bot
-
-```java
-package sk.hackcraft.bwu.sample;
-
-import java.util.Random;
-
-import javabot.model.Player;
-import sk.hackcraft.bwu.Bot;
-import sk.hackcraft.bwu.Game;
-import sk.hackcraft.bwu.Unit;
-import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.Graphics;
-
-public class SampleBot extends Bot {	
-	static public void main(String [] arguments) {
-		Bot bot = new SampleBot();
-		bot.start();
-	}
-	
-	private Random random = new Random();
-	private Game game = null;
-	
-	@Override
-	public void onGameStarted(Game game) {
-		this.game = game;
-	}
-
-	@Override
-	public void onGameEnded() {
-		game = null;
-	}
-	
-	@Override
-	public void onGameUpdate() {
-		for(Unit unit : game.getMyUnits()) {
-			if(unit.isIdle()) {
-				unit.attack(Vector2D.random().scale(
-					game.getMap().getWidth(),
-					game.getMap().getHeight()
-				));
-			}
-		}
-	}
-	
-	@Override
-	public void onDraw(Graphics graphics) {}
-	
-	public void onConnected() {}
-	public void onDisconnected() {}
-	public void onKeyPressed(int keyCode) {}
-	public void onMatchEnded(boolean isWinner) {}
-	public void onPlayerLeft(Player player) {}
-	public void onNukeDetected(Vector2D position) {}
-	public void onUnitDiscovered(Unit unit) {}
-	public void onUnitDestroyed(Unit unit) {}
-	public void onUnitEvaded(Unit unit) {}
-	public void onUnitCreated(Unit unit) {}
-	public void onUnitMorphed(Unit unit) {}
-	public void onUnitShown(Unit unit) {}
-	public void onUnitHidden(Unit unit) {}
-}
-
 ```
 
 ### License
