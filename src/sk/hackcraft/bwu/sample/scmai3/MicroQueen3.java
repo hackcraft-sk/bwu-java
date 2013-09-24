@@ -182,7 +182,7 @@ public class MicroQueen3 extends Bot {
 		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(10, 60), new Vector2D(150, 100));
 		minimap.setColor(Graphics.Color.YELLOW);
 		minimap.drawBounds();
-		routeFinder.render(minimap);
+		routeFinder.renderGraph(minimap);
 		
 		minimap.setColor(Graphics.Color.BLUE);
 		minimap.fillCircle(getAttackGroup().getArithmeticCenter(), 5);

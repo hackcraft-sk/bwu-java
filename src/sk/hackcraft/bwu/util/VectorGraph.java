@@ -17,7 +17,7 @@ import sk.hackcraft.bwu.Vector2D;
 public class VectorGraph {
 	public interface InformationSystem {
 		public double getValueFor(Vector2D position);
-		public double combineSelfAndSiblings(VertexValue me, VertexValue siblings);
+		public double combineSelfAndSiblings(VertexValue me, VertexValue [] siblings);
 	}
 	
 	public class VertexValue {
@@ -155,23 +155,60 @@ public class VectorGraph {
 		// repeat many times
 		for(int repeating=0; repeating < repeatings; repeating++) {
 			for(Vertex vertex : vertices) {
+				VertexValue myValue = new VertexValue(vertex.point, vertex.systemValues.get(system));
 				VertexValue [] siblingValues = new VertexValue[vertex.edges.size()];
 				
 				Iterator<Vertex> it = vertex.edges.iterator();
 				for(int edgeIndex=0; edgeIndex < vertex.edges.size(); edgeIndex++) {
 					Vertex edgeVertex = it.next();
-					// TODO Finish this method.
+					siblingValues[edgeIndex] = new VertexValue(edgeVertex.point, edgeVertex.systemValues.get(system));
+					vertex.systemValues.put(system, system.combineSelfAndSiblings(myValue, siblingValues));
 				}
 			}
 		}
 	}
 	
-	public void render(Minimap minimap) {
+	public List<Vector2D> getUphillPath(InformationSystem system, Vector2D origin) {
+		List<Vector2D> result = new LinkedList<>();
+		
+		Vertex currentVertex = vertices.get(getClosestIndexFor(origin));
+		result.add(currentVertex.point);
+		double currentValue = currentVertex.systemValues.get(system);
+		
+		while(true) {
+			Vertex betterVertex = null;
+			double betterValue = currentValue;
+			for(Vertex edge : currentVertex.edges) {
+				double edgeValue = edge.systemValues.get(system);
+				if(edgeValue > betterValue) {
+					betterVertex = edge;
+					betterValue = edgeValue;
+				}
+			}
+			
+			if(betterVertex == null) {
+				break;
+			} else {
+				currentVertex = betterVertex;
+				currentValue = betterValue;
+			}
+		}
+		
+		return result;
+	}
+	
+	public void renderGraph(Minimap minimap) {
 		minimap.setColor(Graphics.Color.WHITE);
 		for(Vertex v : vertices) {
 			for(Vertex e : v.edges) {
 				minimap.drawLine(v.point, e.point);
 			}
+		}
+	}
+	
+	public void renderSystem(Minimap minimap, System system) {
+		for(Vertex v : vertices) {
+			minimap.drawText(v.point, v.systemValues.get(system));
 		}
 	}
 }
