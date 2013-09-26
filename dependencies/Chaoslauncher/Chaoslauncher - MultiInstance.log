@@ -1,0 +1,49 @@
+2/6/2013 4:41:24 PM 2616 Logging started
+2/6/2013 4:41:24 PM 2616 Begin Startup
+2/6/2013 4:41:24 PM 2616 Chaosauncher 0.5.4.1 on NT 5.1.2600 Service Pack 3 at C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Chaoslauncher - MultiInstance.exe
+2/6/2013 4:41:24 PM 2616 Load Settings
+2/6/2013 4:41:24 PM 2616 GamePath: C:\Documents and Settings\Owner\Desktop\Starcraft\
+2/6/2013 4:41:24 PM 2616 Load Plugins
+2/6/2013 4:41:24 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\BWAPI_ChaosLauncherInjector.bwl
+2/6/2013 4:41:24 PM 2616 Plugin loaded BWAPI Injector (1.16.1) RELEASE
+2/6/2013 4:41:24 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\iccscbn.icc
+2/6/2013 4:41:24 PM 2616 Plugin loaded ICCup
+2/6/2013 4:41:24 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\APMAlert.bwl
+2/6/2013 4:41:24 PM 2616 Plugin loaded APMAlert (1.16.1)
+2/6/2013 4:41:24 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\Chaosplugin.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded Chaosplugin for 1.16.1
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\icctv.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded ICCup TV Streamer
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\icctvp.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded ICCup TV Player
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\LatencyChanger.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded LatencyChanger for 1.16.1
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\repfix.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded RepFix
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\RWAPlayer.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded RWAPlayer (1.16.1)
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\RWARecorder.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded RWARecorder (1.16.1)
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\Stormplugin.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded Stormplugin for 1.16.1
+2/6/2013 4:41:25 PM 2616 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\wmode.bwl
+2/6/2013 4:41:25 PM 2616 Plugin loaded W-MODE 1.02
+2/6/2013 4:41:25 PM 2616 Load Tools
+2/6/2013 4:41:25 PM 2616 Init GUI
+2/6/2013 4:41:25 PM 2616 Get Starcraftversions
+2/6/2013 4:41:25 PM 2616 Init complete
+2/6/2013 4:42:40 PM 2616 Startbutton
+2/6/2013 4:42:40 PM 2616 Starting Game Starcraft 1.16.1 C:\Documents and Settings\Owner\Desktop\Starcraft\StarCraft.exe
+2/6/2013 4:42:40 PM 2616 BWAPI Injector (1.16.1) RELEASE Version  Compatible
+2/6/2013 4:42:40 PM 2616 W-MODE 1.02 Version 1.0.2 Compatible
+2/6/2013 4:42:40 PM 2616 Obtained DebugPrivilege
+2/6/2013 4:42:40 PM 2616 CreateProcess
+2/6/2013 4:42:40 PM 2616 Call ScSuspended for all active Plugins
+2/6/2013 4:42:40 PM 2616 ApplyPatchSuspended for BWAPI Injector (1.16.1) RELEASE
+2/6/2013 4:42:41 PM 2616 ApplyPatchSuspended for W-MODE 1.02
+2/6/2013 4:42:41 PM 2616 ResumeThread
+2/6/2013 4:42:41 PM 2616 WaitForInputIdle
+2/6/2013 4:42:41 PM 2616 Call ScWindowCreated for all active Plugins
+2/6/2013 4:42:41 PM 2616 ApplyPatch for BWAPI Injector (1.16.1) RELEASE
+2/6/2013 4:42:41 PM 2616 ApplyPatch for W-MODE 1.02
+2/6/2013 4:42:41 PM 2616 Starting Starcraft completed

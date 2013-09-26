@@ -1,0 +1,65 @@
+12/15/2012 6:26:02 PM 3024 Logging started
+12/15/2012 6:26:02 PM 3024 Begin Startup
+12/15/2012 6:26:02 PM 3024 Chaosauncher 0.5.4.4 on NT 5.1.2600 Service Pack 3 at C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Chaoslauncher.exe
+12/15/2012 6:26:02 PM 3024 Load Settings
+12/15/2012 6:26:02 PM 3024 GamePath: C:\Documents and Settings\Owner\Desktop\Starcraft\
+12/15/2012 6:26:02 PM 3024 Load Plugins
+12/15/2012 6:26:02 PM 3024 AdvLoaderPluginPath: \Plugins\
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\BWAPI_ChaosLauncherInjector.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded BWAPI Injector (1.16.1) RELEASE
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\iccscbn.icc
+12/15/2012 6:26:02 PM 3024 Plugin loaded ICCup
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\APMAlert.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded APMAlert (1.16.1)
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\Chaosplugin.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded Chaosplugin for 1.16.1
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\icctv.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded ICCup TV Streamer
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\icctvp.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded ICCup TV Player
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\LatencyChanger.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded LatencyChanger for 1.16.1
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\repfix.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded RepFix
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\RWAPlayer.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded RWAPlayer (1.16.1)
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\RWARecorder.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded RWARecorder (1.16.1)
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\Stormplugin.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded Stormplugin for 1.16.1
+12/15/2012 6:26:02 PM 3024 Loading BWL4-Plugin C:\Documents and Settings\Owner\Desktop\JNIBWAPI Starter Pack 1.3\JNIBWAPI Starter Pack\BWAPI_3.7.4\Chaoslauncher\Plugins\wmode.bwl
+12/15/2012 6:26:02 PM 3024 Plugin loaded W-MODE 1.02
+12/15/2012 6:26:02 PM 3024 Load Tools
+12/15/2012 6:26:02 PM 3024 Init GUI
+12/15/2012 6:26:02 PM 3024 Get Starcraftversions
+12/15/2012 6:26:03 PM 3024 Init complete
+12/15/2012 6:26:22 PM 3024 Startbutton
+12/15/2012 6:26:22 PM 3024 Starting Game Starcraft Multi-Instance C:\Documents and Settings\Owner\Desktop\Starcraft\Starcraft_MultiInstance.exe
+12/15/2012 6:26:22 PM 3024 BWAPI Injector (1.16.1) RELEASE Version  Compatible
+12/15/2012 6:26:22 PM 3024 W-MODE 1.02 Version 1.0.2 Compatible
+12/15/2012 6:26:22 PM 3024 Obtained DebugPrivilege
+12/15/2012 6:26:22 PM 3024 CreateProcess
+12/15/2012 6:26:22 PM 3024 Call ScSuspended for all active Plugins
+12/15/2012 6:26:22 PM 3024 ApplyPatchSuspended for BWAPI Injector (1.16.1) RELEASE
+12/15/2012 6:26:24 PM 3024 ApplyPatchSuspended for W-MODE 1.02
+12/15/2012 6:26:24 PM 3024 ResumeThread
+12/15/2012 6:26:24 PM 3024 WaitForInputIdle
+12/15/2012 6:26:24 PM 3024 Call ScWindowCreated for all active Plugins
+12/15/2012 6:26:24 PM 3024 ApplyPatch for BWAPI Injector (1.16.1) RELEASE
+12/15/2012 6:26:24 PM 3024 ApplyPatch for W-MODE 1.02
+12/15/2012 6:26:24 PM 3024 Starting Starcraft completed
+12/15/2012 6:32:34 PM 3024 Startbutton
+12/15/2012 6:32:34 PM 3024 Starting Game Starcraft Multi-Instance C:\Documents and Settings\Owner\Desktop\Starcraft\Starcraft_MultiInstance.exe
+12/15/2012 6:32:34 PM 3024 BWAPI Injector (1.16.1) RELEASE Version  Compatible
+12/15/2012 6:32:34 PM 3024 W-MODE 1.02 Version 1.0.2 Compatible
+12/15/2012 6:32:34 PM 3024 Obtained DebugPrivilege
+12/15/2012 6:32:34 PM 3024 CreateProcess
+12/15/2012 6:32:34 PM 3024 Call ScSuspended for all active Plugins
+12/15/2012 6:32:34 PM 3024 ApplyPatchSuspended for BWAPI Injector (1.16.1) RELEASE
+12/15/2012 6:32:34 PM 3024 ApplyPatchSuspended for W-MODE 1.02
+12/15/2012 6:32:34 PM 3024 ResumeThread
+12/15/2012 6:32:34 PM 3024 WaitForInputIdle
+12/15/2012 6:32:34 PM 3024 Call ScWindowCreated for all active Plugins
+12/15/2012 6:32:34 PM 3024 ApplyPatch for BWAPI Injector (1.16.1) RELEASE
+12/15/2012 6:32:34 PM 3024 ApplyPatch for W-MODE 1.02
+12/15/2012 6:32:34 PM 3024 Starting Starcraft completed
