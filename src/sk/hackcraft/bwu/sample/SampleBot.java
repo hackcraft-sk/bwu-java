@@ -6,6 +6,7 @@ import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.selection.UnitSet;
 
 public class SampleBot extends Bot {
 	static public void main(String [] arguments) {
@@ -13,11 +14,32 @@ public class SampleBot extends Bot {
 		bot.start();
 	}
 	
+	private Game game = null;
+	
 	public void onConnected() {}
-	public void onGameStarted(Game game) {}
-	public void onGameEnded() {}
+	public void onGameStarted(Game game) {
+		this.game = game;		
+	}
+	public void onGameEnded() {
+		this.game = null;
+	}
+	public void onGameUpdate() {
+		UnitSet myUnits = game.getMyUnits();
+		
+		for(Unit unit : myUnits) {
+			if(unit.isIdle() || unit.isStuck()) {
+				// generate new position
+				Vector2D position = Vector2D.random().scale(
+					game.getMap().getWidth()*Game.TILE_SIZE,
+					game.getMap().getHeight()*Game.TILE_SIZE
+				);
+				// attack move!
+				unit.attack(position);
+			}
+		}
+	}
+	
 	public void onDisconnected() {}
-	public void onGameUpdate() {}
 	public void onKeyPressed(int keyCode) {}
 	public void onMatchEnded(boolean isWinner) {}
 	public void onPlayerLeft(Player player) {}
