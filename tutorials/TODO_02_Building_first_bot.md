@@ -14,7 +14,7 @@ There are few classes that you will meet on daily basis developing with *BWU-Jav
 
 * ``sk.hackcraft.bwu.selection.UnitSet`` represents collection of many units. It is very powerfull class and has a whole framework built around it. For now you just need to know that it implements ``Set<Unit>`` so we can treat it like a traditional Set. Also, the ``Game`` object returns a ``UnitSet`` when you retrieve your or enemy units.
 
-These are the only classes you will encounter building your sample bot. There are many other utilities, for rendering a minimap or rendering any other graphics for example, that will be covered in next tutorials, so hold on.
+These are the few important classes you will encounter building your sample bot. There are many other utilities, but we will cover them in next tutorials, so hold on.
 
 ## Bot
 
@@ -61,4 +61,8 @@ public class SampleBot extends Bot {
 
 Now your bot is ready. It doesn't do a thing, but the handlers (code inside these empty methods, which will not stay empty as we build our bot) are run every time corresponding events occur in a game.
 
-TBContinued
+First, let me explain to you few of these methods we will use:
+
+### Updating the game state
+
+In StarCraft, TBC
