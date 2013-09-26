@@ -61,9 +61,12 @@ public class SampleBot extends Bot {
 
 Now your bot is ready. It doesn't do a thing, but the handlers (code inside these empty methods, which will not stay empty as we build our bot) are run every time corresponding events occur in a game.
 
-### Obtaining a Game object
+## Basic flow of the application
 
-TBC
+1. Your ``main`` function is started, you created and started your ``SampleBot``.
+2. **BWU-Java** waits for.
+
+TBF
 
 ### Updating the game state
 
