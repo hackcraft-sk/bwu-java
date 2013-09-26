@@ -11,7 +11,8 @@ public class Minimap {
 	
 	protected Minimap(Graphics graphics, Map map, Vector2D position, Vector2D size) {
 		this.position = position;
-		this.graphics = graphics;
+		this.graphics = graphics.createSubGraphics();
+		this.graphics.setGameCoordinates(true);
 		this.map = map;
 		
 		this.scaler = new Vector2D(

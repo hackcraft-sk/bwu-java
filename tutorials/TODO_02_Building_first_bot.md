@@ -13,9 +13,10 @@ There are few classes that you will meet on daily basis developing with *BWU-Jav
 * ``sk.hackcraft.bwu.Unit`` represents a single unit in a game. It has many methods for unit manipulation and will be covered in special tutorial. Building are also considered as units in *BWU-Java*.
  
 * ``sk.hackcraft.bwu.selection.UnitSet`` represents collection of many units. It is very powerfull class and has a whole framework built around it. For now you just need to know that it implements ``Set<Unit>`` so we can treat it like a traditional Set. Also, the ``Game`` object returns a ``UnitSet`` when you retrieve your or enemy units.
- 
+
+
 These are the few important classes you will encounter building your sample bot. There are many other utilities, but we will cover them in next tutorials, so hold on.
- 
+
 ## Bot
  
 Create a new class, for example, ``SampleBot``, that extends ``sk.hackcraft.bwu.Bot``, add unimplemented methods (your IDE should do this for you). Your class should look something like this:
@@ -60,7 +61,7 @@ public class SampleBot extends Bot {
 ```
  
 Now your bot is ready. It doesn't do a thing, but the handlers (code inside these empty methods, which will not stay empty as we build our bot) are run every time corresponding events occur in a game.
- 
+
 ## Basic flow of the application
  
 1. Your ``main`` function is started, you created and started your ``SampleBot``.
@@ -83,3 +84,4 @@ public void onGameUpdate() {
         // your game state evaluation code that needs to execute very often
 }
 ```
+

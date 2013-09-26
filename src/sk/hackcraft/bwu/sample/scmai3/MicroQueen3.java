@@ -176,8 +176,6 @@ public class MicroQueen3 extends Bot {
 		graphics.setColor(Graphics.Color.PURPLE);
 		graphics.setGameCoordinates();
 		graphics.fillCircle(getAttackGroup().getArithmeticCenter(), 40);
-		
-		graphics.setScreenCoordinates(); // TODO Hack, remove!
 
 		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(10, 60), new Vector2D(150, 100));
 		minimap.setColor(Graphics.Color.YELLOW);
