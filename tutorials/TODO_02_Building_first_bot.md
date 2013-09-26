@@ -61,8 +61,22 @@ public class SampleBot extends Bot {
 
 Now your bot is ready. It doesn't do a thing, but the handlers (code inside these empty methods, which will not stay empty as we build our bot) are run every time corresponding events occur in a game.
 
-First, let me explain to you few of these methods we will use:
+### Obtaining a Game object
+
+TBC
 
 ### Updating the game state
 
-In StarCraft, TBC
+There is one method among all of them, which is called more often than any other one. It's ``onGameUpdate()``. This method is called
+every single *frame* of the game. *Frame* in the game is the smallest time unit that you can encounter while developing
+your bot. In the game, you can see a frame as a updating and re-drawing a game state.
+
+In my own experience, I call almost all of my bot logic from this ``onGameUpdate()`` method. There are many other
+very useful methods, but if you need to re-evaluate something from the game as often as is possible, you need
+to place the evaluation code into this method.
+
+```java
+public void onGameUpdate() {
+	// your game state evaluation code that needs to execute very often
+}
+```
