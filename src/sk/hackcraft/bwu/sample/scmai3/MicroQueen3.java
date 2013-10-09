@@ -16,6 +16,7 @@ import sk.hackcraft.bwu.selection.LogicalSelector;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
 import sk.hackcraft.bwu.util.VectorGraph;
+import sk.hackcraft.bwu.util.VectorGraph.InformationSystem;
 
 public class MicroQueen3 extends Bot {
 	static public double IS_AT_TOLERANCE = 200;
@@ -54,6 +55,9 @@ public class MicroQueen3 extends Bot {
 	private Vector2D nextToGoPosition;
 	private List<Vector2D> currentPath;
 	
+	private InformationSystem defenseSystem = null;
+	private InformationSystem attackSystem = null;
+	
 	@Override
 	public void onGameStarted(Game game) {
 		this.game = game;
@@ -66,6 +70,8 @@ public class MicroQueen3 extends Bot {
 		targetPosition = null;
 		nextToGoPosition = null;
 		currentPath = null;
+		defenseSystem = new MQ3InformationSystem(game, 0.95, 0.05);
+		attackSystem = new MQ3InformationSystem(game, 0.05, 0.95);
 	}
 
 	@Override
@@ -106,6 +112,8 @@ public class MicroQueen3 extends Bot {
 	@Override
 	public void onGameUpdate() {		
 		handleBot();
+		routeFinder.update(defenseSystem, 10);
+		routeFinder.update(attackSystem, 10);
 	}
 	
 	private void handleBot() {
@@ -146,7 +154,6 @@ public class MicroQueen3 extends Bot {
 			graphics.drawText(new Vector2D(10, 40), "Length of current path: "+currentPath.size());
 		}
 		
-		
 		graphics.setGameCoordinates();
 		
 		List<Vector2D> travelingPath = new LinkedList<>();
@@ -177,8 +184,13 @@ public class MicroQueen3 extends Bot {
 		graphics.setGameCoordinates();
 		graphics.fillCircle(getAttackGroup().getArithmeticCenter(), 40);
 
-		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(10, 60), new Vector2D(150, 100));
-		minimap.setColor(Graphics.Color.YELLOW);
+		renderAttackMinimap(graphics);
+		renderDefenseMinimap(graphics);
+	}
+	
+	private void renderAttackMinimap(Graphics graphics) {
+		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(50, 100), new Vector2D(240, 160));
+		minimap.setColor(Graphics.Color.RED);
 		minimap.drawBounds();
 		routeFinder.renderGraph(minimap);
 		
@@ -193,6 +205,17 @@ public class MicroQueen3 extends Bot {
 			minimap.setColor(Graphics.Color.RED);
 			minimap.fillCircle(targetPosition, 5);
 		}
+		
+		routeFinder.renderSystem(minimap, attackSystem);
+	}
+	
+	private void renderDefenseMinimap(Graphics graphics) {
+		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(340, 100), new Vector2D(240, 160));
+		minimap.setColor(Graphics.Color.YELLOW);
+		minimap.drawBounds();
+		routeFinder.renderGraph(minimap);
+		
+		routeFinder.renderSystem(minimap, defenseSystem);
 	}
 	
 	public void handleRegroupingAndAttack() {

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Vector2D;
@@ -147,9 +146,7 @@ public class VectorGraph {
 	public void update(InformationSystem system, int repeatings) {
 		// ensure that every vertex has a value for this system
 		for(Vertex vertex : vertices) {
-			if(!vertex.systemValues.containsKey(system)) {
-				vertex.systemValues.put(system, (double)system.getValueFor(vertex.point));
-			}
+			vertex.systemValues.put(system, (double)system.getValueFor(vertex.point));
 		}
 		
 		// repeat many times
@@ -159,11 +156,11 @@ public class VectorGraph {
 				VertexValue [] siblingValues = new VertexValue[vertex.edges.size()];
 				
 				Iterator<Vertex> it = vertex.edges.iterator();
-				for(int edgeIndex=0; edgeIndex < vertex.edges.size(); edgeIndex++) {
+				for(int edgeIndex=0; it.hasNext(); edgeIndex++) {
 					Vertex edgeVertex = it.next();
 					siblingValues[edgeIndex] = new VertexValue(edgeVertex.point, edgeVertex.systemValues.get(system));
-					vertex.systemValues.put(system, system.combineSelfAndSiblings(myValue, siblingValues));
 				}
+				vertex.systemValues.put(system, system.combineSelfAndSiblings(myValue, siblingValues));
 			}
 		}
 	}
@@ -206,9 +203,9 @@ public class VectorGraph {
 		}
 	}
 	
-	public void renderSystem(Minimap minimap, System system) {
+	public void renderSystem(Minimap minimap, InformationSystem system) {
 		for(Vertex v : vertices) {
-			minimap.drawText(v.point, v.systemValues.get(system));
+			minimap.drawText(v.point, String.format("%.2f", v.systemValues.get(system)));
 		}
 	}
 }
