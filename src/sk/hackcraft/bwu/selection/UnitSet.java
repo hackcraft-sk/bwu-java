@@ -253,7 +253,7 @@ public class UnitSet extends HashSet<Unit> {
 	public UnitSet union(UnitSet set) {
 		UnitSet result = new UnitSet(this);
 		
-		this.addAll(set);
+		result.addAll(set);
 		
 		return result;
 	}

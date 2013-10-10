@@ -188,6 +188,7 @@ public class VectorGraph {
 			} else {
 				currentVertex = betterVertex;
 				currentValue = betterValue;
+				result.add(currentVertex.point);
 			}
 		}
 		

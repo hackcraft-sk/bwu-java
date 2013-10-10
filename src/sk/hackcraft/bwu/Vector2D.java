@@ -2,6 +2,8 @@ package sk.hackcraft.bwu;
 
 import java.util.Random;
 
+import javabot.model.Map;
+
 /**
  * Class representing two dimensional vector and operations defined on it.
  * This class is immutable.
@@ -97,6 +99,10 @@ public class Vector2D {
 	 */
 	public Vector2D scale(Vector2D aspect) {
 		return scale(aspect.x, aspect.y);
+	}
+	
+	public Vector2D scale(Map map) {
+		return scale(map.getWidth()*Game.TILE_SIZE, map.getHeight()*Game.TILE_SIZE);
 	}
 	
 	/**

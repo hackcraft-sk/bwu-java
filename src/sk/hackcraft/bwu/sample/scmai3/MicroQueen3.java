@@ -1,8 +1,7 @@
 package sk.hackcraft.bwu.sample.scmai3;
 
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 
 import javabot.model.Player;
 import sk.hackcraft.bwu.Bot;
@@ -37,23 +36,18 @@ public class MicroQueen3 extends Bot {
 	
 	static public void main(String [] arguments) {
 		Bot bot = new MicroQueen3();
-		//bot.disableGraphics();
+		bot.disableGraphics();
 		bot.start();
 	}
 	
-	static enum State {
-		DEFENDING_BUILDING, DEFENDING_UNITS, MOVING
-	}
-	
 	private Game game = null;
-	private Queue<Vector2D> positionsToExplore;
 	
-	private State state;
 	private VectorGraph routeFinder;
 	
-	private Vector2D targetPosition;
-	private Vector2D nextToGoPosition;
-	private List<Vector2D> currentPath;
+	private Vector2D nextToGoAttackPosition;
+	private Vector2D nextToGoDefensePosition;
+	
+	private UnitSet defenseGroup = new UnitSet();
 	
 	private InformationSystem defenseSystem = null;
 	private InformationSystem attackSystem = null;
@@ -64,14 +58,11 @@ public class MicroQueen3 extends Bot {
 		game.enableUserInput();
 		game.setSpeed(20);
 		
-		state = State.MOVING;
-		positionsToExplore = new LinkedList<>();
 		routeFinder = new MQ3VectorGraph();
-		targetPosition = null;
-		nextToGoPosition = null;
-		currentPath = null;
-		defenseSystem = new MQ3InformationSystem(game, 0.95, 0.05);
-		attackSystem = new MQ3InformationSystem(game, 0.05, 0.95);
+		defenseSystem = new MQ3DefenseInformationSystem(game);
+		attackSystem = new MQ3AttackInformationSystem(game);
+		nextToGoAttackPosition = null;
+		nextToGoDefensePosition = null;
 	}
 
 	@Override
@@ -80,40 +71,28 @@ public class MicroQueen3 extends Bot {
 	}
 	
 	private void initialize() {
-		// find my starting position
-		Vector2D startingPosition = null;
-		Vector2D armyPosition = getAttackGroup().getArithmeticCenter();
+		// create groups
+		createDefenseGroup();
 		
-		for(Vector2D position : STARTING_POSITIONS) {
-			if(startingPosition == null) {
-				startingPosition = position;
-			} else {
-				double currentDistance = startingPosition.sub(armyPosition).length;
-				double newDistance = position.sub(armyPosition).length;
-				
-				if(newDistance < currentDistance) {
-					startingPosition = position;
-				}
-			}
-		}
+		// send scouts to corners 
+		Iterator<Unit> it = getScoutGroup().iterator();
 		
-		// depeding on starting position, add positions to explore
-		if(startingPosition == LEFT_START) {
-			positionsToExplore.add(LEFT_BOTTOM_BASE);
-			positionsToExplore.add(RIGHT_BOTTOM_BASE);
-			positionsToExplore.add(RIGHT_TOP_BASE);
-		} else {
-			positionsToExplore.add(RIGHT_BOTTOM_BASE);
-			positionsToExplore.add(LEFT_BOTTOM_BASE);
-			positionsToExplore.add(LEFT_TOP_BASE);
-		}
+		it.next().attack(new Vector2D(0.1, 0.1).scale(game.getMap()));
+		it.next().attack(new Vector2D(0.9, 0.1).scale(game.getMap()));
+		it.next().attack(new Vector2D(0.9, 0.9).scale(game.getMap()));
+		it.next().attack(new Vector2D(0.1, 0.9).scale(game.getMap()));
+	}
+	
+	private void createDefenseGroup() {
+		defenseGroup = game.getMyUnits().firstNOf(12, game.getUnitTypes().Zerg_Zergling)
+				.union(game.getMyUnits().firstNOf(8, game.getUnitTypes().Zerg_Hydralisk));
 	}
 	
 	@Override
-	public void onGameUpdate() {		
-		handleBot();
+	public void onGameUpdate() {
 		routeFinder.update(defenseSystem, 10);
 		routeFinder.update(attackSystem, 10);
+		handleBot();
 	}
 	
 	private void handleBot() {
@@ -121,68 +100,32 @@ public class MicroQueen3 extends Bot {
 			initialize();
 		}
 		
-		// discover new positions if nesessary
-		if(positionsToExplore.size() <= 3) {
-			Vector2D enemyCenter = game.getEnemyUnits().where(UnitSelector.IS_VISIBLE).getArithmeticCenter();
-			if(enemyCenter != null) {
-				positionsToExplore.add(enemyCenter);
-			}
+		if(nextToGoAttackPosition == null || getAttackGroup().areAt(nextToGoAttackPosition, IS_AT_TOLERANCE)) {
+			List<Vector2D> path = routeFinder.getUphillPath(attackSystem, getAttackGroup().getArithmeticCenter());
+			do {
+				nextToGoAttackPosition = path.remove(0);
+			} while(path.size() > 0 && nextToGoAttackPosition != null && getAttackGroup().areAt(nextToGoAttackPosition, IS_AT_TOLERANCE));
 		}
 		
-		if(targetPosition == null || getAttackGroup().areAt(targetPosition, IS_AT_TOLERANCE)) {
-			say("Selecting next TARGET");
-			targetPosition = positionsToExplore.poll();
+		if(nextToGoDefensePosition == null || defenseGroup.areAt(nextToGoDefensePosition, IS_AT_TOLERANCE)) {
+			List<Vector2D> path = routeFinder.getUphillPath(defenseSystem, defenseGroup.getArithmeticCenter());
+			do {
+				nextToGoDefensePosition = path.remove(0);
+			} while(path.size() > 0 && nextToGoDefensePosition != null && defenseGroup.areAt(nextToGoDefensePosition, IS_AT_TOLERANCE));
 		}
 		
-		if(nextToGoPosition == null || getAttackGroup().areAt(nextToGoPosition, IS_AT_TOLERANCE)) {
-			say("Selecting next NEXT TO GO");
-			currentPath = routeFinder.getShortestPath(getAttackGroup().getArithmeticCenter(), targetPosition);
-			nextToGoPosition = currentPath.get(0);
+		if(game.getFrameCount() > 0) {
+			handleRegroupingAndAttack();
+			handleScouting();
 		}
-		
-		handleRegroupingAndAttack();
-		handleScouting();
 	}
 	
 	@Override
 	public void onDraw(Graphics graphics) {
 		graphics.setScreenCoordinates();
 		graphics.drawText(new Vector2D(10, 10), "MicroQueen3 by nixone");
-		graphics.drawText(new Vector2D(10, 20), state);
-		graphics.drawText(new Vector2D(10, 30), "Count of positions: "+positionsToExplore.size());
-		if(currentPath != null) {
-			graphics.drawText(new Vector2D(10, 40), "Length of current path: "+currentPath.size());
-		}
 		
 		graphics.setGameCoordinates();
-		
-		List<Vector2D> travelingPath = new LinkedList<>();
-		travelingPath.add(getAttackGroup().getArithmeticCenter());
-		travelingPath.addAll(currentPath);
-		
-		graphics.setColor(Graphics.Color.WHITE);
-		
-		for(int i=0; i<(travelingPath.size()-1); i++) {
-			graphics.drawLine(travelingPath.get(i), travelingPath.get(i+1));
-		}
-		
-		if(nextToGoPosition != null) {
-			graphics.setColor(Graphics.Color.ORANGE);
-			graphics.setGameCoordinates();
-			graphics.fillCircle(nextToGoPosition, 10);
-			graphics.drawCircle(nextToGoPosition, (int)IS_AT_TOLERANCE);
-		}
-		
-		if(targetPosition != null) {
-			graphics.setColor(Graphics.Color.RED);
-			graphics.setGameCoordinates();
-			graphics.fillCircle(targetPosition.add(new Vector2D(2,2)), 10);
-			graphics.drawCircle(targetPosition.add(new Vector2D(2, 2)), (int)IS_AT_TOLERANCE);
-		}
-		
-		graphics.setColor(Graphics.Color.PURPLE);
-		graphics.setGameCoordinates();
-		graphics.fillCircle(getAttackGroup().getArithmeticCenter(), 40);
 
 		renderAttackMinimap(graphics);
 		renderDefenseMinimap(graphics);
@@ -197,13 +140,9 @@ public class MicroQueen3 extends Bot {
 		minimap.setColor(Graphics.Color.BLUE);
 		minimap.fillCircle(getAttackGroup().getArithmeticCenter(), 5);
 		
-		if(nextToGoPosition != null) {
+		if(nextToGoAttackPosition != null) {
 			minimap.setColor(Graphics.Color.ORANGE);
-			minimap.fillCircle(nextToGoPosition, 5);
-		}
-		if(targetPosition != null) {
-			minimap.setColor(Graphics.Color.RED);
-			minimap.fillCircle(targetPosition, 5);
+			minimap.fillCircle(nextToGoAttackPosition, 5);
 		}
 		
 		routeFinder.renderSystem(minimap, attackSystem);
@@ -215,28 +154,53 @@ public class MicroQueen3 extends Bot {
 		minimap.drawBounds();
 		routeFinder.renderGraph(minimap);
 		
+		minimap.setColor(Graphics.Color.BLUE);
+		minimap.fillCircle(defenseGroup.getArithmeticCenter(), 5);
+		
+		if(nextToGoDefensePosition != null) {
+			minimap.setColor(Graphics.Color.ORANGE);
+			minimap.fillCircle(nextToGoDefensePosition, 5);
+		}
+		
 		routeFinder.renderSystem(minimap, defenseSystem);
 	}
 	
 	public void handleRegroupingAndAttack() {
-		if(nextToGoPosition == null) {
-			return;
+		if(nextToGoAttackPosition != null && getAttackGroup().size() > 0) {
+			Vector2D armyPosition = getAttackGroup().getArithmeticCenter();
+			Vector2D shouldBePosition = nextToGoAttackPosition
+					.sub(armyPosition)
+					.normalize()
+					.scale(IS_AT_TOLERANCE)
+					.scale(0.75)
+					.add(nextToGoAttackPosition);
+			
+			for(Unit unit : getAttackGroup()) {
+				if(
+					(unit.isIdle() && !unit.isAt(nextToGoAttackPosition, IS_AT_TOLERANCE)) ||
+					(!unit.isAttackFrame() && game.getFrameCount() % 50 == 13)
+				) {
+					unit.attack(shouldBePosition);
+				}
+			}
 		}
 		
-		Vector2D armyPosition = getAttackGroup().getArithmeticCenter();
-		Vector2D shouldBePosition = nextToGoPosition
-				.sub(armyPosition)
-				.normalize()
-				.scale(IS_AT_TOLERANCE)
-				.scale(0.75)
-				.add(nextToGoPosition);
-		
-		for(Unit unit : getAttackGroup()) {
-			if(
-				(unit.isIdle() && !unit.isAt(nextToGoPosition, IS_AT_TOLERANCE)) ||
-				(!unit.isAttackFrame() && game.getFrameCount() % 50 == 13)
-			) {
-				unit.attack(shouldBePosition);
+		if(nextToGoDefensePosition != null) {
+			Vector2D armyPosition = defenseGroup.getArithmeticCenter();
+			Vector2D shouldBePosition = nextToGoDefensePosition
+					.sub(armyPosition)
+					.normalize()
+					.scale(IS_AT_TOLERANCE)
+					.scale(0.75)
+					.add(nextToGoDefensePosition);
+			
+			for(Unit unit : defenseGroup) {
+				if(
+					(unit.isIdle() && !unit.isAt(nextToGoDefensePosition, IS_AT_TOLERANCE)) ||
+					(!unit.isAttackFrame() && game.getFrameCount() % 50 == 13)
+				) {
+					unit.attack(shouldBePosition);
+				}
 			}
 		}
 	}
@@ -263,10 +227,6 @@ public class MicroQueen3 extends Bot {
 		}
 	}
 	
-	public void handleQueen() {
-		
-	}
-	
 	public boolean isUnderAttack() {
 		UnitSet allMy = getAttackGroup();
 		UnitSet myUnderAttack = allMy.where(UnitSelector.IS_UNDER_ATTACK);
@@ -279,7 +239,7 @@ public class MicroQueen3 extends Bot {
 			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Zergling),
 			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Ultralisk),
 			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Hydralisk)
-		));
+		)).minus(defenseGroup);
 	}
 	
 	public UnitSet getScoutGroup() {
