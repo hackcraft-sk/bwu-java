@@ -44,13 +44,7 @@ public class MicroQueen3 extends Bot {
 	
 	private VectorGraph routeFinder;
 	
-	private Vector2D nextToGoAttackPosition;
-	private Vector2D nextToGoDefensePosition;
-	
-	private UnitSet defenseGroup = new UnitSet();
-	
-	private InformationSystem defenseSystem = null;
-	private InformationSystem attackSystem = null;
+	private InformationSystem informationSystem = null;
 	
 	@Override
 	public void onGameStarted(Game game) {
@@ -59,10 +53,7 @@ public class MicroQueen3 extends Bot {
 		game.setSpeed(20);
 		
 		routeFinder = new MQ3VectorGraph();
-		defenseSystem = new MQ3DefenseInformationSystem(game);
-		attackSystem = new MQ3AttackInformationSystem(game);
-		nextToGoAttackPosition = null;
-		nextToGoDefensePosition = null;
+		informationSystem = new MQ3InformationSystem(game);
 	}
 
 	@Override
@@ -71,9 +62,6 @@ public class MicroQueen3 extends Bot {
 	}
 	
 	private void initialize() {
-		// create groups
-		createDefenseGroup();
-		
 		// send scouts to corners 
 		Iterator<Unit> it = getScoutGroup().iterator();
 		
@@ -83,15 +71,9 @@ public class MicroQueen3 extends Bot {
 		it.next().attack(new Vector2D(0.1, 0.9).scale(game.getMap()));
 	}
 	
-	private void createDefenseGroup() {
-		defenseGroup = game.getMyUnits().firstNOf(12, game.getUnitTypes().Zerg_Zergling)
-				.union(game.getMyUnits().firstNOf(8, game.getUnitTypes().Zerg_Hydralisk));
-	}
-	
 	@Override
 	public void onGameUpdate() {
-		routeFinder.update(defenseSystem, 10);
-		routeFinder.update(attackSystem, 10);
+		routeFinder.update(informationSystem, 10);
 		handleBot();
 	}
 	
@@ -100,22 +82,8 @@ public class MicroQueen3 extends Bot {
 			initialize();
 		}
 		
-		if(nextToGoAttackPosition == null || getAttackGroup().areAt(nextToGoAttackPosition, IS_AT_TOLERANCE)) {
-			List<Vector2D> path = routeFinder.getUphillPath(attackSystem, getAttackGroup().getArithmeticCenter());
-			do {
-				nextToGoAttackPosition = path.remove(0);
-			} while(path.size() > 0 && nextToGoAttackPosition != null && getAttackGroup().areAt(nextToGoAttackPosition, IS_AT_TOLERANCE));
-		}
-		
-		if(nextToGoDefensePosition == null || defenseGroup.areAt(nextToGoDefensePosition, IS_AT_TOLERANCE)) {
-			List<Vector2D> path = routeFinder.getUphillPath(defenseSystem, defenseGroup.getArithmeticCenter());
-			do {
-				nextToGoDefensePosition = path.remove(0);
-			} while(path.size() > 0 && nextToGoDefensePosition != null && defenseGroup.areAt(nextToGoDefensePosition, IS_AT_TOLERANCE));
-		}
-		
 		if(game.getFrameCount() > 0) {
-			handleRegroupingAndAttack();
+			handleAttack();
 			handleScouting();
 		}
 	}
@@ -128,79 +96,41 @@ public class MicroQueen3 extends Bot {
 		graphics.setGameCoordinates();
 
 		renderAttackMinimap(graphics);
-		renderDefenseMinimap(graphics);
 	}
 	
 	private void renderAttackMinimap(Graphics graphics) {
-		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(50, 100), new Vector2D(240, 160));
-		minimap.setColor(Graphics.Color.RED);
+		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(50, 100), new Vector2D(300, 200));
+		minimap.setColor(Graphics.Color.YELLOW);
 		minimap.drawBounds();
 		routeFinder.renderGraph(minimap);
 		
 		minimap.setColor(Graphics.Color.BLUE);
 		minimap.fillCircle(getAttackGroup().getArithmeticCenter(), 5);
 		
-		if(nextToGoAttackPosition != null) {
-			minimap.setColor(Graphics.Color.ORANGE);
-			minimap.fillCircle(nextToGoAttackPosition, 5);
-		}
-		
-		routeFinder.renderSystem(minimap, attackSystem);
+		routeFinder.renderSystem(minimap, informationSystem);
 	}
 	
-	private void renderDefenseMinimap(Graphics graphics) {
-		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(340, 100), new Vector2D(240, 160));
-		minimap.setColor(Graphics.Color.YELLOW);
-		minimap.drawBounds();
-		routeFinder.renderGraph(minimap);
-		
-		minimap.setColor(Graphics.Color.BLUE);
-		minimap.fillCircle(defenseGroup.getArithmeticCenter(), 5);
-		
-		if(nextToGoDefensePosition != null) {
-			minimap.setColor(Graphics.Color.ORANGE);
-			minimap.fillCircle(nextToGoDefensePosition, 5);
-		}
-		
-		routeFinder.renderSystem(minimap, defenseSystem);
-	}
-	
-	public void handleRegroupingAndAttack() {
-		if(nextToGoAttackPosition != null && getAttackGroup().size() > 0) {
-			Vector2D armyPosition = getAttackGroup().getArithmeticCenter();
-			Vector2D shouldBePosition = nextToGoAttackPosition
-					.sub(armyPosition)
-					.normalize()
-					.scale(IS_AT_TOLERANCE)
-					.scale(0.75)
-					.add(nextToGoAttackPosition);
+	public void handleAttack() {
+		for(Unit unit : getAttackGroup()) {
+			List<Vector2D> path = routeFinder.getUphillPath(informationSystem, unit.getPosition());
+			Vector2D nextToVisit = null;
 			
-			for(Unit unit : getAttackGroup()) {
-				if(
-					(unit.isIdle() && !unit.isAt(nextToGoAttackPosition, IS_AT_TOLERANCE)) ||
-					(!unit.isAttackFrame() && game.getFrameCount() % 50 == 13)
-				) {
-					unit.attack(shouldBePosition);
-				}
-			}
-		}
-		
-		if(nextToGoDefensePosition != null) {
-			Vector2D armyPosition = defenseGroup.getArithmeticCenter();
-			Vector2D shouldBePosition = nextToGoDefensePosition
-					.sub(armyPosition)
-					.normalize()
-					.scale(IS_AT_TOLERANCE)
-					.scale(0.75)
-					.add(nextToGoDefensePosition);
+			do {
+				nextToVisit = path.remove(0);
+			} while(path.size() > 0 && unit.isAt(nextToVisit, IS_AT_TOLERANCE));
 			
-			for(Unit unit : defenseGroup) {
-				if(
-					(unit.isIdle() && !unit.isAt(nextToGoDefensePosition, IS_AT_TOLERANCE)) ||
-					(!unit.isAttackFrame() && game.getFrameCount() % 50 == 13)
-				) {
-					unit.attack(shouldBePosition);
-				}
+			if(
+				(unit.isIdle() && !unit.isAt(nextToVisit, IS_AT_TOLERANCE)) ||
+				(!unit.isAttackFrame() && game.getFrameCount() % 50 == 13)
+			) {
+				Vector2D shouldBePosition = nextToVisit
+						.sub(unit.getPosition())
+						.normalize()
+						.scale(IS_AT_TOLERANCE)
+						.scale(0.75)
+						.add(nextToVisit);
+				
+				unit.attack(shouldBePosition);
 			}
 		}
 	}
@@ -218,10 +148,7 @@ public class MicroQueen3 extends Bot {
 			// nope
 			} else {
 				if(scout.isIdle()) {
-					scout.move(Vector2D.random().scale(
-						game.getMap().getWidth()*Game.TILE_SIZE,
-						game.getMap().getHeight()*Game.TILE_SIZE
-					));
+					scout.move(Vector2D.random().scale(game.getMap()));
 				}
 			}
 		}
@@ -239,7 +166,7 @@ public class MicroQueen3 extends Bot {
 			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Zergling),
 			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Ultralisk),
 			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Hydralisk)
-		)).minus(defenseGroup);
+		));
 	}
 	
 	public UnitSet getScoutGroup() {
@@ -273,5 +200,4 @@ public class MicroQueen3 extends Bot {
 	public void onUnitMorphed(Unit unit) {}
 	public void onUnitShown(Unit unit) {}
 	public void onUnitHidden(Unit unit) {}
-
 }
