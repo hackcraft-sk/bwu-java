@@ -1,5 +1,9 @@
 package sk.hackcraft.bwu;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
 import javabot.BWAPIEventListener;
 import javabot.JNIBWAPI;
 import javabot.model.Player;
@@ -29,6 +33,7 @@ abstract public class Bot {
 				onConnected();
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -37,7 +42,10 @@ abstract public class Bot {
 
 		public void gameStarted() {
 			try {
+				graphicsOutputStream = new GraphicsOutputStream();
+				printStream = new PrintStream(graphicsOutputStream);
 				game = new Game(Bot.this, bwta);
+				
 				onGameStarted(game);
 				
 				for(javabot.model.Unit jUnit : BWAPI.getAllUnits()) {
@@ -45,6 +53,7 @@ abstract public class Bot {
 				}
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -55,10 +64,12 @@ abstract public class Bot {
 			try {
 				onGameUpdate();
 				if(graphicsEnabled) {
+					graphicsOutputStream.drawTo(graphics);
 					onDraw(graphics);
 				}
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -71,6 +82,7 @@ abstract public class Bot {
 				game = null;
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -82,6 +94,7 @@ abstract public class Bot {
 				onKeyPressed(keyCode);
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -93,6 +106,7 @@ abstract public class Bot {
 				onMatchEnded(winner);
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -104,6 +118,7 @@ abstract public class Bot {
 				onPlayerLeft(BWAPI.getPlayer(id));
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -115,6 +130,7 @@ abstract public class Bot {
 				onNukeDetected(new Vector2D(x, y));
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -126,6 +142,7 @@ abstract public class Bot {
 				onNukeDetected(null);
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -140,6 +157,7 @@ abstract public class Bot {
 				onUnitDiscovered(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -154,6 +172,7 @@ abstract public class Bot {
 				onUnitEvaded(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -168,6 +187,7 @@ abstract public class Bot {
 				onUnitShown(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -179,9 +199,16 @@ abstract public class Bot {
 				if(game == null)
 					return;
 				
-				onUnitHidden(game.getUnit(unitID));
+				Unit unit = game.getUnit(unitID);
+				
+				onUnitHidden(unit);
+				
+				if(!unit.getType().isBuilding()) {
+					game.removeUnit(unitID);
+				}
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -196,6 +223,7 @@ abstract public class Bot {
 				onUnitCreated(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -207,11 +235,17 @@ abstract public class Bot {
 				if(game == null)
 					return;
 				
-				onUnitDestroyed(game.getUnit(unitID));
+				Unit unit = game.getUnit(unitID);
+				if(unit == null) {
+					return;
+				}
+				
+				onUnitDestroyed(unit);
 				
 				game.removeUnit(unitID);
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -226,6 +260,7 @@ abstract public class Bot {
 				onUnitMorphed(game.getUnit(unitID));
 			} catch(Throwable t) {
 				t.printStackTrace();
+				t.printStackTrace(printStream);
 				if(failFast) {
 					System.exit(failFastReturnCode);
 				}
@@ -234,11 +269,13 @@ abstract public class Bot {
 	};
 	
 	private Game game = null;
-	private boolean failFast = true;
+	private boolean failFast = false;
 	private int failFastReturnCode = 1;
 	private boolean bwta = false;
 	private Graphics graphics;
 	private boolean graphicsEnabled = true;
+	private GraphicsOutputStream graphicsOutputStream = new GraphicsOutputStream();
+	private PrintStream printStream = new PrintStream(graphicsOutputStream);
 	
 	final protected JNIBWAPI BWAPI;
 	
@@ -276,5 +313,9 @@ abstract public class Bot {
 	
 	public void disableGraphics() {
 		this.graphicsEnabled = false;
+	}
+	
+	public PrintStream getPrintStream() {
+		return printStream;
 	}
 }

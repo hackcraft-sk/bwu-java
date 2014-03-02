@@ -48,6 +48,17 @@ public class Vector2D {
 	}
 	
 	/**
+	 * Calculates a dot product of two vectors.
+	 * 
+	 * @param vectorA
+	 * @param vectorB
+	 * @return dot product
+	 */
+	static public double dotProduct(Vector2D vectorA, Vector2D vectorB) {
+		return vectorA.x*vectorB.x+vectorA.y*vectorB.y;
+	}
+	
+	/**
 	 * Component.
 	 */
 	final public double x, y;
@@ -63,9 +74,15 @@ public class Vector2D {
 	 * @param y
 	 */
 	public Vector2D(double x, double y) {
+		if(Double.isNaN(x) || Double.isNaN(y)) {
+			throw new IllegalArgumentException("Cannot crate a NaN vector!");
+		}
+		
 		this.x = x;
 		this.y = y;
-		this.length = Math.sqrt(x*x+y*y);
+		
+		double lng = Math.sqrt(x*x+y*y);	
+		this.length = Double.isNaN(lng) ? 0 : lng;
 	}
 	
 	/**

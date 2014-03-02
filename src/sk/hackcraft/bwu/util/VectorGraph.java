@@ -166,7 +166,7 @@ public class VectorGraph {
 	}
 	
 	public List<Vector2D> getUphillPath(InformationSystem system, Vector2D origin) {
-		List<Vector2D> result = new LinkedList<>();
+		LinkedList<Vector2D> result = new LinkedList<>();
 		
 		Vertex currentVertex = vertices.get(getClosestIndexFor(origin));
 		result.add(currentVertex.point);
@@ -182,7 +182,7 @@ public class VectorGraph {
 					betterValue = edgeValue;
 				}
 			}
-			
+
 			if(betterVertex == null) {
 				break;
 			} else {
@@ -192,7 +192,22 @@ public class VectorGraph {
 			}
 		}
 		
+		removeFirstPathPartIfWrongDirection(result, origin);
+		
 		return result;
+	}
+	
+	private void removeFirstPathPartIfWrongDirection(LinkedList<Vector2D> path, Vector2D origin) {
+		if(path.size() >= 2) {
+			Vector2D directionToFirst = path.get(0).sub(origin);
+			Vector2D directionFromFirstToSecond = path.get(1).sub(path.get(0));
+			
+			double dotProduct = Vector2D.dotProduct(directionToFirst, directionFromFirstToSecond);
+			
+			if(dotProduct < 0) {
+				path.removeFirst();
+			}
+		}
 	}
 	
 	public void renderGraph(Minimap minimap) {

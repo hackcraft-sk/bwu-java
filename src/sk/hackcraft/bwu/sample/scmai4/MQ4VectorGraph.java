@@ -1,10 +1,10 @@
-package sk.hackcraft.bwu.sample.scmai3;
+package sk.hackcraft.bwu.sample.scmai4;
 
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.util.VectorGraph;
 
-public class MQ3VectorGraph extends VectorGraph {
-	public MQ3VectorGraph() {
+public class MQ4VectorGraph extends VectorGraph {
+	public MQ4VectorGraph() {
 		super(new Vector2D[]{
 			new Vector2D(564, 360), 	// 0
 			new Vector2D(3514, 352),	// 1
@@ -54,5 +54,10 @@ public class MQ3VectorGraph extends VectorGraph {
 		connectBothWays(10, 11);
 		connectBothWays(11, 12);
 		connectBothWays(12, 14);
+		
+		/*connectBothWays(0, 5);
+		connectBothWays(5, 13);
+		connectBothWays(1, 9);
+		connectBothWays(9, 14);*/
 	}
 }

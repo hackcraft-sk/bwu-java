@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.sample.scmai3;
+package sk.hackcraft.bwu.sample.scmai4;
 
 import java.util.Iterator;
 import java.util.List;
@@ -14,12 +14,12 @@ import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.LogicalSelector;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
+import sk.hackcraft.bwu.util.Clustering;
 import sk.hackcraft.bwu.util.VectorGraph;
 import sk.hackcraft.bwu.util.VectorGraph.InformationSystem;
 
-public class MicroQueen3 extends Bot {
-	static public double IS_AT_TOLERANCE = 200;
-	static public double GROUP_DISTANCE_TOLERANCE = 300;
+public class MicroQueen4 extends Bot {
+	static public double IS_AT_TOLERANCE = 400;
 	
 	static public Vector2D LEFT_BOTTOM_BASE = new Vector2D(452, 2776);
 	static public Vector2D LEFT_TOP_BASE = new Vector2D(456, 292);
@@ -35,8 +35,8 @@ public class MicroQueen3 extends Bot {
 	static public Vector2D [] STARTING_POSITIONS = new Vector2D[]{ LEFT_START, RIGHT_START };
 	
 	static public void main(String [] arguments) {
-		Bot bot = new MicroQueen3();
-		bot.disableGraphics();
+		Bot bot = new MicroQueen4();
+		//bot.disableGraphics();
 		bot.start();
 	}
 	
@@ -46,14 +46,17 @@ public class MicroQueen3 extends Bot {
 	
 	private InformationSystem informationSystem = null;
 	
+	private Clustering clustering = null;
+	
 	@Override
 	public void onGameStarted(Game game) {
 		this.game = game;
 		game.enableUserInput();
 		game.setSpeed(20);
 		
-		routeFinder = new MQ3VectorGraph();
-		informationSystem = new MQ3InformationSystem(game);
+		routeFinder = new MQ4VectorGraph();
+		informationSystem = new MQ4InformationSystem(game);
+		clustering = new Clustering(game.getMap(), 3);
 	}
 
 	@Override
@@ -65,15 +68,24 @@ public class MicroQueen3 extends Bot {
 		// send scouts to corners 
 		Iterator<Unit> it = getScoutGroup().iterator();
 		
-		it.next().attack(new Vector2D(0.1, 0.1).scale(game.getMap()));
-		it.next().attack(new Vector2D(0.9, 0.1).scale(game.getMap()));
-		it.next().attack(new Vector2D(0.9, 0.9).scale(game.getMap()));
-		it.next().attack(new Vector2D(0.1, 0.9).scale(game.getMap()));
+		Vector2D [] firstPositionsToScout = new Vector2D[]{
+				new Vector2D(0.1, 0.1).scale(game.getMap()),
+				new Vector2D(0.9, 0.1).scale(game.getMap()),
+				new Vector2D(0.9, 0.9).scale(game.getMap()),
+				new Vector2D(0.1, 0.9).scale(game.getMap())
+		};
+		
+		for(Vector2D positionToScout : firstPositionsToScout) {
+			it.next().attack(positionToScout);
+		}
 	}
 	
 	@Override
 	public void onGameUpdate() {
 		routeFinder.update(informationSystem, 10);
+		if(game.getFrameCount() % 15 == 13) {
+			clustering.updateFor(getAttackGroup());
+		}
 		handleBot();
 	}
 	
@@ -84,6 +96,9 @@ public class MicroQueen3 extends Bot {
 		
 		if(game.getFrameCount() > 0) {
 			handleAttack();
+		}
+		
+		if(game.getFrameCount() > 20) {
 			handleScouting();
 		}
 	}
@@ -91,43 +106,43 @@ public class MicroQueen3 extends Bot {
 	@Override
 	public void onDraw(Graphics graphics) {
 		graphics.setScreenCoordinates();
-		graphics.drawText(new Vector2D(10, 10), "MicroQueen3 by nixone");
 		
 		graphics.setGameCoordinates();
-
+		
 		renderAttackMinimap(graphics);
 	}
 	
 	private void renderAttackMinimap(Graphics graphics) {
-		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(50, 100), new Vector2D(300, 200));
+		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(220, 25), new Vector2D(300, 300));
 		minimap.setColor(Graphics.Color.YELLOW);
 		minimap.drawBounds();
 		routeFinder.renderGraph(minimap);
 		
-		minimap.setColor(Graphics.Color.BLUE);
-		minimap.fillCircle(getAttackGroup().getArithmeticCenter(), 5);
-		
 		routeFinder.renderSystem(minimap, informationSystem);
+		clustering.drawOn(minimap);
 	}
 	
-	public void handleAttack() {
+	public void handleAttack() {		
 		for(Unit unit : getAttackGroup()) {
 			List<Vector2D> path = routeFinder.getUphillPath(informationSystem, unit.getPosition());
 			Vector2D nextToVisit = null;
 			
-			do {
+			while(!path.isEmpty() && (nextToVisit == null || unit.isAt(nextToVisit, IS_AT_TOLERANCE))) {
 				nextToVisit = path.remove(0);
-			} while(path.size() > 0 && unit.isAt(nextToVisit, IS_AT_TOLERANCE));
+			}
+			
+			if(nextToVisit == null) {
+				return;
+			}
 			
 			if(
-				(unit.isIdle() && !unit.isAt(nextToVisit, IS_AT_TOLERANCE)) ||
-				(!unit.isAttackFrame() && game.getFrameCount() % 50 == 13)
+				((unit.isIdle() || unit.isStuck()) && !unit.isAt(nextToVisit, IS_AT_TOLERANCE)) ||
+				(!unit.isAttackFrame() && game.getFrameCount() % 20 == 13)
 			) {
 				Vector2D shouldBePosition = nextToVisit
 						.sub(unit.getPosition())
 						.normalize()
-						.scale(IS_AT_TOLERANCE)
-						.scale(0.75)
+						.scale(IS_AT_TOLERANCE*2)
 						.add(nextToVisit);
 				
 				unit.attack(shouldBePosition);
@@ -184,7 +199,7 @@ public class MicroQueen3 extends Bot {
 	}
 	
 	public void say(Object something) {
-		System.out.println("MicroQueen2: "+something.toString());
+		getPrintStream().println("MicroQueen4: "+something.toString());
 	}
 	
 	public void onConnected() {}
