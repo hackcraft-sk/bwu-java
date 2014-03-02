@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.sample.scmai4;
+package sk.nixone.scmai4;
 
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.util.VectorGraph;

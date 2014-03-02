@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.sample.scmai4;
+package sk.nixone.scmai4;
 
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Unit;

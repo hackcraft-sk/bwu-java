@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.sample.scmai4;
+package sk.nixone.scmai4;
 
 import java.util.Iterator;
 import java.util.List;
