@@ -188,9 +188,11 @@ public class Clustering {
 	
 	private void removeNonExistingUnitsFromClusters(UnitSet units) {
 		for(Cluster cluster : clusters) {
-			for(Unit unit : cluster) {
-				if(!units.contains(unit)) {
-					cluster.remove(unit);
+			Iterator<Unit> it = cluster.iterator();
+			
+			while(it.hasNext()) {
+				if(!units.contains(it.next())) {
+					it.remove();
 				}
 			}
 		}
