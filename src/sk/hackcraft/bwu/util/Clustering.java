@@ -3,7 +3,7 @@ package sk.hackcraft.bwu.util;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javabot.model.Map;
+import jnibwapi.Map;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Unit;

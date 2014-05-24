@@ -3,7 +3,8 @@ package sk.nixone.scmai4;
 import java.util.Iterator;
 import java.util.List;
 
-import javabot.model.Player;
+import jnibwapi.Player;
+import jnibwapi.types.UnitType;
 import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
@@ -178,20 +179,20 @@ public class MicroQueen4 extends Bot {
 	
 	public UnitSet getAttackGroup() {
 		return game.getMyUnits().where(new LogicalSelector.Or(
-			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Zergling),
-			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Ultralisk),
-			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Hydralisk)
+			new UnitSelector.UnitTypeSelector(UnitType.UnitTypes.Zerg_Zergling),
+			new UnitSelector.UnitTypeSelector(UnitType.UnitTypes.Zerg_Ultralisk),
+			new UnitSelector.UnitTypeSelector(UnitType.UnitTypes.Zerg_Hydralisk)
 		));
 	}
 	
 	public UnitSet getScoutGroup() {
 		return game.getMyUnits().where(new LogicalSelector.Or(
-			new UnitSelector.UnitTypeSelector(game.getUnitTypes().Zerg_Scourge)
+			new UnitSelector.UnitTypeSelector(UnitType.UnitTypes.Zerg_Scourge)
 		));
 	}
 	
 	public UnitSet getBuildings() {
-		return game.getMyUnits().whereType(game.getUnitTypes().Zerg_Hatchery);
+		return game.getMyUnits().whereType(UnitType.UnitTypes.Zerg_Hatchery);
 	}
 	
 	public UnitSet getBuildingUnderAttack() {

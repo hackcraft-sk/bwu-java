@@ -1,5 +1,6 @@
 package sk.nixone.scmai4;
 
+import jnibwapi.types.UnitType;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
@@ -19,7 +20,7 @@ public class MQ4InformationSystem implements InformationSystem {
 		double value = 0;
 		
 		for(Unit unit : game.getMyUnits().whereLessOrEqual(new DistanceSelector(position), 400)) {
-			if(unit.getType() == game.getUnitTypes().Zerg_Hatchery) {
+			if(unit.getType() == UnitType.UnitTypes.Zerg_Hatchery) {
 				value += 10000;
 			} else {
 				value += unit.getHitPoints();
@@ -33,7 +34,7 @@ public class MQ4InformationSystem implements InformationSystem {
 		double value = 0;
 		
 		for(Unit unit : game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(position), 400)) {
-			if(unit.getType() == game.getUnitTypes().Zerg_Hatchery) {
+			if(unit.getType() == UnitType.UnitTypes.Zerg_Hatchery) {
 				value += 20000;
 			} else {
 				value -= unit.getHitPoints();
@@ -44,7 +45,7 @@ public class MQ4InformationSystem implements InformationSystem {
 	}
 	
 	private double getCloseToEnemyHatcheryBonus(Vector2D position) {
-		UnitSet enemyHatcheries = game.getEnemyUnits().whereType(game.getUnitTypes().Zerg_Hatchery);
+		UnitSet enemyHatcheries = game.getEnemyUnits().whereType(UnitType.UnitTypes.Zerg_Hatchery);
 		UnitSet closeEnemyHatcheries = enemyHatcheries.whereLessOrEqual(new DistanceSelector(position), 400);
 		Unit closeEnemyHatchery = closeEnemyHatcheries.first();
 		
@@ -62,7 +63,7 @@ public class MQ4InformationSystem implements InformationSystem {
 	}
 	
 	private double getDefendingMyHatcheriesBonus(Vector2D position) {
-		UnitSet myHatcheries = game.getMyUnits().whereType(game.getUnitTypes().Zerg_Hatchery);
+		UnitSet myHatcheries = game.getMyUnits().whereType(UnitType.UnitTypes.Zerg_Hatchery);
 		UnitSet myCloseHatcheries = myHatcheries.whereLessOrEqual(new DistanceSelector(position), 400);
 		Unit myCloseHatchery = myCloseHatcheries.first();
 		

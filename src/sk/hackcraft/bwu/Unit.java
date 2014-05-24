@@ -1,12 +1,12 @@
 package sk.hackcraft.bwu;
 
-import javabot.model.Player;
-import javabot.types.OrderType;
-import javabot.types.TechType;
-import javabot.types.UnitCommandType;
-import javabot.types.UnitType;
-import javabot.types.UpgradeType;
-import javabot.types.WeaponType;
+import jnibwapi.Player;
+import jnibwapi.types.OrderType;
+import jnibwapi.types.TechType;
+import jnibwapi.types.UnitCommandType;
+import jnibwapi.types.UnitType;
+import jnibwapi.types.UpgradeType;
+import jnibwapi.types.WeaponType;
 
 /**
  * The Unit class is used to get information about individual units as well as issue orders to units.
@@ -23,9 +23,9 @@ import javabot.types.WeaponType;
  */
 public class Unit {
 	final protected Game game;
-	final protected javabot.model.Unit originalUnit;
+	final protected jnibwapi.Unit originalUnit;
 	
-	protected Unit(Game game, javabot.model.Unit originalUnit) {
+	protected Unit(Game game, jnibwapi.Unit originalUnit) {
 		if(originalUnit == null) {
 			throw new RuntimeException("Cannot create unit from null original JNIBWAPI unit.");
 		}

@@ -2,7 +2,7 @@ package sk.hackcraft.bwu;
 
 import java.util.Random;
 
-import javabot.model.Map;
+import jnibwapi.Map;
 
 /**
  * Class representing two dimensional vector and operations defined on it.

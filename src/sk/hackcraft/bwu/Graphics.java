@@ -1,6 +1,6 @@
 package sk.hackcraft.bwu;
 
-import javabot.model.Map;
+import jnibwapi.Map;
 
 /**
  * Class represeting all operations available on StarCraft graphics to draw something-

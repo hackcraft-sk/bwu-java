@@ -1,6 +1,6 @@
 package sk.hackcraft.bwu.sample;
 
-import javabot.model.Player;
+import jnibwapi.Player;
 import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;

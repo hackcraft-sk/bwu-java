@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import javabot.BWAPIEventListener;
-import javabot.JNIBWAPI;
-import javabot.model.Player;
+import jnibwapi.BWAPIEventListener;
+import jnibwapi.JNIBWAPI;
+import jnibwapi.Player;
 
 abstract public class Bot {
 	abstract public void onConnected();

@@ -2,8 +2,8 @@ package sk.hackcraft.bwu;
 
 import java.util.HashMap;
 
-import javabot.model.Map;
-import javabot.model.Player;
+import jnibwapi.Map;
+import jnibwapi.Player;
 
 import sk.hackcraft.bwu.selection.UnitSet;
 import sk.hackcraft.bwu.types.BulletTypes;

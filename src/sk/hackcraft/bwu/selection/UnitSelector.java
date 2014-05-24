@@ -1,8 +1,8 @@
 package sk.hackcraft.bwu.selection;
 
-import javabot.model.Player;
-import javabot.types.UnitType;
-import javabot.types.WeaponType;
+import jnibwapi.Player;
+import jnibwapi.types.UnitType;
+import jnibwapi.types.WeaponType;
 import sk.hackcraft.bwu.Unit;
 
 /**
@@ -261,7 +261,8 @@ public interface UnitSelector {
 	static public final BooleanSelector CAN_ATTACK_AIR = new BooleanSelector() {
 		@Override
 		public boolean isTrueFor(Unit unit) {
-			return unit.getType().isCanAttackAir();
+			// TODO Is this correct selection?
+			return unit.getAirWeaponType().isTargetsAir();
 		}
 	};
 }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javabot.types.UnitType;
+import jnibwapi.types.UnitType;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
 

@@ -1,7 +1,7 @@
 package sk.hackcraft.bwu;
 
 import sk.hackcraft.bwu.Graphics.Color;
-import javabot.model.Map;
+import jnibwapi.Map;
 
 public class Minimap {
 	private Vector2D position;
