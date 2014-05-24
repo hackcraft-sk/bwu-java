@@ -37,8 +37,8 @@ public class DistanceSelector implements RealSelector {
 	@Override
 	public double getValue(Unit unit) {
 		if(position != null) {
-			return unit.getPosition().sub(position).length;
+			return unit.getPositionVector().sub(position).length;
 		}
-		return this.unit.getPosition().sub(unit.getPosition()).length;
+		return this.unit.getPositionVector().sub(unit.getPositionVector()).length;
 	}
 }

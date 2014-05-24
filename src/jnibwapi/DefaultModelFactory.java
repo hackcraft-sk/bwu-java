@@ -10,5 +10,4 @@ public class DefaultModelFactory implements ModelFactory {
 	public Player createPlayer(int[] data, int index, String name) {
 		return new Player(data, index, name);
 	}
-
 }

@@ -122,10 +122,10 @@ public interface UnitSelector {
 		}
 	};
 	
-	static public final IntegerSelector SHIELD = new IntegerSelector() {
+	static public final IntegerSelector SHIELDS = new IntegerSelector() {
 		@Override
 		public int getValue(Unit unit) {
-			return unit.getShield();
+			return unit.getShields();
 		}
 	};
 	

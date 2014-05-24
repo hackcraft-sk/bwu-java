@@ -110,10 +110,6 @@ public class JNIBWAPI {
 		}
 	}
 	
-	protected ModelFactory getModelFactory() {
-		return factory;
-	}
-	
 	/**
 	 * Invokes the native library which will connect to the bridge and then invoke callback
 	 * functions.

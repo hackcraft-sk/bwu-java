@@ -1,6 +1,7 @@
 package sk.hackcraft.bwu;
 
 import jnibwapi.JNIBWAPI;
+import jnibwapi.types.WeaponType;
 
 /**
  * The Unit class is used to get information about individual units as well as issue orders to units.
@@ -37,5 +38,13 @@ public class Unit extends jnibwapi.Unit {
 	
 	public void attack(Vector2D vector, boolean queued) {
 		attack(vector.toPosition(), false);
+	}
+	
+	public WeaponType getGroundWeaponType() {
+		return getType().getGroundWeapon();
+	}
+	
+	public WeaponType getAirWeaponType() {
+		return game.bot.BWAPI.getWeaponType(getType().getAirWeaponID());
 	}
 }

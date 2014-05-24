@@ -144,7 +144,7 @@ public class UnitSet extends HashSet<Unit> {
 		Vector2D center = Vector2D.ZERO;
 		
 		for(Unit unit : this) {
-			center = center.add(unit.getPosition());
+			center = center.add(unit.getPositionVector());
 		}
 		center = center.scale(1.0/size());
 		
@@ -161,7 +161,7 @@ public class UnitSet extends HashSet<Unit> {
 		double accumulated = 0;
 		
 		for(Unit unit : this) {
-			accumulated += point.sub(unit.getPosition()).length;
+			accumulated += point.sub(unit.getPositionVector()).length;
 		}
 		
 		return accumulated/size();
