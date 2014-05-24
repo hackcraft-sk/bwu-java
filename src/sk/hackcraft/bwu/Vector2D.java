@@ -3,6 +3,7 @@ package sk.hackcraft.bwu;
 import java.util.Random;
 
 import jnibwapi.Map;
+import jnibwapi.Position;
 
 /**
  * Class representing two dimensional vector and operations defined on it.
@@ -67,6 +68,10 @@ public class Vector2D {
 	 * Length of the vector, or the distance of components from the origin (0, 0)
 	 */
 	final public double length;
+	
+	public Vector2D(Position position) {
+		this(position.getPX(), position.getPY());
+	}
 	
 	/**
 	 * Creates a vector.
@@ -185,5 +190,9 @@ public class Vector2D {
 	 */
 	public boolean sameAs(Vector2D v) {
 		return v.x==x && v.y==y;
+	}
+	
+	public Position toPosition() {
+		return new Position((int)Math.round(x), (int)Math.round(y));
 	}
 }

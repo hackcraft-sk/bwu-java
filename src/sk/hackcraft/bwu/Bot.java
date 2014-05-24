@@ -1,30 +1,31 @@
 package sk.hackcraft.bwu;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 import jnibwapi.BWAPIEventListener;
 import jnibwapi.JNIBWAPI;
 import jnibwapi.Player;
+import jnibwapi.Position;
 
 abstract public class Bot {
 	abstract public void onConnected();
 	abstract public void onGameStarted(Game game);
-	abstract public void onGameEnded();
+	abstract public void onGameEnded(boolean isWinner);
 	abstract public void onDisconnected();
 	abstract public void onGameUpdate();
 	abstract public void onKeyPressed(int keyCode);
-	abstract public void onMatchEnded(boolean isWinner);
 	abstract public void onPlayerLeft(Player player);
+	abstract public void onPlayerDropped(Player player);
 	abstract public void onNukeDetected(Vector2D position);
 	abstract public void onUnitDiscovered(Unit unit);
 	abstract public void onUnitDestroyed(Unit unit);
 	abstract public void onUnitEvaded(Unit unit);
 	abstract public void onUnitCreated(Unit unit);
+	abstract public void onUnitCompleted(Unit unit);
 	abstract public void onUnitMorphed(Unit unit);
 	abstract public void onUnitShown(Unit unit);
 	abstract public void onUnitHidden(Unit unit);
+	abstract public void onUnitRenegade(Unit unit);
 	abstract public void onDraw(Graphics graphics);
 	
 	private BWAPIEventListener listener = new BWAPIEventListener() {
@@ -40,15 +41,15 @@ abstract public class Bot {
 			}
 		}
 
-		public void gameStarted() {
+		public void matchStart() {
 			try {
 				graphicsOutputStream = new GraphicsOutputStream();
 				printStream = new PrintStream(graphicsOutputStream);
-				game = new Game(Bot.this, bwta);
+				game = new Game(Bot.this);
 				
 				onGameStarted(game);
 				
-				for(javabot.model.Unit jUnit : BWAPI.getAllUnits()) {
+				for(jnibwapi.Unit jUnit : BWAPI.getAllUnits()) {
 					onUnitDiscovered(game.getUnit(jUnit.getID()));
 				}
 			} catch(Throwable t) {
@@ -60,26 +61,13 @@ abstract public class Bot {
 			}
 		}
 
-		public void gameUpdate() {
+		public void matchFrame() {
 			try {
 				onGameUpdate();
 				if(graphicsEnabled) {
 					graphicsOutputStream.drawTo(graphics);
 					onDraw(graphics);
 				}
-			} catch(Throwable t) {
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if(failFast) {
-					System.exit(failFastReturnCode);
-				}
-			}
-		}
-		
-		public void gameEnded() {
-			try {
-				onGameEnded();
-				game = null;
 			} catch(Throwable t) {
 				t.printStackTrace();
 				t.printStackTrace(printStream);
@@ -101,9 +89,9 @@ abstract public class Bot {
 			}
 		}
 		
-		public void matchEnded(boolean winner) {
+		public void matchEnd(boolean winner) {
 			try {
-				onMatchEnded(winner);
+				onGameEnded(winner);
 			} catch(Throwable t) {
 				t.printStackTrace();
 				t.printStackTrace(printStream);
@@ -125,9 +113,9 @@ abstract public class Bot {
 			}
 		}
 		
-		public void nukeDetect(int x, int y) {
+		public void nukeDetect(Position p) {
 			try {
-				onNukeDetected(new Vector2D(x, y));
+				onNukeDetected(new Vector2D(p.getPX(), p.getPY()));
 			} catch(Throwable t) {
 				t.printStackTrace();
 				t.printStackTrace(printStream);
@@ -266,24 +254,89 @@ abstract public class Bot {
 				}
 			}
 		}
+		
+		@Override
+		public void playerDropped(int id) {
+			try {
+				onPlayerDropped(BWAPI.getPlayer(id));
+			} catch(Throwable t) {
+				t.printStackTrace();
+				t.printStackTrace(printStream);
+				if(failFast) {
+					System.exit(failFastReturnCode);
+				}
+			}
+		}
+		
+		@Override
+		public void unitComplete(int unitID) {
+			try {
+				if(game == null)
+					return;
+				
+				onUnitCompleted(game.getUnit(unitID));
+			} catch(Throwable t) {
+				t.printStackTrace();
+				t.printStackTrace(printStream);
+				if(failFast) {
+					System.exit(failFastReturnCode);
+				}
+			}
+		}
+		
+		@Override
+		public void unitRenegade(int unitID) {
+			try {
+				if(game == null)
+					return;
+				
+				onUnitRenegade(game.getUnit(unitID));
+			} catch(Throwable t) {
+				t.printStackTrace();
+				t.printStackTrace(printStream);
+				if(failFast) {
+					System.exit(failFastReturnCode);
+				}
+			}
+		}
+
+		@Override
+		public void sendText(String text) {
+			// TODO Implement
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void receiveText(String text) {
+			// TODO Implement
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void saveGame(String gameName) {
+			// TODO Implement
+			throw new UnsupportedOperationException();
+		}
 	};
 	
 	private Game game = null;
 	private boolean failFast = false;
 	private int failFastReturnCode = 1;
-	private boolean bwta = false;
 	private Graphics graphics;
 	private boolean graphicsEnabled = true;
 	private GraphicsOutputStream graphicsOutputStream = new GraphicsOutputStream();
 	private PrintStream printStream = new PrintStream(graphicsOutputStream);
+	private ModelFactory modelFactory;
 	
 	final protected JNIBWAPI BWAPI;
 	
-	public Bot() {
-		BWAPI = new JNIBWAPI(listener);
+	public Bot(boolean enableBWTA) {
+		modelFactory = new ModelFactory();
+		BWAPI = new JNIBWAPI(listener, enableBWTA, modelFactory);
 		graphics = new Graphics(this);
 	}
 	
+	@Deprecated
 	protected JNIBWAPI getBWAPI() {
 		return BWAPI;
 	}
@@ -294,10 +347,6 @@ abstract public class Bot {
 	
 	public void setFailFastReturnCode(int returnCode) {
 		this.failFastReturnCode = returnCode;
-	}
-	
-	public void setBWTA(boolean enabled) {
-		this.bwta = enabled;
 	}
 	
 	public void start() {

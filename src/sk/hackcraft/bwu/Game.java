@@ -6,13 +6,6 @@ import jnibwapi.Map;
 import jnibwapi.Player;
 
 import sk.hackcraft.bwu.selection.UnitSet;
-import sk.hackcraft.bwu.types.BulletTypes;
-import sk.hackcraft.bwu.types.DamageTypes;
-import sk.hackcraft.bwu.types.ExplosionTypes;
-import sk.hackcraft.bwu.types.OrderTypes;
-import sk.hackcraft.bwu.types.TechTypes;
-import sk.hackcraft.bwu.types.UnitTypes;
-import sk.hackcraft.bwu.types.WeaponTypes;
 
 
 /**
@@ -29,33 +22,13 @@ public class Game {
 	
 	private HashMap<Integer, Unit> units = new HashMap<Integer, Unit>();
 	
-	final private BulletTypes bulletTypes;
-	final private DamageTypes damageTypes;
-	final private ExplosionTypes explosionTypes;
-	final private OrderTypes orderTypes;
-	final private TechTypes techTypes;
-	final private UnitTypes unitTypes;
-	final private WeaponTypes weaponTypes;
-	
 	final private UnitSet enemyUnits = new UnitSet();
 	final private UnitSet myUnits = new UnitSet();
 	final private UnitSet neutralUnits = new UnitSet();
 	final private UnitSet allyUnits = new UnitSet();
 	
-	protected Game(Bot bot, boolean bwta) {
+	protected Game(Bot bot) {
 		this.bot = bot;
-		
-		bot.BWAPI.loadTypeData();
-		
-		bulletTypes = new BulletTypes(bot.BWAPI);
-		damageTypes = new DamageTypes(bot.BWAPI);
-		explosionTypes = new ExplosionTypes(bot.BWAPI);
-		orderTypes = new OrderTypes(bot.BWAPI);
-		techTypes = new TechTypes(bot.BWAPI);
-		unitTypes = new UnitTypes(bot.BWAPI);
-		weaponTypes = new WeaponTypes(bot.BWAPI);
-		
-		bot.BWAPI.loadMapData(bwta);
 	}
 	
 	/**
@@ -68,11 +41,11 @@ public class Game {
 	
 	protected Unit getUnit(int unitID) {
 		if(!units.containsKey(unitID)) {
-			javabot.model.Unit originalUnit = bot.BWAPI.getUnit(unitID);
+			jnibwapi.Unit originalUnit = bot.BWAPI.getUnit(unitID);
 			if(originalUnit == null) {
 				return null;
 			}
-			Unit unit = new Unit(this, originalUnit);
+			Unit unit = (Unit)originalUnit;
 			
 			units.put(unitID, unit);
 			
@@ -105,62 +78,6 @@ public class Game {
 			
 			units.remove(unitID);
 		}
-	}
-	
-	/**
-	 * Returns all available bullet types in this game
-	 * @return
-	 */
-	public BulletTypes getBulletTypes() {
-		return bulletTypes;
-	}
-	
-	/**
-	 * Returns all available damage types in this game
-	 * @return
-	 */
-	public DamageTypes getDamageTypes() {
-		return damageTypes;
-	}
-	
-	/**
-	 * Returns all available explosion types in this game
-	 * @return
-	 */
-	public ExplosionTypes getExplosionTypes() {
-		return explosionTypes;
-	}
-	
-	/**
-	 * Returns all available order types in this game
-	 * @return
-	 */
-	public OrderTypes getOrderTypes() {
-		return orderTypes;
-	}
-	
-	/**
-	 * Returns all available tech types in this game
-	 * @return
-	 */
-	public TechTypes getTechTypes() {
-		return techTypes;
-	}
-	
-	/**
-	 * Returns all available unit types in this game
-	 * @return
-	 */
-	public UnitTypes getUnitTypes() {
-		return unitTypes;
-	}
-	
-	/**
-	 * Returns all available weapon types in this game
-	 * @return
-	 */
-	public WeaponTypes getWeaponTypes() {
-		return weaponTypes;
 	}
 	
 	/**

@@ -16,6 +16,10 @@ public class SampleBot extends Bot {
 	
 	private Game game = null;
 	
+	public SampleBot() {
+		super(false);
+	}
+	
 	public void onConnected() {}
 	public void onGameStarted(Game game) {
 		this.game = game;		
@@ -41,8 +45,8 @@ public class SampleBot extends Bot {
 	
 	public void onDisconnected() {}
 	public void onKeyPressed(int keyCode) {}
-	public void onMatchEnded(boolean isWinner) {}
-	public void onPlayerLeft(Player player) {}
+	public void onGameEnded(boolean isWinner) {}
+	public void onPlayerDropped(Player player) {}
 	public void onNukeDetected(Vector2D position) {}
 	public void onUnitDiscovered(Unit unit) {}
 	public void onUnitDestroyed(Unit unit) {}
@@ -52,4 +56,7 @@ public class SampleBot extends Bot {
 	public void onUnitShown(Unit unit) {}
 	public void onUnitHidden(Unit unit) {}
 	public void onDraw(Graphics graphics) {}
+	public void onPlayerLeft(Player player) {}
+	public void onUnitCompleted(Unit unit) {}
+	public void onUnitRenegade(Unit unit) {}
 }

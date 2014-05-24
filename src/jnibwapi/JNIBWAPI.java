@@ -81,6 +81,11 @@ public class JNIBWAPI {
 	/** whether to use BWTA for map analysis */
 	private boolean enableBWTA;
 	private Charset charset;
+	private ModelFactory factory;
+	
+	public JNIBWAPI(BWAPIEventListener listener, boolean enableBWTA) {
+		this(listener, enableBWTA, new DefaultModelFactory());
+	}
 	
 	/**
 	 * Instantiates a BWAPI instance, but does not connect to the bridge. To connect, the start
@@ -89,8 +94,9 @@ public class JNIBWAPI {
 	 * @param listener - listener for BWAPI callback events.
 	 * @param enableBWTA - whether to use BWTA for map analysis
 	 */
-	public JNIBWAPI(BWAPIEventListener listener, boolean enableBWTA) {
+	public JNIBWAPI(BWAPIEventListener listener, boolean enableBWTA, ModelFactory factory) {
 		instance = this;
+		this.factory = factory;
 		this.listener = listener;
 		this.enableBWTA = enableBWTA;
 		try {
@@ -102,6 +108,10 @@ public class JNIBWAPI {
 					"Korean character set not available. Some characters may not be read properly");
 			charset = StandardCharsets.ISO_8859_1;
 		}
+	}
+	
+	protected ModelFactory getModelFactory() {
+		return factory;
 	}
 	
 	/**
@@ -765,7 +775,8 @@ public class JNIBWAPI {
 			int[] playerData = getPlayersData();
 			for (int index = 0; index < playerData.length; index += Player.numAttributes) {
 				String name = new String(getPlayerName(playerData[index]), charset);
-				Player player = new Player(playerData, index, name);
+				//Player player = new Player(playerData, index, name);
+				Player player = factory.createPlayer(playerData, index, name);
 				
 				players.put(player.getID(), player);
 				
@@ -793,7 +804,8 @@ public class JNIBWAPI {
 			
 			for (int index = 0; index < unitData.length; index += Unit.numAttributes) {
 				int id = unitData[index];
-				Unit unit = new Unit(id, this);
+				//Unit unit = new Unit(id, this);
+				Unit unit = factory.createUnit(id, this);
 				unit.update(unitData, index);
 				
 				units.put(id, unit);
@@ -818,7 +830,8 @@ public class JNIBWAPI {
 				// Ensure we don't have duplicate units
 				Unit unit = units.get(id);
 				if (unit == null) {
-					unit = new Unit(id, this);
+					//unit = new Unit(id, this);
+					unit = factory.createUnit(id, this);
 					unit.update(unitData, index);
 				}
 				

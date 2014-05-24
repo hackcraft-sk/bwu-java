@@ -49,6 +49,10 @@ public class MicroQueen4 extends Bot {
 	
 	private Clustering clustering = null;
 	
+	public MicroQueen4() {
+		super(false);
+	}
+	
 	@Override
 	public void onGameStarted(Game game) {
 		this.game = game;
@@ -61,7 +65,7 @@ public class MicroQueen4 extends Bot {
 	}
 
 	@Override
-	public void onGameEnded() {
+	public void onGameEnded(boolean isWinner) {
 		game = null;
 	}
 	
@@ -206,8 +210,7 @@ public class MicroQueen4 extends Bot {
 	public void onConnected() {}
 	public void onDisconnected() {}
 	public void onKeyPressed(int keyCode) {}
-	public void onMatchEnded(boolean isWinner) {}
-	public void onPlayerLeft(Player player) {}
+	public void onPlayerDropped(Player player) {}
 	public void onNukeDetected(Vector2D position) {}
 	public void onUnitDiscovered(Unit unit) {}
 	public void onUnitDestroyed(Unit unit) {}
@@ -216,4 +219,7 @@ public class MicroQueen4 extends Bot {
 	public void onUnitMorphed(Unit unit) {}
 	public void onUnitShown(Unit unit) {}
 	public void onUnitHidden(Unit unit) {}
+	public void onPlayerLeft(Player player) {}
+	public void onUnitCompleted(Unit unit) {}
+	public void onUnitRenegade(Unit unit) {}
 }

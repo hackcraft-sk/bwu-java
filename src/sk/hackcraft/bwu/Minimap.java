@@ -1,7 +1,7 @@
 package sk.hackcraft.bwu;
 
-import sk.hackcraft.bwu.Graphics.Color;
 import jnibwapi.Map;
+import jnibwapi.util.BWColor;
 
 public class Minimap {
 	private Vector2D position;
@@ -30,7 +30,7 @@ public class Minimap {
 	}
 	
 	public void drawCircle(Unit unit, int radius) {
-		drawCircle(unit.getPosition(), radius);
+		drawCircle(unit.getPositionVector(), radius);
 	}
 	
 	public void drawCircle(Vector2D position, int radius) {
@@ -38,7 +38,7 @@ public class Minimap {
 	}
 	
 	public void fillCircle(Unit unit, int radius) {
-		fillCircle(unit.getPosition(), radius);
+		fillCircle(unit.getPositionVector(), radius);
 	}
 	
 	public void fillCircle(Vector2D position, int radius) {
@@ -50,7 +50,7 @@ public class Minimap {
 	}
 	
 	public void drawDot(Unit unit) {
-		drawDot(unit.getPosition());
+		drawDot(unit.getPositionVector());
 	}
 	
 	public void drawLine(Vector2D from, Vector2D to) {
@@ -62,14 +62,14 @@ public class Minimap {
 	}
 	
 	public void drawText(Unit unit, Object text, Vector2D offset) {
-		drawText(offset.add(unit.getPosition()), text);
+		drawText(offset.add(unit.getPositionVector()), text);
 	}
 	
 	public void drawText(Unit unit, Object text) {
 		drawText(unit, text, Vector2D.ZERO);
 	}
 	
-	public void setColor(Color color) {
+	public void setColor(BWColor color) {
 		graphics.setColor(color);
 	}
 	
