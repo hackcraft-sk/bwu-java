@@ -4,6 +4,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedList;
 
+/**
+ * Output stream for drawing pure text on StarCraft screen through
+ * <code>Graphics</code>. This output stream is for example used
+ * when printing exception stack traces in <code>Bot.on*</code> calls if
+ * graphics is enabled.
+ * 
+ * @author nixone
+ */
 public class GraphicsOutputStream extends OutputStream
 {
 	private LinkedList<String> lines = new LinkedList<>();
@@ -33,6 +41,10 @@ public class GraphicsOutputStream extends OutputStream
 		}
 	}
 
+	/**
+	 * Draws the outputed text through provided <code>Graphics</code> instance.
+	 * @param graphics
+	 */
 	public void drawTo(Graphics graphics)
 	{
 		boolean before = graphics.isGameCoordinates();

@@ -6,7 +6,14 @@ import jnibwapi.util.BWColor;
 
 /**
  * Class represeting all operations available on StarCraft graphics to draw
- * something-
+ * something. This instance works as a state machine with 2 states being remembered:
+ * 
+ * Screen Coordinates / Game Coordinates - Whether the coordinates provided when drawing
+ * something should be considered as a coordinates of a certain pixel on a screen or a coordinates
+ * on a game plane. Default state is Screen Coordinates.
+ * 
+ * Color - <code>BWColor</code> instance of current paint that should be used when drawing something.
+ * Default color is <code>BWColor.White</code>.
  * 
  * @author nixone
  * 
@@ -43,7 +50,7 @@ public class Graphics
 
 	/**
 	 * Draws an outline for a box that is defined by its top left and bottom
-	 * right corners. The context color and coordinates are taken into account.
+	 * right corners.
 	 * 
 	 * @param topLeftCorner
 	 * @param bottomRightCorner
@@ -54,8 +61,7 @@ public class Graphics
 	}
 
 	/**
-	 * Fills the box defined by its top left and bottom right corners. The
-	 * context color and coordinate systems are taken into account.
+	 * Fills the box defined by its top left and bottom right corners.
 	 * 
 	 * @param topLeftCorner
 	 * @param bottomRightCorner
@@ -66,11 +72,11 @@ public class Graphics
 	}
 
 	/**
-	 * Draws the outline for a circle around a specific unit. Only context color
-	 * is taken into account.
+	 * Draws the outline for a circle around a specific unit. 
+	 * Coordinate system state is not taken into account.
 	 * 
-	 * @param unit
-	 * @param radius
+	 * @param unit specific unit
+	 * @param radius radius of a circle in a game pixels.
 	 */
 	public void drawCircle(Unit unit, int radius)
 	{
@@ -84,7 +90,7 @@ public class Graphics
 
 	/**
 	 * Draws the outline of a circle around a certain position with a certain
-	 * radius. Context color and coordinate system are taken into account.
+	 * radius.
 	 * 
 	 * @param position
 	 *            center of a circle
@@ -97,8 +103,8 @@ public class Graphics
 	}
 
 	/**
-	 * Fills the circle around a unit with a certain specified radius. Only
-	 * context color is taken into account.
+	 * Fills the circle around a unit with a certain specified radius. 
+	 * Coordinate system state is not taken into account.
 	 * 
 	 * @param unit
 	 * @param radius
@@ -113,16 +119,33 @@ public class Graphics
 		setScreenCoordinates(savedScreen);
 	}
 
+	/**
+	 * Fills the circle around a certain position with a certain radius.
+	 * 
+	 * @param position
+	 * @param radius
+	 */
 	public void fillCircle(Vector2D position, int radius)
 	{
 		bot.BWAPI.drawCircle(new Position((int) Math.round(position.x), (int) Math.round(position.y)), radius, color, true, screen);
 	}
 
+	/**
+	 * Draws a single point at a certain position.
+	 * 
+	 * @param position
+	 */
 	public void drawDot(Vector2D position)
 	{
 		bot.BWAPI.drawDot(new Position((int) Math.round(position.x), (int) Math.round(position.y)), color, screen);
 	}
 
+	/**
+	 * Draws a single point at a certain unit. Coordinate
+	 * system state is not taken into account.
+	 * 
+	 * @param unit
+	 */
 	public void drawDot(Unit unit)
 	{
 		boolean savedScreen = isScreenCoordinates();
@@ -133,16 +156,41 @@ public class Graphics
 		setScreenCoordinates(savedScreen);
 	}
 
+	/**
+	 * Draws a line from a certain position to a certain position.
+	 * 
+	 * @param from start position of line
+	 * @param to end position of line
+	 */
 	public void drawLine(Vector2D from, Vector2D to)
 	{
 		bot.BWAPI.drawLine(new Position((int) Math.round(from.x), (int) Math.round(from.y)), new Position((int) Math.round(to.x), (int) Math.round(to.y)), color, screen);
 	}
 
+	/**
+	 * Draws a text at a certain position. Coordinates are of a left edge of the text
+	 * (text is left-aligned).
+	 * 
+	 * @param position position of left edge of the text
+	 * @param text text to be drawn, <code>Object.toString()</code> is used.
+	 */
 	public void drawText(Vector2D position, Object text)
 	{
 		bot.BWAPI.drawText(new Position((int) Math.round(position.x), (int) Math.round(position.y)), text.toString(), screen);
 	}
 
+	/**
+	 * Draws a text at a certain unit. Text is left-aligned so it spans to the right of a unit.
+	 * Coordinate system state is not taken into account.
+	 * 
+	 * @param unit 
+	 * 			to draw text upon
+	 * @param text 
+	 * 			text to be drawn, <code>Object.toString()</code> is used
+	 * @param offset
+	 * 			offset in game coordinates of text relative to unit
+	 * 
+	 */
 	public void drawText(Unit unit, Object text, Vector2D offset)
 	{
 		boolean savedScreen = isScreenCoordinates();
@@ -153,46 +201,103 @@ public class Graphics
 		setScreenCoordinates(savedScreen);
 	}
 
+	/**
+	 * Draws a text at a certain unit. Text is left-aligned so it spans to the right of a unit.
+	 * Coordinate system state is not taken into account.
+	 * 
+	 * @param unit 
+	 * 			to draw text upon
+	 * @param text 
+	 * 			text to be drawn, <code>Object.toString()</code> is used
+	 * 
+	 */
 	public void drawText(Unit unit, Object text)
 	{
 		drawText(unit, text, Vector2D.ZERO);
 	}
 
+	/**
+	 * Sets the color state of a graphics object. Next <code>draw*</code> or <code>fill*</code>
+	 * calls will be painted with this color until next <code>setColor()</code> with another
+	 * color is called.
+	 * 
+	 * @param color 
+	 * 			to paint
+	 */
 	public void setColor(BWColor color)
 	{
 		this.color = color;
 	}
 
+	/**
+	 * Sets whether the coordinates should be screen or game coordinates
+	 * 
+	 * @param screen
+	 * 			whether we are using screen coordinates
+	 */
 	public void setScreenCoordinates(boolean screen)
 	{
 		this.screen = screen;
 	}
 
+	/**
+	 * Sets the coordinates to be screen coordinates
+	 */
 	public void setScreenCoordinates()
 	{
 		setScreenCoordinates(true);
 	}
 
+	/**
+	 * Tells a state of coordinate system.
+	 * 
+	 * @return whether we are using screen coordinates at this moment
+	 */
 	public boolean isScreenCoordinates()
 	{
 		return this.screen;
 	}
 
+	/**
+	 * Sets whether the coordinates should be screen or game coordinates
+	 * 
+	 * @param game
+	 * 			whether we are using game coordinates
+	 */
 	public void setGameCoordinates(boolean game)
 	{
 		this.screen = !game;
 	}
 
+	/**
+	 * Sets the coordinates to be game coordinates
+	 */
 	public void setGameCoordinates()
 	{
 		setGameCoordinates(true);
 	}
 
+	/**
+	 * Tells a state of coordinate system.
+	 * 
+	 * @return whether we are using game coordinates at this moment
+	 */
 	public boolean isGameCoordinates()
 	{
 		return !screen;
 	}
 
+	/**
+	 * Creates a minimap with usage of this graphics.
+	 * 
+	 * @param map 
+	 * 			map to create a minimap on
+	 * @param position 
+	 * 			position of top left corner of the minimap to be displayed in
+	 * @param size 
+	 * 			(width, height) vector of the minimap size in pixels on screen
+	 * @return created minimap
+	 */
 	public Minimap createMinimap(Map map, Vector2D position, Vector2D size)
 	{
 		return new Minimap(this, map, position, size);

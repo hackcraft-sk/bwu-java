@@ -5,30 +5,45 @@ import java.util.Iterator;
 
 import jnibwapi.Map;
 import jnibwapi.util.BWColor;
-import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.selection.UnitSet;
 
+/**
+ * Class for doing k-mean clustering among the units provided in each update.
+ * The criterion for k-mean clustering is to minimize the sum of all
+ * <code>1/(DISTANCE_FROM_CLUSTER_CENTER/10)^2</code> values for each unit in each cluster.
+ * 
+ * @author nixone
+ *
+ */
 public class Clustering
 {
+	/**
+	 * One cluster represents a group of units grouped together
+	 * to fit the clustering criteria.
+	 * 
+	 * @author nixone
+	 *
+	 */
+	@SuppressWarnings("serial")
 	static public class Cluster extends UnitSet
 	{
 		private Vector2D position;
 		private Object representative = new Object();
 
-		public Cluster(Vector2D position)
+		private Cluster(Vector2D position)
 		{
 			this.position = position;
 		}
 
-		public void setPosition(Vector2D position)
+		private void setPosition(Vector2D position)
 		{
 			this.position = position;
 		}
 
-		public void setPositionToSquareDistanceCenter()
+		private void setPositionToSquareDistanceCenter()
 		{
 			if (size() > 0)
 			{
@@ -58,12 +73,17 @@ public class Clustering
 			}
 		}
 
+		/**
+		 * Optimized center of the cluster after doing the k-mean clustering.
+		 * 
+		 * @return center of cluster
+		 */
 		public Vector2D getPosition()
 		{
 			return position;
 		}
 
-		public double getSquareDistanceError()
+		private double getSquareDistanceError()
 		{
 			if (this.isEmpty())
 			{
@@ -106,6 +126,12 @@ public class Clustering
 
 	private int clusterImprovementCount = 10;
 
+	/**
+	 * Creates a clusterer for a certain map size and with initial k for k-mean clustering set.
+	 * 
+	 * @param map map for clustering
+	 * @param initialClusterCount initial cluster count (k in k-means).
+	 */
 	public Clustering(Map map, int initialClusterCount)
 	{
 		this.map = map;
@@ -115,7 +141,7 @@ public class Clustering
 			addCluster();
 		}
 	}
-
+	
 	private void moveClustersRandomly()
 	{
 		for (Cluster cluster : clusters)
@@ -124,6 +150,12 @@ public class Clustering
 		}
 	}
 
+	/**
+	 * Updates the clustering (creates, destroys or moves the clusters around for best cluster positions)
+	 * for certain units (other units are not considered than units provided in parameters).
+	 * 
+	 * @param units units that are to be considered in k-mean clustering
+	 */
 	public void updateFor(UnitSet units)
 	{
 		removeNonExistingUnitsFromClusters(units);
@@ -260,6 +292,13 @@ public class Clustering
 		return bestCluster;
 	}
 
+	/**
+	 * Draws the current clustering (with cluster centers and units correspondence) to the
+	 * minimap.
+	 * 
+	 * @param minimap
+	 * 			to be drawn to
+	 */
 	public void drawOn(Minimap minimap)
 	{
 		for (Cluster cluster : clusters)
@@ -268,7 +307,9 @@ public class Clustering
 			{
 				continue;
 			}
+			
 			minimap.setColor(BWColor.Blue);
+			
 			for (Unit unit : cluster)
 			{
 				minimap.drawLine(unit.getPositionVector(), cluster.getPosition());

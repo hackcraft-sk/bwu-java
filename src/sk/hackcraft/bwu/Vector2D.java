@@ -74,6 +74,11 @@ public class Vector2D
 	 */
 	final public double length;
 
+	/**
+	 * Creates a vector from JNIBWAPI position.
+	 * 
+	 * @param position
+	 */
 	public Vector2D(Position position)
 	{
 		this(position.getPX(), position.getPY());
@@ -219,6 +224,11 @@ public class Vector2D
 		return v.x == x && v.y == y;
 	}
 
+	/**
+	 * Converts the vector to JNIBWAPI position.
+	 * 
+	 * @return
+	 */
 	public Position toPosition()
 	{
 		return new Position((int) Math.round(x), (int) Math.round(y));

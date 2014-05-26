@@ -2,6 +2,12 @@ package sk.hackcraft.bwu;
 
 import jnibwapi.JNIBWAPI;
 
+/**
+ * Factory for creating specific BWU instances of game model representations.
+ * 
+ * @author nixone
+ *
+ */
 public class ModelFactory implements jnibwapi.ModelFactory
 {
 	private Game game = null;

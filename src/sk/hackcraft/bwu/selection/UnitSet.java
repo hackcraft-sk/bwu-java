@@ -14,6 +14,7 @@ import sk.hackcraft.bwu.Vector2D;
  * @author nixone
  * 
  */
+@SuppressWarnings("serial")
 public class UnitSet extends HashSet<Unit>
 {
 	/**
@@ -212,7 +213,7 @@ public class UnitSet extends HashSet<Unit>
 	 * 
 	 * @param unitTypes
 	 *            possible types ordered by preference
-	 * @return
+	 * @return the first unit of specified types that exists in this set
 	 */
 	public Unit firstOf(UnitType... unitTypes)
 	{
@@ -227,6 +228,21 @@ public class UnitSet extends HashSet<Unit>
 		return null;
 	}
 
+	/**
+	 * Returns the new set containing first <code>n</code> units
+	 * of specified <code>unitTypes</code>. Order of provided unit types
+	 * is important. If the specified count of units (<code>n</code>) can
+	 * be reached by units of only first unit type, it would be done this way.
+	 * Only when certain type of units is depleted from this set, the next unitType
+	 * is used. If the required number of units cannot be reached, uncomplete set
+	 * will be returned, so the size of returned set can possibly be less than <code>n</code>.
+	 * 
+	 * @param n 
+	 * 			number of required units
+	 * @param unitTypes
+	 * 			required unit types
+	 * @return set of required units
+	 */
 	public UnitSet firstNOf(int n, UnitType... unitTypes)
 	{
 		UnitSet result = new UnitSet();
@@ -248,7 +264,7 @@ public class UnitSet extends HashSet<Unit>
 	/**
 	 * Returns any single (first) unit from this set.
 	 * 
-	 * @return
+	 * @return any single (first) unit from this set.
 	 */
 	public Unit first()
 	{
@@ -264,7 +280,8 @@ public class UnitSet extends HashSet<Unit>
 	 * specified set.
 	 * 
 	 * @param units
-	 * @return
+	 * 			specified set
+	 * @return all units that are in this set but are not in the specified one
 	 */
 	public UnitSet minus(UnitSet units)
 	{
@@ -283,7 +300,8 @@ public class UnitSet extends HashSet<Unit>
 	 * Returns the set of all units that are in both this and specified set.
 	 * 
 	 * @param set
-	 * @return
+	 * 			specified set
+	 * @return intersection of this and specified set
 	 */
 	public UnitSet intersection(UnitSet set)
 	{
@@ -304,7 +322,7 @@ public class UnitSet extends HashSet<Unit>
 	 * Returns all units that are in this set or in the specified set.
 	 * 
 	 * @param set
-	 * @return
+	 * @return fact
 	 */
 	public UnitSet union(UnitSet set)
 	{
@@ -322,7 +340,7 @@ public class UnitSet extends HashSet<Unit>
 	 * 
 	 * @param position
 	 * @param tolerance
-	 * @return
+	 * @return decision
 	 */
 	public boolean areAt(Vector2D position, double tolerance)
 	{
