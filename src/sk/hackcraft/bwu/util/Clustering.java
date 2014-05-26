@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import jnibwapi.Map;
+import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Unit;
@@ -203,7 +204,7 @@ public class Clustering {
 		double bestClusterDistance = 0;
 		
 		for(Cluster cluster : clusters) {
-			double clusterDistance = cluster.getPosition().sub(unit.getPosition()).length;
+			double clusterDistance = cluster.getPosition().sub(new Vector2D(unit.getPosition())).length;
 			
 			if(bestCluster == null || bestClusterDistance > clusterDistance) {
 				bestCluster = cluster;
@@ -219,12 +220,12 @@ public class Clustering {
 			if(cluster.isEmpty()) {
 				continue;
 			}
-			minimap.setColor(Graphics.Color.BLUE);
+			minimap.setColor(BWColor.Blue);
 			for(Unit unit : cluster) {
-				minimap.drawLine(unit.getPosition(), cluster.getPosition());
+				minimap.drawLine(new Vector2D(unit.getPosition()), cluster.getPosition());
 			}
 			
-			minimap.setColor(Graphics.Color.RED);
+			minimap.setColor(BWColor.Red);
 			minimap.fillCircle(cluster.getPosition(), 5);
 		}
 	}

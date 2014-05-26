@@ -5,6 +5,7 @@ import java.util.List;
 
 import jnibwapi.Player;
 import jnibwapi.types.UnitType;
+import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
@@ -119,7 +120,7 @@ public class MicroQueen4 extends Bot {
 	
 	private void renderAttackMinimap(Graphics graphics) {
 		Minimap minimap = graphics.createMinimap(game.getMap(), new Vector2D(220, 25), new Vector2D(300, 300));
-		minimap.setColor(Graphics.Color.YELLOW);
+		minimap.setColor(BWColor.Yellow);
 		minimap.drawBounds();
 		routeFinder.renderGraph(minimap);
 		
@@ -129,7 +130,7 @@ public class MicroQueen4 extends Bot {
 	
 	public void handleAttack() {		
 		for(Unit unit : getAttackGroup()) {
-			List<Vector2D> path = routeFinder.getUphillPath(informationSystem, unit.getPosition());
+			List<Vector2D> path = routeFinder.getUphillPath(informationSystem, new Vector2D(unit.getPosition()));
 			Vector2D nextToVisit = null;
 			
 			while(!path.isEmpty() && (nextToVisit == null || unit.isAt(nextToVisit, IS_AT_TOLERANCE))) {
@@ -145,7 +146,7 @@ public class MicroQueen4 extends Bot {
 				(!unit.isAttackFrame() && game.getFrameCount() % 20 == 13)
 			) {
 				Vector2D shouldBePosition = nextToVisit
-						.sub(unit.getPosition())
+						.sub(new Vector2D(unit.getPosition()))
 						.normalize()
 						.scale(IS_AT_TOLERANCE*2)
 						.add(nextToVisit);
@@ -159,7 +160,8 @@ public class MicroQueen4 extends Bot {
 		for(Unit scout : getScoutGroup()) {
 			UnitSet closeThreats = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(scout), 400).where(UnitSelector.CAN_ATTACK_AIR);
 			// is under threat
-			if(closeThreats.size() > 0) {
+			// TODO debug
+			/*if(closeThreats.size() > 0) {
 				Vector2D avoidance = scout.getPosition().sub(closeThreats.getArithmeticCenter()).normalize().scale(800).add(scout.getPosition());
 				
 				if(game.getFrameCount() % 20 == 3) {
@@ -170,7 +172,7 @@ public class MicroQueen4 extends Bot {
 				if(scout.isIdle()) {
 					scout.move(Vector2D.random().scale(game.getMap()));
 				}
-			}
+			}*/
 		}
 	}
 	

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Vector2D;
@@ -211,7 +212,7 @@ public class VectorGraph {
 	}
 	
 	public void renderGraph(Minimap minimap) {
-		minimap.setColor(Graphics.Color.WHITE);
+		minimap.setColor(BWColor.White);
 		for(Vertex v : vertices) {
 			for(Vertex e : v.edges) {
 				minimap.drawLine(v.point, e.point);

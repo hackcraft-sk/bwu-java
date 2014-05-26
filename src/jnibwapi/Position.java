@@ -1,5 +1,7 @@
 package jnibwapi;
 
+import sk.hackcraft.bwu.Vector2D;
+
 
 /** Generalised representation of a position for JNIBWAPI. Immutable. */
 public class Position {
@@ -220,5 +222,36 @@ public class Position {
 	@Override
 	public String toString() {
 		return getClass().getName() + "[x=" + x + ",y=" + y + "]";
+	}
+	
+	public Vector2D add(Vector2D vector)
+	{
+		// TODO stub
+		return Vector2D.ZERO;
+	}
+	
+	public Vector2D sub(Vector2D vector)
+	{
+		// TODO stub
+		return Vector2D.ZERO;
+	}
+	
+	public Vector2D scale(double scale)
+	{
+		// TODO stub
+		return Vector2D.ZERO;
+	}
+	
+	
+	public Vector2D add(Position position)
+	{
+		// TODO stub
+		return Vector2D.ZERO;
+	}
+	
+	public Vector2D sub(Position position)
+	{
+		// TODO stub
+		return Vector2D.ZERO;
 	}
 }
