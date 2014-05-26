@@ -53,67 +53,93 @@ public class SampleBot extends Bot
 		}
 	}
 
-	public void onDisconnected()
-	{
-	}
-
+	@Override
 	public void onKeyPressed(int keyCode)
 	{
 	}
 
+	@Override
 	public void onGameEnded(boolean isWinner)
 	{
 	}
 
+	@Override
 	public void onPlayerDropped(Player player)
 	{
 	}
 
+	@Override
 	public void onNukeDetected(Vector2D position)
 	{
 	}
 
+	@Override
 	public void onUnitDiscovered(Unit unit)
 	{
 	}
 
+	@Override
 	public void onUnitDestroyed(Unit unit)
 	{
 	}
 
+	@Override
 	public void onUnitEvaded(Unit unit)
 	{
 	}
 
+	@Override
 	public void onUnitCreated(Unit unit)
 	{
 	}
 
+	@Override
 	public void onUnitMorphed(Unit unit)
 	{
 	}
 
+	@Override
 	public void onUnitShown(Unit unit)
 	{
 	}
 
+	@Override
 	public void onUnitHidden(Unit unit)
 	{
 	}
 
+	@Override
 	public void onDraw(Graphics graphics)
 	{
 	}
 
+	@Override
 	public void onPlayerLeft(Player player)
 	{
 	}
 
+	@Override
 	public void onUnitCompleted(Unit unit)
 	{
 	}
 
+	@Override
 	public void onUnitRenegade(Unit unit)
+	{
+	}
+
+	@Override
+	public void onSentMessage(String message)
+	{
+	}
+
+	@Override
+	public void onReceivedMessage(String message)
+	{
+	}
+
+	@Override
+	public void onSavedGame(String gameName)
 	{
 	}
 }

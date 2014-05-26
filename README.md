@@ -1,4 +1,4 @@
-# BWU-Java (JNIBWAPI Utility Layer)
+# BWU-Java (JNIBWAPI Utility Layer) Branch for port to JNIBWAPI 1.0
 
 In the future, I believe in creating a very simple and comfortable API for accesing SC:BW
 and possibly a framework to support unit control and management. I honestly hope it does many
@@ -27,17 +27,14 @@ This repository contains few other things apart from pure bwu-java (package ``sk
 
 *	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 3](http://scmai.hackcraft.sk),
 	package ``sk.hackcraft.bwu.sample``
-*	Sample bot written in pure JNIBWAPI that took 2nd place in
-	[StarCraft Micro AI Tournament 1](http://hackcraft.sk/article/default/starcraft-micro-ai-tournament-2013-report),
-	package ``sk.nixone.microqueen``
-*	Pure JNIBWAPI which bwu-java uses as a backbone, package ``javabot``
+*	Pure JNIBWAPI which bwu-java uses as a backbone, package ``jnibwapi``
 
 ## Code samples
 
 Is my unit of a certain type? (Really crappy in pure JNIBWAPI)
 
 ```java
-return myUnit.getType() == game.getUnitTypes().Terran_Marine; // that's the way i like it!
+return myUnit.getType() == UnitType.UnitTypes.Terran_Marine; // that's the way i like it!
 ```
 
 You want to get a center of all visible enemy units? Easy!
@@ -53,7 +50,7 @@ Are there more than 3 units in range of my sieged tank?
 return game.getEnemyUnits()
 		.whereLessOrEqual(
 			new DistanceSelector(unit), 
-			game.getWeaponTypes().Arclite_Shock_Cannon.getMaxRange()
+			WeaponType.WeaponTypes.Arclite_Shock_Cannon.getMaxRange()
 		)
 		.size() > 3;
 ```
@@ -63,9 +60,9 @@ We want first enemy unit in range of our ghost to lock down, prioritized by: Bat
 ```java
 // simple, but really useful
 Unit lockdownTarget = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(ghost), range).firstOf(
-	game.getUnitTypes().Terran_Battlecruiser,
-	game.getUnitTypes().Terran_Siege_Tank_Siege_Mode,
-	game.getUnitTypes().Terran_Siege_Tank_Tank_Mode
+	UnitType.UnitTypes.Terran_Battlecruiser,
+	UnitType.UnitTypes.Terran_Siege_Tank_Siege_Mode,
+	UnitType.UnitTypes.Terran_Siege_Tank_Tank_Mode
 );
 ```
 

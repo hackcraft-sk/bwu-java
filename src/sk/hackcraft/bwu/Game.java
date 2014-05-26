@@ -34,9 +34,7 @@ public class Game
 	}
 
 	/**
-	 * Returns the bot this game corresponds to
-	 * 
-	 * @return
+	 * @return the bot this game corresponds to.
 	 */
 	public Bot getBot()
 	{
@@ -157,28 +155,49 @@ public class Game
 	}
 
 	/**
-	 * Sets game speed
+	 * Sets game speed, as a delay between game updates, therefore 0 means
+	 * fastest game. Normal values varies between 10-30 speed.
 	 * 
-	 * @param speed
-	 *            game speed
+	 * @param delay delay between game updates
 	 */
-	public void setSpeed(int speed)
+	public void setSpeed(int delay)
 	{
-		bot.BWAPI.setGameSpeed(speed);
+		bot.BWAPI.setGameSpeed(delay);
 	}
-
+	
+	/**
+	 * Enables user to use standard StarCraft User Interface to change the game state, send
+	 * messages etc.
+	 */
 	public void enableUserInput()
 	{
 		bot.BWAPI.enableUserInput();
 	}
 
+	/**
+	 * Enables Complete Map Information
+	 */
 	public void enablePerfectInformation()
 	{
 		bot.BWAPI.enablePerfectInformation();
 	}
 
+	/**
+	 * Returns the number of frames elapsed so far (number of <code>Bot.onGameUpdate()</code> calls).
+	 * @return
+	 */
 	public int getFrameCount()
 	{
 		return bot.BWAPI.getFrameCount();
+	}
+	
+	/**
+	 * Sends a message to the standard StarCraft chat.
+	 * 
+	 * @param message message contents
+	 */
+	public void sendMessage(String message)
+	{
+		bot.BWAPI.sendText(message);
 	}
 }
