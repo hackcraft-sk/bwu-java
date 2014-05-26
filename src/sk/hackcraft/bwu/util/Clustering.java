@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import jnibwapi.Map;
+import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Unit;
@@ -29,7 +30,7 @@ public class Clustering {
 				double cumulation = 0;
 				
 				for(Unit unit : this) {
-					double distance = unit.getPosition().sub(this.position).length / 10;
+					double distance = unit.getPositionVector().sub(this.position).length / 10;
 					
 					double scale = 1/(distance*distance);
 					
@@ -37,7 +38,7 @@ public class Clustering {
 						continue;
 					}
 					
-					position = position.add(unit.getPosition().scale(scale));
+					position = position.add(unit.getPositionVector().scale(scale));
 					
 					cumulation += scale;
 				}
@@ -60,7 +61,7 @@ public class Clustering {
 			double cumulative = 0;
 			
 			for(Unit unit : this) {
-				double distance = unit.getPosition().sub(position).length / 10;
+				double distance = unit.getPositionVector().sub(position).length / 10;
 				cumulative += distance*distance;
 			}
 			
@@ -203,7 +204,7 @@ public class Clustering {
 		double bestClusterDistance = 0;
 		
 		for(Cluster cluster : clusters) {
-			double clusterDistance = cluster.getPosition().sub(unit.getPosition()).length;
+			double clusterDistance = cluster.getPosition().sub(unit.getPositionVector()).length;
 			
 			if(bestCluster == null || bestClusterDistance > clusterDistance) {
 				bestCluster = cluster;
@@ -219,12 +220,12 @@ public class Clustering {
 			if(cluster.isEmpty()) {
 				continue;
 			}
-			minimap.setColor(Graphics.Color.BLUE);
+			minimap.setColor(BWColor.Blue);
 			for(Unit unit : cluster) {
-				minimap.drawLine(unit.getPosition(), cluster.getPosition());
+				minimap.drawLine(unit.getPositionVector(), cluster.getPosition());
 			}
 			
-			minimap.setColor(Graphics.Color.RED);
+			minimap.setColor(BWColor.Red);
 			minimap.fillCircle(cluster.getPosition(), 5);
 		}
 	}
