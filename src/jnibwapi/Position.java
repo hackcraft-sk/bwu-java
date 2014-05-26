@@ -223,35 +223,4 @@ public class Position {
 	public String toString() {
 		return getClass().getName() + "[x=" + x + ",y=" + y + "]";
 	}
-	
-	public Vector2D add(Vector2D vector)
-	{
-		// TODO stub
-		return Vector2D.ZERO;
-	}
-	
-	public Vector2D sub(Vector2D vector)
-	{
-		// TODO stub
-		return Vector2D.ZERO;
-	}
-	
-	public Vector2D scale(double scale)
-	{
-		// TODO stub
-		return Vector2D.ZERO;
-	}
-	
-	
-	public Vector2D add(Position position)
-	{
-		// TODO stub
-		return Vector2D.ZERO;
-	}
-	
-	public Vector2D sub(Position position)
-	{
-		// TODO stub
-		return Vector2D.ZERO;
-	}
 }
