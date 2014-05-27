@@ -13,7 +13,7 @@ import sk.hackcraft.bwu.selection.UnitSet;
 /**
  * Class for doing k-mean clustering among the units provided in each update.
  * The criterion for k-mean clustering is to minimize the sum of all
- * <code>1/(DISTANCE_FROM_CLUSTER_CENTER/10)^2</code> values for each unit in each cluster.
+ * <code>1/(DISTANCE_FROM_CLUSTER_CENTER)^2</code> values for each unit in each cluster.
  * 
  * @author nixone
  *
@@ -52,7 +52,7 @@ public class Clustering
 
 				for (Unit unit : this)
 				{
-					double distance = unit.getPositionVector().sub(this.position).length / 10;
+					double distance = unit.getPositionVector().sub(this.position).length;
 
 					double scale = 1 / (distance * distance);
 
@@ -94,7 +94,7 @@ public class Clustering
 
 			for (Unit unit : this)
 			{
-				double distance = unit.getPositionVector().sub(position).length / 10;
+				double distance = unit.getPositionVector().sub(position).length;
 				cumulative += distance * distance;
 			}
 
@@ -122,7 +122,7 @@ public class Clustering
 	private Map map;
 	private HashSet<Cluster> clusters = new HashSet<>();
 	private double clusterPrice = 40;
-	private double clusterCountChangePrice = 5000;
+	private double clusterCountChangePrice = 500000;
 
 	private int clusterImprovementCount = 10;
 

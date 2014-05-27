@@ -232,6 +232,7 @@ abstract public class Bot
 				graphicsOutputStream = new GraphicsOutputStream();
 				printStream = new PrintStream(graphicsOutputStream);
 				game = new Game(Bot.this);
+				modelFactory.setGame(game);
 
 				onGameStarted(game);
 
@@ -298,6 +299,8 @@ abstract public class Bot
 			try
 			{
 				onGameEnded(winner);
+				game = null;
+				modelFactory.setGame(game);
 			}
 			catch (Throwable t)
 			{

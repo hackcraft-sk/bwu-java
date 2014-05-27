@@ -800,7 +800,6 @@ public class JNIBWAPI {
 			
 			for (int index = 0; index < unitData.length; index += Unit.numAttributes) {
 				int id = unitData[index];
-				//Unit unit = new Unit(id, this);
 				Unit unit = factory.createUnit(id, this);
 				unit.update(unitData, index);
 				
@@ -826,7 +825,6 @@ public class JNIBWAPI {
 				// Ensure we don't have duplicate units
 				Unit unit = units.get(id);
 				if (unit == null) {
-					//unit = new Unit(id, this);
 					unit = factory.createUnit(id, this);
 					unit.update(unitData, index);
 				}
@@ -879,7 +877,7 @@ public class JNIBWAPI {
 				
 				Unit unit = units.get(id);
 				if (unit == null) {
-					unit = new Unit(id, this);
+					unit = factory.createUnit(id, this);
 					units.put(id, unit);
 				}
 				
