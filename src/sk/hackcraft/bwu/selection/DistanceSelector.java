@@ -40,10 +40,16 @@ public class DistanceSelector implements RealSelector
 	@Override
 	public double getValue(Unit unit)
 	{
-		if (position != null)
+		Vector2D origin = this.position;
+		
+		if (origin == null)
 		{
-			return unit.getPositionVector().sub(position).length;
+			origin = this.unit.getPositionVector();
 		}
-		return this.unit.getPositionVector().sub(unit.getPositionVector()).length;
+		
+		Vector2D unitPosition = unit.getPositionVector();
+		
+		double distance = origin.sub(unitPosition).getLength();
+		return distance;
 	}
 }
