@@ -75,7 +75,11 @@ public class UnitMiner implements Miner
 		if (getState() == State.RETURNING_RESOURCES)
 		{
 			jnibwapi.Unit target = unit.getOrderTarget();
-			bwapi.drawLine(unit.getPosition(), target.getPosition(), BWColor.Green, false);
+			
+			if(target != null)
+			{
+				bwapi.drawLine(unit.getPosition(), target.getPosition(), BWColor.Green, false);
+			}
 		}
 		
 		if (getState() == State.WAITING_FOR_RESOURCE)
