@@ -1,6 +1,6 @@
 package sk.hackcraft.bwu;
 
-import static sk.hackcraft.bwu.Vector2DMath.toVector;
+import static sk.hackcraft.bwu.Vector2DMath.*;
 
 import jnibwapi.JNIBWAPI;
 import jnibwapi.Position.PosType;
@@ -32,7 +32,7 @@ public class Unit extends jnibwapi.Unit
 
 	public boolean isAt(Vector2D position, double tolerance)
 	{
-		return getPositionVector().sub(position).length <= tolerance;
+		return sub(getPositionVector(), position).getLength() <= tolerance;
 	}
 
 	@Deprecated
@@ -48,7 +48,7 @@ public class Unit extends jnibwapi.Unit
 
 	public void attack(Vector2D vector, boolean queued)
 	{
-		attack(vector.toPosition(), false);
+		attack(toPosition(vector, PosType.PIXEL), false);
 	}
 
 	public WeaponType getGroundWeaponType()

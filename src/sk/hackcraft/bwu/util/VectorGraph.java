@@ -13,6 +13,7 @@ import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.Vector2DMath;
 
 public class VectorGraph
 {
@@ -249,7 +250,7 @@ public class VectorGraph
 			Vector2D directionToFirst = path.get(0).sub(origin);
 			Vector2D directionFromFirstToSecond = path.get(1).sub(path.get(0));
 
-			double dotProduct = Vector2D.dotProduct(directionToFirst, directionFromFirstToSecond);
+			double dotProduct = Vector2DMath.dotProduct(directionToFirst, directionFromFirstToSecond);
 
 			if (dotProduct < 0)
 			{

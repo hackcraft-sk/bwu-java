@@ -1,10 +1,48 @@
 package sk.hackcraft.bwu;
 
+import java.util.Random;
+
 import jnibwapi.Position;
 import jnibwapi.Position.PosType;
 
 public class Vector2DMath
 {
+	static private Random random = new Random();
+	
+	/**
+	 * Creates a vector with random distribution between (0, 0) and (1, 1)
+	 * 
+	 * @return
+	 */
+	static public Vector2D randomVector()
+	{
+		return randomVector(random);
+	}
+	
+	/**
+	 * Creates a vector with random distribution between (0, 0) and (1, 1)
+	 * 
+	 * @param random
+	 * 			provided random sequence
+	 * @return
+	 */
+	static public Vector2D randomVector(Random random)
+	{
+		return new Vector2D(random.nextFloat(), random.nextFloat());
+	}
+	
+	/**
+	 * Calculates a dot product of two vectors.
+	 * 
+	 * @param vectorA
+	 * @param vectorB
+	 * @return dot product
+	 */
+	static public float dotProduct(Vector2D vectorA, Vector2D vectorB)
+	{
+		return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
+	}
+	
 	public static Vector2D toVector(Position position, PosType posType)
 	{
 		int x = position.getX(posType);
@@ -57,8 +95,15 @@ public class Vector2DMath
 	
 	public static Vector2D normalize(Vector2D vector)
 	{
-		float x = vector.getX() / vector.getLength();
-		float y = vector.getY() / vector.getLength();
+		float length = vector.getLength();
+		
+		if(length == 0)
+		{
+			return vector;
+		}
+		
+		float x = vector.getX() / length;
+		float y = vector.getY() / length;
 		
 		return new Vector2D(x, y);
 	}

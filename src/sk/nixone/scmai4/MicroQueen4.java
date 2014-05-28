@@ -5,10 +5,7 @@ import static sk.hackcraft.bwu.Vector2DMath.*;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
-
 import jnibwapi.Player;
-import jnibwapi.Position.PosType;
 import jnibwapi.types.UnitType;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Bot;
@@ -17,6 +14,7 @@ import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.LogicalSelector;
 import sk.hackcraft.bwu.selection.UnitSelector;
@@ -27,7 +25,7 @@ import sk.hackcraft.bwu.util.VectorGraph.InformationSystem;
 
 public class MicroQueen4 extends Bot
 {
-	static public double IS_AT_TOLERANCE = 400;
+	static public float IS_AT_TOLERANCE = 400;
 
 	static public Vector2D LEFT_BOTTOM_BASE = new Vector2D(452, 2776);
 	static public Vector2D LEFT_TOP_BASE = new Vector2D(456, 292);
@@ -85,7 +83,7 @@ public class MicroQueen4 extends Bot
 		// send scouts to corners
 		Iterator<Unit> it = getScoutGroup().iterator();
 
-		Vector2D[] firstPositionsToScout = new Vector2D[] { new Vector2D(0.1, 0.1).scale(game.getMap()), new Vector2D(0.9, 0.1).scale(game.getMap()), new Vector2D(0.9, 0.9).scale(game.getMap()), new Vector2D(0.1, 0.9).scale(game.getMap()) };
+		Vector2D[] firstPositionsToScout = new Vector2D[] { new Vector2D(0.1f, 0.1f).scale(game.getMap()), new Vector2D(0.9f, 0.1f).scale(game.getMap()), new Vector2D(0.9f, 0.9f).scale(game.getMap()), new Vector2D(0.1f, 0.9f).scale(game.getMap()) };
 
 		for (Vector2D positionToScout : firstPositionsToScout)
 		{
@@ -190,7 +188,7 @@ public class MicroQueen4 extends Bot
 			{
 				if (scout.isIdle())
 				{
-					scout.move(Vector2D.random().scale(game.getMap()).toPosition(), false);
+					scout.move(Vector2DMath.randomVector().scale(game.getMap()).toPosition(), false);
 				}
 			}
 		}

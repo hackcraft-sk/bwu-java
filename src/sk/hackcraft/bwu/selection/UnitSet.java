@@ -184,7 +184,7 @@ public class UnitSet extends HashSet<Unit>
 		{
 			center = center.add(unit.getPositionVector());
 		}
-		center = center.scale(1.0 / size());
+		center = center.scale(1.0f / size());
 
 		return center;
 	}

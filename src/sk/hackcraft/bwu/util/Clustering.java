@@ -8,6 +8,7 @@ import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.selection.UnitSet;
 
 /**
@@ -48,15 +49,15 @@ public class Clustering
 			if (size() > 0)
 			{
 				Vector2D position = Vector2D.ZERO;
-				double cumulation = 0;
+				float cumulation = 0;
 
 				for (Unit unit : this)
 				{
-					double distance = unit.getPositionVector().sub(this.position).length;
+					float distance = unit.getPositionVector().sub(this.position).length;
 
-					double scale = 1 / (distance * distance);
+					float scale = 1 / (distance * distance);
 
-					if (Double.isInfinite(scale) || Double.isNaN(scale))
+					if (Float.isInfinite(scale) || Float.isNaN(scale))
 					{
 						continue;
 					}
@@ -146,7 +147,7 @@ public class Clustering
 	{
 		for (Cluster cluster : clusters)
 		{
-			cluster.setPosition(Vector2D.random().scale(map));
+			cluster.setPosition(Vector2DMath.randomVector().scale(map));
 		}
 	}
 
@@ -194,7 +195,7 @@ public class Clustering
 
 	private void addCluster()
 	{
-		clusters.add(new Cluster(Vector2D.random().scale(map)));
+		clusters.add(new Cluster(Vector2DMath.randomVector().scale(map)));
 	}
 
 	private void removeCluster()

@@ -1,4 +1,4 @@
-# BWU-Java (JNIBWAPI Utility Layer) Branch for port to JNIBWAPI 1.0
+# BWU-Java (JNIBWAPI Utility Layer)
 
 In the future, I believe in creating a very simple and comfortable API for accesing SC:BW
 and possibly a framework to support unit control and management. I honestly hope it does many
@@ -10,6 +10,11 @@ StarCraft: Broodwar mainly for purposes of creating and testing artificial intel
 algorithms.
 
 ### Current version
+
+Current version of **BWU-Java** uses:
+
+*	[JNIBWAPI](https://code.google.com/p/jnibwapi/) version **1.0**
+*	[BWAPI](https://code.google.com/p/bwapi/) version **3.7.4**
 
 This project is currently under heavy development. It can be used to write simple micro bots,
 but it's not recommended for huge full game bot development yet. It has been used in
@@ -23,11 +28,12 @@ find an example to build a simple sample bot capable of playing simple micro mat
 
 ## What is where
 
-This repository contains few other things apart from pure bwu-java (package ``sk.hackcraft.bwu``).
+This repository contains few other things apart from pure *BWU-Java* (package ``sk.hackcraft.bwu``).
 
-*	Sample bot written in pure bwu-java as a demonstration in [StarCraft Micro AI Tournament 3](http://scmai.hackcraft.sk),
-	package ``sk.hackcraft.bwu.sample``
-*	Pure JNIBWAPI which bwu-java uses as a backbone, package ``jnibwapi``
+*	Pure **JNIBWAPI** which bwu-java uses as a backbone, package ``jnibwapi``
+*	**Sample bot** as a sample for random bot walk thorugh the map in package ``sk.hackcraft.bwu.sample``
+*	**MicroQueen 4**, full micro bot that was a competitor in [StarCraft Micro AI Tournament 4](http://scmai.hackcraft.sk),
+	in package ``sk.nixone.scmai4``
 
 ## Code samples
 

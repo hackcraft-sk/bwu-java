@@ -6,6 +6,7 @@ import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.selection.UnitSet;
 
 public class SampleBot extends Bot
@@ -46,7 +47,7 @@ public class SampleBot extends Bot
 			if (unit.isIdle() || unit.isStuck())
 			{
 				// generate new position
-				Vector2D position = Vector2D.random().scale(game.getMap());
+				Vector2D position = Vector2DMath.randomVector().scale(game.getMap());
 				// attack move!
 				unit.attack(position);
 			}

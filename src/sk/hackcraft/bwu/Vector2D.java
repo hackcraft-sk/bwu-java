@@ -1,8 +1,5 @@
 package sk.hackcraft.bwu;
 
-import static sk.hackcraft.bwu.Vector2DMath.*;
-import java.util.Random;
-
 import jnibwapi.Map;
 import jnibwapi.Position;
 import jnibwapi.Position.PosType;
@@ -41,40 +38,16 @@ public class Vector2D
 	 */
 	static final public Vector2D WEST = new Vector2D(-1, 0);
 
-	static private Random random = new Random();
-
 	/**
-	 * Creates a vector with random distribution between (0, 0) and (1, 1)
-	 * 
-	 * @return
+	 * Components.
 	 */
-	static public Vector2D random()
-	{
-		return new Vector2D(random.nextDouble(), random.nextDouble());
-	}
-
-	/**
-	 * Calculates a dot product of two vectors.
-	 * 
-	 * @param vectorA
-	 * @param vectorB
-	 * @return dot product
-	 */
-	static public double dotProduct(Vector2D vectorA, Vector2D vectorB)
-	{
-		return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
-	}
-
-	/**
-	 * Component.
-	 */
-	final public double x, y;
+	final public float x, y;
 
 	/**
 	 * Length of the vector, or the distance of components from the origin (0,
 	 * 0)
 	 */
-	final public double length;
+	final public float length;
 
 	/**
 	 * Creates a vector.
@@ -82,9 +55,9 @@ public class Vector2D
 	 * @param x
 	 * @param y
 	 */
-	public Vector2D(double x, double y)
+	public Vector2D(float x, float y)
 	{
-		if (Double.isNaN(x) || Double.isNaN(y))
+		if (Float.isNaN(x) || Float.isNaN(y))
 		{
 			throw new IllegalArgumentException("Cannot crate a NaN vector!");
 		}
@@ -92,23 +65,23 @@ public class Vector2D
 		this.x = x;
 		this.y = y;
 
-		double lng = Math.sqrt(x * x + y * y);
-		this.length = Double.isNaN(lng) ? 0 : lng;
+		float lng = (float)Math.sqrt(x * x + y * y);
+		this.length = Float.isNaN(lng) ? 0 : lng;
 	}
 	
 	public float getX()
 	{
-		return (float)x;
+		return x;
 	}
 	
 	public float getY()
 	{
-		return (float)y;
+		return y;
 	}
 	
 	public float getLength()
 	{
-		return (float)length;
+		return length;
 	}
 
 	/**
@@ -117,9 +90,10 @@ public class Vector2D
 	 * @param aspect
 	 * @return
 	 */
-	public Vector2D scale(double aspect)
+	@Deprecated
+	public Vector2D scale(float aspect)
 	{
-		return Vector2DMath.scale(this, (float)aspect);
+		return Vector2DMath.scale(this, aspect);
 	}
 
 	/**
@@ -131,9 +105,10 @@ public class Vector2D
 	 * @param aspectY
 	 * @return new vector
 	 */
-	public Vector2D scale(double aspectX, double aspectY)
+	@Deprecated
+	public Vector2D scale(float aspectX, float aspectY)
 	{
-		return Vector2DMath.scale(this, (float)aspectX, (float)aspectY);
+		return Vector2DMath.scale(this, aspectX, aspectY);
 	}
 
 	/**
@@ -143,11 +118,13 @@ public class Vector2D
 	 * @param aspect
 	 * @return
 	 */
+	@Deprecated
 	public Vector2D scale(Vector2D aspect)
 	{
 		return Vector2DMath.scale(this, aspect);
 	}
 
+	@Deprecated
 	public Vector2D scale(Map map)
 	{
 		return scale(map.getWidth() * Game.TILE_SIZE, map.getHeight() * Game.TILE_SIZE);
@@ -227,11 +204,23 @@ public class Vector2D
 		return v.x == x && v.y == y;
 	}
 
+	@Override
+	public boolean equals(Object object)
+	{
+		if(!(object instanceof Vector2D))
+		{
+			return false;
+		}
+	
+		return ((Vector2D)object).sameAs(this);
+	}
+	
 	/**
 	 * Converts the vector to JNIBWAPI position.
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public Position toPosition()
 	{
 		return Vector2DMath.toPosition(this, PosType.PIXEL);
