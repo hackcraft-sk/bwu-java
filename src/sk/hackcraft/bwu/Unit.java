@@ -1,6 +1,9 @@
 package sk.hackcraft.bwu;
 
+import static sk.hackcraft.bwu.Vector2DMath.toVector;
+
 import jnibwapi.JNIBWAPI;
+import jnibwapi.Position.PosType;
 import jnibwapi.types.WeaponType;
 
 /**
@@ -32,9 +35,10 @@ public class Unit extends jnibwapi.Unit
 		return getPositionVector().sub(position).length <= tolerance;
 	}
 
+	@Deprecated
 	public Vector2D getPositionVector()
 	{
-		return new Vector2D(getPosition());
+		return toVector(getPosition(), PosType.PIXEL);
 	}
 
 	public void attack(Vector2D position)

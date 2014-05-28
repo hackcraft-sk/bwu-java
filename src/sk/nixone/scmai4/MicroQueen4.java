@@ -1,9 +1,14 @@
 package sk.nixone.scmai4;
 
+import static sk.hackcraft.bwu.Vector2DMath.*;
+
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
+
 import jnibwapi.Player;
+import jnibwapi.Position.PosType;
 import jnibwapi.types.UnitType;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Bot;
@@ -159,7 +164,6 @@ public class MicroQueen4 extends Bot
 			if (((unit.isIdle() || unit.isStuck()) && !unit.isAt(nextToVisit, IS_AT_TOLERANCE)) || (!unit.isAttackFrame() && game.getFrameCount() % 20 == 13))
 			{
 				Vector2D shouldBePosition = nextToVisit.sub(unit.getPositionVector()).normalize().scale(IS_AT_TOLERANCE * 2).add(nextToVisit);
-
 				unit.attack(shouldBePosition);
 			}
 		}

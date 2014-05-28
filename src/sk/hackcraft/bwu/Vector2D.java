@@ -1,9 +1,11 @@
 package sk.hackcraft.bwu;
 
+import static sk.hackcraft.bwu.Vector2DMath.*;
 import java.util.Random;
 
 import jnibwapi.Map;
 import jnibwapi.Position;
+import jnibwapi.Position.PosType;
 
 /**
  * Class representing two dimensional vector and operations defined on it. This
@@ -75,16 +77,6 @@ public class Vector2D
 	final public double length;
 
 	/**
-	 * Creates a vector from JNIBWAPI position.
-	 * 
-	 * @param position
-	 */
-	public Vector2D(Position position)
-	{
-		this(position.getPX(), position.getPY());
-	}
-
-	/**
 	 * Creates a vector.
 	 * 
 	 * @param x
@@ -103,6 +95,21 @@ public class Vector2D
 		double lng = Math.sqrt(x * x + y * y);
 		this.length = Double.isNaN(lng) ? 0 : lng;
 	}
+	
+	public float getX()
+	{
+		return (float)x;
+	}
+	
+	public float getY()
+	{
+		return (float)y;
+	}
+	
+	public float getLength()
+	{
+		return (float)length;
+	}
 
 	/**
 	 * Scales this vector by a specific aspect.
@@ -112,7 +119,7 @@ public class Vector2D
 	 */
 	public Vector2D scale(double aspect)
 	{
-		return scale(aspect, aspect);
+		return Vector2DMath.scale(this, (float)aspect);
 	}
 
 	/**
@@ -126,7 +133,7 @@ public class Vector2D
 	 */
 	public Vector2D scale(double aspectX, double aspectY)
 	{
-		return new Vector2D(x * aspectX, y * aspectY);
+		return Vector2DMath.scale(this, (float)aspectX, (float)aspectY);
 	}
 
 	/**
@@ -138,7 +145,7 @@ public class Vector2D
 	 */
 	public Vector2D scale(Vector2D aspect)
 	{
-		return scale(aspect.x, aspect.y);
+		return Vector2DMath.scale(this, aspect);
 	}
 
 	public Vector2D scale(Map map)
@@ -153,11 +160,7 @@ public class Vector2D
 	 */
 	public Vector2D normalize()
 	{
-		if (length == 0)
-		{
-			return this;
-		}
-		return new Vector2D(x / length, y / length);
+		return Vector2DMath.normalize(this);
 	}
 
 	/**
@@ -169,7 +172,7 @@ public class Vector2D
 	 */
 	public Vector2D add(Vector2D v)
 	{
-		return new Vector2D(x + v.x, y + v.y);
+		return Vector2DMath.add(this, v);
 	}
 
 	/**
@@ -181,7 +184,7 @@ public class Vector2D
 	 */
 	public Vector2D sub(Vector2D v)
 	{
-		return add(v.scale(-1));
+		return Vector2DMath.sub(this, v);
 	}
 
 	/**
@@ -191,7 +194,7 @@ public class Vector2D
 	 */
 	public Vector2D invert()
 	{
-		return scale(-1);
+		return Vector2DMath.invert(this);
 	}
 
 	/**
@@ -201,7 +204,7 @@ public class Vector2D
 	 */
 	public Vector2D[] getOrthogonal()
 	{
-		return new Vector2D[] { new Vector2D(-y, x), new Vector2D(y, -x) };
+		return Vector2DMath.getOrthogonal(this);
 	}
 
 	/**
@@ -231,6 +234,6 @@ public class Vector2D
 	 */
 	public Position toPosition()
 	{
-		return new Position((int) Math.round(x), (int) Math.round(y));
+		return Vector2DMath.toPosition(this, PosType.PIXEL);
 	}
 }
