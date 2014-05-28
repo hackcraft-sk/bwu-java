@@ -1248,4 +1248,10 @@ public class Unit implements Cloneable {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Unit " + getType().getName() + " #" + getID();
+	}
 }

@@ -1,7 +1,9 @@
 package sk.hackcraft.bwu.selection;
 
 import jnibwapi.Player;
+import jnibwapi.Position;
 import jnibwapi.types.UnitType;
+import jnibwapi.types.UnitType.UnitTypes;
 import jnibwapi.types.WeaponType;
 import sk.hackcraft.bwu.Unit;
 
@@ -327,6 +329,101 @@ public interface UnitSelector
 		{
 			// TODO Is this correct selection?
 			return unit.getAirWeaponType().isTargetsAir();
+		}
+	};
+	
+	static public final BooleanSelector IS_RESOURCE_DEPOT = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			UnitType type = unit.getType();
+			
+			if (type == UnitTypes.Terran_Command_Center)
+			{
+				return true;
+			}
+			
+			if (type == UnitTypes.Protoss_Nexus)
+			{
+				return true;
+			}
+			
+			if (type == UnitTypes.Zerg_Hatchery || type == UnitTypes.Zerg_Lair || type == UnitTypes.Zerg_Hive)
+			{
+				return true;
+			}
+
+			return false;
+		}
+	};
+	
+	static public final BooleanSelector IS_WORKER = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			UnitType type = unit.getType();
+			
+			if (type == UnitTypes.Terran_SCV)
+			{
+				return true;
+			}
+			
+			if (type == UnitTypes.Zerg_Drone)
+			{
+				return true;
+			}
+			
+			if (type == UnitTypes.Protoss_Probe)
+			{
+				return true;
+			}
+
+			return false;
+		}
+	};
+	
+	static public final BooleanSelector IS_RESOURCE = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			UnitType type = unit.getType();
+			
+			return IS_MINERAL.isTrueFor(unit) || IS_VESPENE_GEYSER.isTrueFor(unit);
+		}
+	};
+	
+	static public final BooleanSelector IS_MINERAL = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			UnitType type = unit.getType();
+			
+			if (type == UnitTypes.Resource_Mineral_Field || type == UnitTypes.Resource_Mineral_Field_Type_2 || type == UnitTypes.Resource_Mineral_Field_Type_3)
+			{
+				return true;
+			}
+
+			return false;
+		}
+	};
+	
+	static public final BooleanSelector IS_VESPENE_GEYSER = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			UnitType type = unit.getType();
+			
+			if (type == UnitTypes.Resource_Mineral_Field || type == UnitTypes.Resource_Mineral_Field_Type_2 || type == UnitTypes.Resource_Mineral_Field_Type_3)
+			{
+				return true;
+			}
+
+			return false;
 		}
 	};
 }
