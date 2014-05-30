@@ -37,7 +37,9 @@ public class MiningBotTest extends Bot
 	private Game game;
 	
 	private MiningAgent miningAgent;
-	private Set<Miner> miners;
+	
+	private Set<Unit> minersUnits;
+	private Set<UnitMiner> miners;
 	
 	private Map<Resource, Unit> resourcesMapping;
 
@@ -58,6 +60,7 @@ public class MiningBotTest extends Bot
 		game.enableUserInput();
 		game.setSpeed(15);
 		
+		minersUnits = new HashSet<>();
 		miners = new HashSet<>();
 		resourcesMapping = new HashMap<>();
 	}
@@ -65,8 +68,13 @@ public class MiningBotTest extends Bot
 	@Override
 	public void onGameEnded(boolean isWinner)
 	{
-		// TODO Auto-generated method stub
+		game = null;
+
+		miningAgent = null;
 		
+		minersUnits = null;
+		miners = null;
+		resourcesMapping = null;
 	}
 
 	@Override
@@ -82,21 +90,27 @@ public class MiningBotTest extends Bot
 					.where(UnitSelector.IS_MINERAL)
 					.whereLessOrEqual(new DistanceSelector(resourceDepot), 500);
 			
-			Set<Resource> resources = new HashSet<>();
-			
+			miningAgent = new MiningAgent();
+
 			for (Unit unit : nearbyMinerals)
 			{
 				Resource resource = new UnitMineralResource(unit);
-				resources.add(resource);
+
+				miningAgent.addResource(resource);
 				
 				resourcesMapping.put(resource, unit);
 			}
 			
-			miningAgent = new MiningAgent(resources);
-			
 			UnitSet workers = myUnits.where(UnitSelector.IS_WORKER);
 			for (Unit unit : workers)
 			{
+				if (minersUnits.contains(unit))
+				{
+					continue;
+				}
+				
+				minersUnits.add(unit);
+				
 				UnitMiner miner = new UnitMiner(unit, resourcesMapping);
 				miners.add(miner);
 
@@ -106,15 +120,19 @@ public class MiningBotTest extends Bot
 		
 		System.out.println(game.getFrameCount());
 		
+		Graphics graphics = getMapGraphics();
+		
 		if (game.getFrameCount() > 1)
 		{
 			miningAgent.update();
-			for (Miner miner : miners)
+			for (UnitMiner miner : miners)
 			{
 				if (miner.canWork())
 				{
 					miner.update();
 				}
+				
+				miner.draw(graphics);
 			}
 		}
 	}
@@ -193,8 +211,16 @@ public class MiningBotTest extends Bot
 	@Override
 	public void onUnitMorphed(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (miningAgent != null)
+		{
+			if (UnitSelector.IS_WORKER.isTrueFor(unit))
+			{
+				UnitMiner miner = new UnitMiner(unit, resourcesMapping);
+				miners.add(miner);
+	
+				miningAgent.addMiner(miner);
+			}
+		}
 	}
 
 	@Override

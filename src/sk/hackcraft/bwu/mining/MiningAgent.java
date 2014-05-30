@@ -3,12 +3,13 @@ package sk.hackcraft.bwu.mining;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
+import sk.hackcraft.bwu.Drawable;
+import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
 
-public class MiningAgent implements Updateable
+public class MiningAgent implements Updateable, Drawable
 {
 	private final Set<Resource> resources;
 	
@@ -20,38 +21,53 @@ public class MiningAgent implements Updateable
 	private final Map<Resource, Integer> actualSaturations;
 	private final Map<Resource, Integer> fullSaturations;
 	
-	public MiningAgent(Set<Resource> resources)
+	public MiningAgent()
 	{
-		this.resources = resources;
+		this.resources = new HashSet<>();
 
 		this.miners = new HashSet<>();
 		
 		this.assignments = new HashMap<>();
 		this.actualSaturations = new HashMap<>();
 		this.fullSaturations = new HashMap<>();
-		
-		for (Resource resource : resources)
-		{
-			actualSaturations.put(resource, 0);
-			
-			// TODO add some heuristic based on distance
-			fullSaturations.put(resource, 3);
-		}
 	}
-	
+
 	public void setSurplusMinerListener(SurplusMinerListener surplusMinerListener)
 	{
 		this.surplusMinerListener = surplusMinerListener;
 	}
 	
+	public void addResource(Resource resource)
+	{
+		resources.add(resource);
+		
+		actualSaturations.put(resource, 0);
+		
+		// TODO add some heuristic based on ground path distances
+		fullSaturations.put(resource, 3);
+	}
+
 	public void addMiner(Miner miner)
 	{
 		miners.add(miner);
 	}
-	
+
 	public void removeMiner(Miner miner)
 	{
 		miners.remove(miner);
+	}
+
+	public int getMinersDeficit()
+	{
+		int actualCount = miners.size();
+		int maxCount = 0;
+		
+		for (Map.Entry<Resource, Integer> entry : actualSaturations.entrySet())
+		{
+			maxCount += entry.getValue();
+		}
+		
+		return maxCount - actualCount;
 	}
 	
 	@Override
@@ -59,6 +75,13 @@ public class MiningAgent implements Updateable
 	{
 		checkWorkersAssignments();
 		checkResourcesState();
+	}
+	
+	@Override
+	public void draw(Graphics graphics)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 	
 	private void checkWorkersAssignments()
@@ -106,7 +129,7 @@ public class MiningAgent implements Updateable
 	private void removeResource(Resource resource)
 	{
 		Map<Miner, Resource> assignmentsCopy = new HashMap<>(assignments);
-		for (Entry<Miner, Resource> entry : assignmentsCopy.entrySet())
+		for (Map.Entry<Miner, Resource> entry : assignmentsCopy.entrySet())
 		{
 			if (entry.getValue() == resource)
 			{
@@ -171,7 +194,7 @@ public class MiningAgent implements Updateable
 		boolean isDepleted();
 	}
 	
-	public interface Miner extends Updateable
+	public interface Miner
 	{
 		public enum State
 		{

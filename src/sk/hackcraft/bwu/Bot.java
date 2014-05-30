@@ -260,8 +260,8 @@ abstract public class Bot
 				onGameUpdate();
 				if (graphicsEnabled)
 				{
-					graphicsOutputStream.drawTo(graphics);
-					onDraw(graphics);
+					graphicsOutputStream.drawTo(screenGraphics);
+					onDraw(screenGraphics);
 				}
 			}
 			catch (Throwable t)
@@ -651,7 +651,7 @@ abstract public class Bot
 	private Game game = null;
 	private boolean failFast = false;
 	private int failFastReturnCode = 1;
-	private Graphics graphics;
+	private Graphics screenGraphics, mapGraphics;
 	private boolean graphicsEnabled = true;
 	private GraphicsOutputStream graphicsOutputStream = new GraphicsOutputStream();
 	private PrintStream printStream = new PrintStream(graphicsOutputStream);
@@ -679,13 +679,24 @@ abstract public class Bot
 	{
 		modelFactory = new ModelFactory();
 		BWAPI = new JNIBWAPI(listener, enableBWTA, modelFactory);
-		graphics = new Graphics(this);
+		screenGraphics = new Graphics(this, true);
+		mapGraphics = new Graphics(this, false);
 	}
 
 	@Deprecated
 	protected JNIBWAPI getBWAPI()
 	{
 		return BWAPI;
+	}
+	
+	public Graphics getScreenGraphics()
+	{
+		return screenGraphics;
+	}
+	
+	public Graphics getMapGraphics()
+	{
+		return mapGraphics;
 	}
 
 	/**
