@@ -51,6 +51,11 @@ public class Vector2DMath
 		return new Vector2D(x, y);
 	}
 	
+	public static Position toPosition(Vector2D vector)
+	{
+		return toPosition(vector, PosType.PIXEL);
+	}
+	
 	public static Position toPosition(Vector2D vector, PosType posType)
 	{
 		int x = (int)vector.getX();

@@ -1,7 +1,5 @@
 package sk.hackcraft.bwu.map;
 
-import com.sun.corba.se.impl.ior.WireObjectKeyTemplate;
-
 public class Layer
 {
 	private final int width, height;
