@@ -90,7 +90,6 @@ public class Vector2D
 	 * @param aspect
 	 * @return
 	 */
-	@Deprecated
 	public Vector2D scale(float aspect)
 	{
 		return Vector2DMath.scale(this, aspect);
@@ -105,7 +104,6 @@ public class Vector2D
 	 * @param aspectY
 	 * @return new vector
 	 */
-	@Deprecated
 	public Vector2D scale(float aspectX, float aspectY)
 	{
 		return Vector2DMath.scale(this, aspectX, aspectY);
@@ -118,7 +116,6 @@ public class Vector2D
 	 * @param aspect
 	 * @return
 	 */
-	@Deprecated
 	public Vector2D scale(Vector2D aspect)
 	{
 		return Vector2DMath.scale(this, aspect);
@@ -220,9 +217,8 @@ public class Vector2D
 	 * 
 	 * @return
 	 */
-	@Deprecated
 	public Position toPosition()
 	{
-		return Vector2DMath.toPosition(this, PosType.PIXEL);
+		return Vector2DMath.toPosition(this);
 	}
 }

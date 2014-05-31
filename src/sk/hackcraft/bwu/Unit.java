@@ -35,7 +35,6 @@ public class Unit extends jnibwapi.Unit
 		return sub(getPositionVector(), position).getLength() <= tolerance;
 	}
 
-	@Deprecated
 	public Vector2D getPositionVector()
 	{
 		return toVector(getPosition(), PosType.PIXEL);

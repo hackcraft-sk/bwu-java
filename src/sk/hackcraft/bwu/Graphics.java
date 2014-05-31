@@ -25,16 +25,16 @@ public class Graphics
 	private BWColor color = BWColor.White;
 	private boolean screen = true;
 
-	protected Graphics(Bot bot)
+	protected Graphics(Bot bot, boolean screen)
 	{
 		this.bot = bot;
+		this.screen = screen;
 	}
 
 	private Graphics(Graphics graphics)
 	{
-		this(graphics.bot);
+		this(graphics.bot, graphics.screen);
 		this.color = graphics.color;
-		this.screen = graphics.screen;
 	}
 
 	/**
