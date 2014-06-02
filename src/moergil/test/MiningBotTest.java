@@ -53,7 +53,7 @@ public class MiningBotTest extends Bot
 	}
 
 	@Override
-	public void onGameStarted(Game game)
+	public void gameStarted(Game game)
 	{		
 		this.game = game;
 		
@@ -66,7 +66,7 @@ public class MiningBotTest extends Bot
 	}
 
 	@Override
-	public void onGameEnded(boolean isWinner)
+	public void gameEnded(boolean isWinner)
 	{
 		game = null;
 
@@ -78,7 +78,7 @@ public class MiningBotTest extends Bot
 	}
 
 	@Override
-	public void onGameUpdate()
+	public void gameUpdated()
 	{
 		if (game.getFrameCount() == 1)
 		{
@@ -141,35 +141,35 @@ public class MiningBotTest extends Bot
 	}
 
 	@Override
-	public void onKeyPressed(int keyCode)
+	public void keyPressed(int keyCode)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onPlayerLeft(Player player)
+	public void playerLeft(Player player)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onPlayerDropped(Player player)
+	public void playerDropped(Player player)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onNukeDetected(Vector2D target)
+	public void nukeDetected(Vector2D target)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUnitDiscovered(Unit unit)
+	public void unitDiscovered(Unit unit)
 	{
 		if (miningAgent != null)
 		{
@@ -184,35 +184,35 @@ public class MiningBotTest extends Bot
 	}
 
 	@Override
-	public void onUnitDestroyed(Unit unit)
+	public void unitDestroyed(Unit unit)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUnitEvaded(Unit unit)
+	public void unitEvaded(Unit unit)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUnitCreated(Unit unit)
+	public void unitCreated(Unit unit)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUnitCompleted(Unit unit)
+	public void unitCompleted(Unit unit)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUnitMorphed(Unit unit)
+	public void unitMorphed(Unit unit)
 	{
 		if (miningAgent != null)
 		{
@@ -227,49 +227,49 @@ public class MiningBotTest extends Bot
 	}
 
 	@Override
-	public void onUnitShown(Unit unit)
+	public void unitShowed(Unit unit)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUnitHidden(Unit unit)
+	public void unitHid(Unit unit)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUnitRenegade(Unit unit)
+	public void unitRenegaded(Unit unit)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onDraw(Graphics graphics)
+	public void draw(Graphics graphics)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onSentMessage(String message)
+	public void messageSent(String message)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onReceivedMessage(String message)
+	public void messageReceived(String message)
 	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onSavedGame(String gameName)
+	public void gameSaved(String gameName)
 	{
 		// TODO Auto-generated method stub
 		

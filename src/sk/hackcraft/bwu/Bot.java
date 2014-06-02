@@ -30,7 +30,7 @@ abstract public class Bot
 	 * 
 	 * @param game representation of match for retrieving units etc.
 	 */
-	abstract public void onGameStarted(Game game);
+	abstract public void gameStarted(Game game);
 
 	/**
 	 * BWAPI calls this at the end of the match. isWinner will be true if the AIModule 
@@ -38,33 +38,33 @@ abstract public class Bot
 	 * 
 	 * @param isWinner indicator, whether your bot won the match or not
 	 */
-	abstract public void onGameEnded(boolean isWinner);
+	abstract public void gameEnded(boolean isWinner);
 
 	/**
 	 * BWAPI calls this on every logical frame in the game.
 	 */
-	abstract public void onGameUpdate();
+	abstract public void gameUpdated();
 
 	/**
 	 * Key is pressed through StarCraft User Interface.
 	 * 
 	 * @param keyCode code identification of the key that was pressed
 	 */
-	abstract public void onKeyPressed(int keyCode);
+	abstract public void keyPressed(int keyCode);
 
 	/**
 	 * BWAPI calls this when a player leaves the game.
 	 * 
 	 * @param player
 	 */
-	abstract public void onPlayerLeft(Player player);
+	abstract public void playerLeft(Player player);
 
 	/**
 	 * Certain player was dropped from the current match.
 	 * 
 	 * @param player
 	 */
-	abstract public void onPlayerDropped(Player player);
+	abstract public void playerDropped(Player player);
 
 	/**
 	 * BWAPI calls this when a nuclear launch has been detected. 
@@ -75,7 +75,7 @@ abstract public class Bot
 	 * 
 	 * @param position position of nuke or null if not available
 	 */
-	abstract public void onNukeDetected(Vector2D target);
+	abstract public void nukeDetected(Vector2D target);
 
 	/**
 	 * BWAPI calls this when a unit becomes accessible. If 
@@ -85,7 +85,7 @@ abstract public class Bot
 	 * 
 	 * @param unit that was discovered
 	 */
-	abstract public void onUnitDiscovered(Unit unit);
+	abstract public void unitDiscovered(Unit unit);
 
 	/**
 	 * BWAPI calls this when a unit dies or otherwise removed from the 
@@ -100,7 +100,7 @@ abstract public class Bot
 	 * 
 	 * @param unit that was destroyed
 	 */
-	abstract public void onUnitDestroyed(Unit unit);
+	abstract public void unitDestroyed(Unit unit);
 
 	/**
 	 * BWAPI calls this right before a unit becomes inaccessible. 
@@ -110,7 +110,7 @@ abstract public class Bot
 	 * 
 	 * @param unit that was evaded
 	 */
-	abstract public void onUnitEvaded(Unit unit);
+	abstract public void unitEvaded(Unit unit);
 
 	/**
 	 * BWAPI calls this when an accessible unit is created. Note that this 
@@ -125,14 +125,14 @@ abstract public class Bot
 	 * 
 	 * @param unit that was created
 	 */
-	abstract public void onUnitCreated(Unit unit);
+	abstract public void unitCreated(Unit unit);
 
 	/**
 	 * No BWAPI documentation available.
 	 * 
 	 * @param unit that was completed
 	 */
-	abstract public void onUnitCompleted(Unit unit);
+	abstract public void unitCompleted(Unit unit);
 
 	/**
 	 * BWAPI calls this when an accessible unit changes type, such as from a 
@@ -143,7 +143,7 @@ abstract public class Bot
 	 * 
 	 * @param unit that was morphed
 	 */
-	abstract public void onUnitMorphed(Unit unit);
+	abstract public void unitMorphed(Unit unit);
 
 	/**
 	 * BWAPI calls this when a unit becomes visible. If Complete Map 
@@ -152,7 +152,7 @@ abstract public class Bot
 	 * 
 	 * @param unit that was shown
 	 */
-	abstract public void onUnitShown(Unit unit);
+	abstract public void unitShowed(Unit unit);
 
 	/**
 	 * BWAPI calls this right before a unit becomes invisible. If Complete 
@@ -161,14 +161,14 @@ abstract public class Bot
 	 * 
 	 * @param unit that was hidden
 	 */
-	abstract public void onUnitHidden(Unit unit);
+	abstract public void unitHid(Unit unit);
 
 	/**
 	 * BWAPI calls this when an accessible unit changes ownership.
 	 * 
 	 * @param unit that renegaded
 	 */
-	abstract public void onUnitRenegade(Unit unit);
+	abstract public void unitRenegaded(Unit unit);
 
 	/**
 	 * BWU calls this when graphics is enabled in this bot and this is called
@@ -176,7 +176,7 @@ abstract public class Bot
 	 * 
 	 * @param graphics state machine for drawing
 	 */
-	abstract public void onDraw(Graphics graphics);
+	abstract public void draw(Graphics graphics);
 	
 	/**
 	 * If <code>Game.enableUserInput()</code> is enabled, BWAPI will call this each time a user 
@@ -187,14 +187,14 @@ abstract public class Bot
 	 * 
 	 * @param message message to send
 	 */
-	abstract public void onSentMessage(String message);
+	abstract public void messageSent(String message);
 
 	/**
 	 * BWAPI calls this each time it receives a message from another player in the chat.
 	 * 
 	 * @param message message that was sent
 	 */
-	abstract public void onReceivedMessage(String message);
+	abstract public void messageReceived(String message);
 	
 	/**
 	 * BWAPI calls this when the user saves the match. The gameName will 
@@ -202,7 +202,7 @@ abstract public class Bot
 	 * 
 	 * @param gameName
 	 */
-	abstract public void onSavedGame(String gameName);
+	abstract public void gameSaved(String gameName);
 	
 	private BWAPIEventListener listener = new BWAPIEventListener()
 	{
@@ -220,35 +220,35 @@ abstract public class Bot
 			game = new Game(Bot.this);
 			modelFactory.setGame(game);
 
-			onGameStarted(game);
+			gameStarted(game);
 
 			for (jnibwapi.Unit jUnit : BWAPI.getAllUnits())
 			{
-				onUnitDiscovered(game.getUnit(jUnit.getID()));
+				unitDiscovered(game.getUnit(jUnit.getID()));
 			}
 		}
 
 		@Override
 		public void matchFrame()
 		{
-			onGameUpdate();
+			gameUpdated();
 			if (graphicsEnabled)
 			{
 				graphicsOutputStream.drawTo(screenGraphics);
-				onDraw(screenGraphics);
+				draw(screenGraphics);
 			}
 		}
 
 		@Override
 		public void keyPressed(int keyCode)
 		{
-			onKeyPressed(keyCode);
+			keyPressed(keyCode);
 		}
 
 		@Override
 		public void matchEnd(boolean winner)
 		{
-			onGameEnded(winner);
+			gameEnded(winner);
 			game = null;
 			modelFactory.setGame(game);
 		}
@@ -256,23 +256,23 @@ abstract public class Bot
 		@Override
 		public void playerLeft(int id)
 		{
-			onPlayerLeft(BWAPI.getPlayer(id));
+			Bot.this.playerLeft(BWAPI.getPlayer(id));
 		}
 
 		@Override
 		public void nukeDetect(Position p)
 		{
 			if(p.isValid()) {
-				onNukeDetected(new Vector2D(p.getPX(), p.getPY()));
+				nukeDetected(new Vector2D(p.getPX(), p.getPY()));
 			} else {
-				onNukeDetected(null);
+				nukeDetected(null);
 			}
 		}
 
 		@Override
 		public void nukeDetect()
 		{
-			onNukeDetected(null);
+			nukeDetected(null);
 		}
 
 		@Override
@@ -281,7 +281,7 @@ abstract public class Bot
 			if (game == null)
 				return;
 
-			onUnitDiscovered(game.getUnit(unitID));
+			unitDiscovered(game.getUnit(unitID));
 		}
 
 		@Override
@@ -290,7 +290,7 @@ abstract public class Bot
 			if (game == null)
 				return;
 
-			onUnitEvaded(game.getUnit(unitID));
+			unitEvaded(game.getUnit(unitID));
 		}
 
 		@Override
@@ -299,7 +299,7 @@ abstract public class Bot
 			if (game == null)
 				return;
 
-			onUnitShown(game.getUnit(unitID));
+			unitShowed(game.getUnit(unitID));
 		}
 
 		@Override
@@ -310,7 +310,7 @@ abstract public class Bot
 
 			Unit unit = game.getUnit(unitID);
 
-			onUnitHidden(unit);
+			unitHid(unit);
 
 			if (!unit.getType().isBuilding())
 			{
@@ -324,7 +324,7 @@ abstract public class Bot
 			if (game == null)
 				return;
 
-			onUnitCreated(game.getUnit(unitID));
+			unitCreated(game.getUnit(unitID));
 		}
 
 		@Override
@@ -339,7 +339,7 @@ abstract public class Bot
 				return;
 			}
 
-			onUnitDestroyed(unit);
+			unitDestroyed(unit);
 
 			game.removeUnit(unitID);
 		}
@@ -350,13 +350,13 @@ abstract public class Bot
 			if (game == null)
 				return;
 
-			onUnitMorphed(game.getUnit(unitID));
+			unitMorphed(game.getUnit(unitID));
 		}
 
 		@Override
 		public void playerDropped(int id)
 		{
-			onPlayerDropped(BWAPI.getPlayer(id));
+			Bot.this.playerDropped(BWAPI.getPlayer(id));
 		}
 
 		@Override
@@ -365,7 +365,7 @@ abstract public class Bot
 			if (game == null)
 				return;
 
-			onUnitCompleted(game.getUnit(unitID));
+			unitCompleted(game.getUnit(unitID));
 		}
 
 		@Override
@@ -374,25 +374,25 @@ abstract public class Bot
 			if (game == null)
 				return;
 
-			onUnitRenegade(game.getUnit(unitID));
+			unitRenegaded(game.getUnit(unitID));
 		}
 
 		@Override
 		public void sendText(String text)
 		{
-			onSentMessage(text);
+			messageSent(text);
 		}
 
 		@Override
 		public void receiveText(String text)
 		{
-			onReceivedMessage(text);
+			messageReceived(text);
 		}
 
 		@Override
 		public void saveGame(String gameName)
 		{
-			onSavedGame(gameName);
+			gameSaved(gameName);
 		}
 	};
 

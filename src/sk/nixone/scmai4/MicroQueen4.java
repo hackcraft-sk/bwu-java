@@ -61,7 +61,7 @@ public class MicroQueen4 extends Bot
 	}
 
 	@Override
-	public void onGameStarted(Game game)
+	public void gameStarted(Game game)
 	{
 		this.game = game;
 		game.enableUserInput();
@@ -73,7 +73,7 @@ public class MicroQueen4 extends Bot
 	}
 
 	@Override
-	public void onGameEnded(boolean isWinner)
+	public void gameEnded(boolean isWinner)
 	{
 		game = null;
 	}
@@ -92,7 +92,7 @@ public class MicroQueen4 extends Bot
 	}
 
 	@Override
-	public void onGameUpdate()
+	public void gameUpdated()
 	{
 		routeFinder.update(informationSystem, 10);
 		if (game.getFrameCount() % 15 == 13)
@@ -121,7 +121,7 @@ public class MicroQueen4 extends Bot
 	}
 
 	@Override
-	public void onDraw(Graphics graphics)
+	public void draw(Graphics graphics)
 	{
 		graphics.setScreenCoordinates();
 
@@ -233,82 +233,82 @@ public class MicroQueen4 extends Bot
 	}
 
 	@Override
-	public void onKeyPressed(int keyCode)
+	public void keyPressed(int keyCode)
 	{
 	}
 
 	@Override
-	public void onPlayerDropped(Player player)
+	public void playerDropped(Player player)
 	{
 	}
 
 	@Override
-	public void onNukeDetected(Vector2D position)
+	public void nukeDetected(Vector2D position)
 	{
 	}
 
 	@Override
-	public void onUnitDiscovered(Unit unit)
+	public void unitDiscovered(Unit unit)
 	{
 	}
 
 	@Override
-	public void onUnitDestroyed(Unit unit)
+	public void unitDestroyed(Unit unit)
 	{
 	}
 
 	@Override
-	public void onUnitEvaded(Unit unit)
+	public void unitEvaded(Unit unit)
 	{
 	}
 
 	@Override
-	public void onUnitCreated(Unit unit)
+	public void unitCreated(Unit unit)
 	{
 	}
 
 	@Override
-	public void onUnitMorphed(Unit unit)
+	public void unitMorphed(Unit unit)
 	{
 	}
 
 	@Override
-	public void onUnitShown(Unit unit)
+	public void unitShowed(Unit unit)
 	{
 	}
 
 	@Override
-	public void onUnitHidden(Unit unit)
+	public void unitHid(Unit unit)
 	{
 	}
 
 	@Override
-	public void onPlayerLeft(Player player)
+	public void playerLeft(Player player)
 	{
 	}
 
 	@Override
-	public void onUnitCompleted(Unit unit)
+	public void unitCompleted(Unit unit)
 	{
 	}
 
 	@Override
-	public void onUnitRenegade(Unit unit)
+	public void unitRenegaded(Unit unit)
 	{
 	}
 
 	@Override
-	public void onSentMessage(String message)
+	public void messageSent(String message)
 	{
 	}
 
 	@Override
-	public void onReceivedMessage(String message)
+	public void messageReceived(String message)
 	{
 	}
 
 	@Override
-	public void onSavedGame(String gameName)
+	public void gameSaved(String gameName)
 	{
 	}
 }
