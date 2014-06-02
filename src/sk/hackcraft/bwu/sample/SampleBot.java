@@ -1,11 +1,10 @@
 package sk.hackcraft.bwu.sample;
 
-import jnibwapi.JNIBWAPI;
 import jnibwapi.Player;
 import jnibwapi.Unit;
 import sk.hackcraft.bwu.AbstractBot;
-import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.BWU;
+import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
@@ -16,7 +15,7 @@ public class SampleBot extends AbstractBot
 {
 	static public void main(String[] arguments)
 	{
-		new BWU()
+		BWU bwu = new BWU()
 		{
 			@Override
 			protected Bot createBot(Game game)
@@ -24,6 +23,8 @@ public class SampleBot extends AbstractBot
 				return new SampleBot(game);
 			}
 		};
+		
+		bwu.start();
 	}
 	
 	public SampleBot(Game game)

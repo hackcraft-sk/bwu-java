@@ -3,8 +3,6 @@ package sk.hackcraft.bwu;
 import java.io.PrintStream;
 
 import jnibwapi.JNIBWAPI;
-import jnibwapi.Player;
-import jnibwapi.Unit;
 
 /**
  * Class representing a programmed bot able to play many successive games. Bot
