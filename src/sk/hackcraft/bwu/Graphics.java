@@ -1,7 +1,9 @@
 package sk.hackcraft.bwu;
 
+import jnibwapi.JNIBWAPI;
 import jnibwapi.Map;
 import jnibwapi.Position;
+import jnibwapi.Unit;
 import jnibwapi.util.BWColor;
 
 /**
@@ -20,23 +22,29 @@ import jnibwapi.util.BWColor;
  */
 public class Graphics
 {
-	final protected Bot bot;
+	final protected JNIBWAPI jnibwapi;
 
 	private BWColor color = BWColor.White;
 	private boolean screen = true;
 
-	protected Graphics(Bot bot, boolean screen)
+	protected Graphics(JNIBWAPI jnibwapi)
 	{
-		this.bot = bot;
-		this.screen = screen;
+		this.jnibwapi = jnibwapi;
 	}
 
 	private Graphics(Graphics graphics)
 	{
-		this(graphics.bot, graphics.screen);
+		this(graphics.jnibwapi);
+
 		this.color = graphics.color;
+		this.screen = graphics.screen;
 	}
 
+	void setCanvas(boolean screen)
+	{
+		this.screen = screen;
+	}
+	
 	/**
 	 * Creates new graphics to create new drawing context for colors and setting
 	 * of coordinates.
@@ -57,7 +65,7 @@ public class Graphics
 	 */
 	public void drawBox(Vector2D topLeftCorner, Vector2D bottomRightCorner)
 	{
-		bot.BWAPI.drawBox(new Position((int) Math.round(topLeftCorner.x), (int) Math.round(topLeftCorner.y)), new Position((int) Math.round(bottomRightCorner.x), (int) Math.round(bottomRightCorner.y)), color, false, screen);
+		jnibwapi.drawBox(new Position(Math.round(topLeftCorner.x), Math.round(topLeftCorner.y)), new Position(Math.round(bottomRightCorner.x), Math.round(bottomRightCorner.y)), color, false, screen);
 	}
 
 	/**
@@ -68,7 +76,7 @@ public class Graphics
 	 */
 	public void fillBox(Vector2D topLeftCorner, Vector2D bottomRightCorner)
 	{
-		bot.BWAPI.drawBox(new Position((int) Math.round(topLeftCorner.x), (int) Math.round(topLeftCorner.y)), new Position((int) Math.round(bottomRightCorner.x), (int) Math.round(bottomRightCorner.y)), color, true, screen);
+		jnibwapi.drawBox(new Position(Math.round(topLeftCorner.x), Math.round(topLeftCorner.y)), new Position(Math.round(bottomRightCorner.x), Math.round(bottomRightCorner.y)), color, true, screen);
 	}
 
 	/**
@@ -99,7 +107,7 @@ public class Graphics
 	 */
 	public void drawCircle(Vector2D position, int radius)
 	{
-		bot.BWAPI.drawCircle(new Position((int) Math.round(position.x), (int) Math.round(position.y)), radius, color, false, screen);
+		jnibwapi.drawCircle(new Position(Math.round(position.x), Math.round(position.y)), radius, color, false, screen);
 	}
 
 	/**
@@ -127,7 +135,7 @@ public class Graphics
 	 */
 	public void fillCircle(Vector2D position, int radius)
 	{
-		bot.BWAPI.drawCircle(new Position((int) Math.round(position.x), (int) Math.round(position.y)), radius, color, true, screen);
+		jnibwapi.drawCircle(new Position(Math.round(position.x), Math.round(position.y)), radius, color, true, screen);
 	}
 
 	/**
@@ -137,7 +145,7 @@ public class Graphics
 	 */
 	public void drawDot(Vector2D position)
 	{
-		bot.BWAPI.drawDot(new Position((int) Math.round(position.x), (int) Math.round(position.y)), color, screen);
+		jnibwapi.drawDot(new Position(Math.round(position.x), Math.round(position.y)), color, screen);
 	}
 
 	/**
@@ -164,7 +172,7 @@ public class Graphics
 	 */
 	public void drawLine(Vector2D from, Vector2D to)
 	{
-		bot.BWAPI.drawLine(new Position((int) Math.round(from.x), (int) Math.round(from.y)), new Position((int) Math.round(to.x), (int) Math.round(to.y)), color, screen);
+		jnibwapi.drawLine(new Position(Math.round(from.x), Math.round(from.y)), new Position(Math.round(to.x), Math.round(to.y)), color, screen);
 	}
 
 	/**
@@ -176,7 +184,7 @@ public class Graphics
 	 */
 	public void drawText(Vector2D position, Object text)
 	{
-		bot.BWAPI.drawText(new Position((int) Math.round(position.x), (int) Math.round(position.y)), text.toString(), screen);
+		jnibwapi.drawText(new Position(Math.round(position.x), Math.round(position.y)), text.toString(), screen);
 	}
 
 	/**

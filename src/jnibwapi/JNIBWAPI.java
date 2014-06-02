@@ -18,17 +18,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jnibwapi.types.*;
+import jnibwapi.types.BulletType;
 import jnibwapi.types.BulletType.BulletTypes;
+import jnibwapi.types.DamageType;
 import jnibwapi.types.DamageType.DamageTypes;
+import jnibwapi.types.EventType;
+import jnibwapi.types.ExplosionType;
 import jnibwapi.types.ExplosionType.ExplosionTypes;
+import jnibwapi.types.OrderType;
 import jnibwapi.types.OrderType.OrderTypes;
+import jnibwapi.types.RaceType;
 import jnibwapi.types.RaceType.RaceTypes;
+import jnibwapi.types.TechType;
 import jnibwapi.types.TechType.TechTypes;
+import jnibwapi.types.UnitCommandType;
 import jnibwapi.types.UnitCommandType.UnitCommandTypes;
+import jnibwapi.types.UnitSizeType;
 import jnibwapi.types.UnitSizeType.UnitSizeTypes;
+import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
+import jnibwapi.types.UpgradeType;
 import jnibwapi.types.UpgradeType.UpgradeTypes;
+import jnibwapi.types.WeaponType;
 import jnibwapi.types.WeaponType.WeaponTypes;
 import jnibwapi.util.BWColor;
 
@@ -272,132 +283,175 @@ public class JNIBWAPI
 	}
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean attack(int unitID, int x, int y);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean attack(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean build(int unitID, int tx, int ty, int typeID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean buildAddon(int unitID, int typeID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean train(int unitID, int typeID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean morph(int unitID, int typeID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean research(int unitID, int techID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean upgrade(int unitID, int updateID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean setRallyPoint(int unitID, int x, int y);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean setRallyPoint(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean move(int unitID, int x, int y);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean patrol(int unitID, int x, int y);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean holdPosition(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean stop(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean follow(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean gather(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean returnCargo(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean repair(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean burrow(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean unburrow(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean cloak(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean decloak(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean siege(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean unsiege(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean lift(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean land(int unitID, int tx, int ty);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean load(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean unload(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean unloadAll(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean unloadAll(int unitID, int x, int y);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean rightClick(int unitID, int x, int y);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean rightClick(int unitID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean haltConstruction(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean cancelConstruction(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean cancelAddon(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean cancelTrain(int unitID, int slot);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean cancelMorph(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean cancelResearch(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean cancelUpgrade(int unitID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean useTech(int unitID, int typeID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean useTech(int unitID, int typeID, int x, int y);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean useTech(int unitID, int typeID, int targetID);
 
 	/** @deprecated Use the one in {@link Unit} instead */
+	@Deprecated
 	public native boolean placeCOP(int unitID, int tx, int ty);
 
 	// utility commands
@@ -1365,6 +1419,9 @@ public class JNIBWAPI
 	 */
 	private void eventOccurred(int eventTypeID, int param1, int param2, String param3)
 	{
+		Unit unit;
+		Player player;
+		
 		try
 		{
 			EventType event = EventType.getEventType(eventTypeID);
@@ -1389,7 +1446,7 @@ public class JNIBWAPI
 					listener.receiveText(param3);
 					break;
 				case PlayerLeft:
-					listener.playerLeft(param1);
+					listener.playerLeft(getPlayer(param1));
 					break;
 				case NukeDetect:
 					if (param1 == -1)
@@ -1398,37 +1455,37 @@ public class JNIBWAPI
 						listener.nukeDetect(new Position(param1, param2));
 					break;
 				case UnitDiscover:
-					listener.unitDiscover(param1);
+					listener.unitDiscover(getUnit(param1));
 					break;
 				case UnitEvade:
-					listener.unitEvade(param1);
+					listener.unitEvade(getUnit(param1));
 					break;
 				case UnitShow:
-					listener.unitShow(param1);
+					listener.unitShow(getUnit(param1));
 					break;
 				case UnitHide:
-					listener.unitHide(param1);
+					listener.unitHide(getUnit(param1));
 					break;
 				case UnitCreate:
-					listener.unitCreate(param1);
+					listener.unitCreate(getUnit(param1));
 					break;
 				case UnitDestroy:
-					listener.unitDestroy(param1);
+					listener.unitDestroy(getUnit(param1));
 					break;
 				case UnitMorph:
-					listener.unitMorph(param1);
+					listener.unitMorph(getUnit(param1));
 					break;
 				case UnitRenegade:
-					listener.unitRenegade(param1);
+					listener.unitRenegade(getUnit(param1));
 					break;
 				case SaveGame:
 					listener.saveGame(param3);
 					break;
 				case UnitComplete:
-					listener.unitComplete(param1);
+					listener.unitComplete(getUnit(param1));
 					break;
 				case PlayerDropped:
-					listener.playerDropped(param1);
+					listener.playerDropped(getPlayer(param1));
 					break;
 				case None:
 					// Unused?

@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import jnibwapi.Map;
+import jnibwapi.Unit;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Minimap;
-import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.selection.UnitSet;

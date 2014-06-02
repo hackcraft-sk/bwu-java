@@ -4,8 +4,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import jnibwapi.Position;
+import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
-import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
 
 /**
@@ -182,7 +183,8 @@ public class UnitSet extends HashSet<Unit>
 
 		for (Unit unit : this)
 		{
-			center = center.add(unit.getPositionVector());
+			Position p = unit.getPosition();
+			center = center.add(Convert.toPositionVector(p));
 		}
 		center = center.scale(1.0f / size());
 
@@ -202,7 +204,7 @@ public class UnitSet extends HashSet<Unit>
 
 		for (Unit unit : this)
 		{
-			accumulated += point.sub(unit.getPositionVector()).length;
+			accumulated += point.sub(Convert.toPositionVector(unit.getPosition())).length;
 		}
 
 		return accumulated / size();

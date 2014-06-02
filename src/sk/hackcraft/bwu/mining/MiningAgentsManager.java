@@ -2,15 +2,12 @@ package sk.hackcraft.bwu.mining;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import jnibwapi.JNIBWAPI;
-import jnibwapi.Position;
 import jnibwapi.Unit;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.mining.MiningAgent.Resource;
 import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;

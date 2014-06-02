@@ -1,10 +1,8 @@
 package sk.hackcraft.bwu;
 
-import java.util.HashMap;
-
+import jnibwapi.JNIBWAPI;
 import jnibwapi.Map;
 import jnibwapi.Player;
-
 import sk.hackcraft.bwu.selection.UnitSet;
 
 /**
@@ -19,76 +17,16 @@ public class Game
 {
 	static public final int TILE_SIZE = 32;
 
-	final protected Bot bot;
+	private final JNIBWAPI jnibwapi;
 
-	private HashMap<Integer, Unit> units = new HashMap<Integer, Unit>();
-
-	final private UnitSet enemyUnits = new UnitSet();
-	final private UnitSet myUnits = new UnitSet();
-	final private UnitSet neutralUnits = new UnitSet();
-	final private UnitSet allyUnits = new UnitSet();
-
-	protected Game(Bot bot)
+	public Game(JNIBWAPI jnibwapi)
 	{
-		this.bot = bot;
+		this.jnibwapi = jnibwapi;
 	}
-
-	/**
-	 * @return the bot this game corresponds to.
-	 */
-	public Bot getBot()
+	
+	public JNIBWAPI getJNIBWAPI()
 	{
-		return bot;
-	}
-
-	protected Unit getUnit(int unitID)
-	{
-		if (!units.containsKey(unitID))
-		{
-			jnibwapi.Unit originalUnit = bot.BWAPI.getUnit(unitID);
-			if (originalUnit == null)
-			{
-				return null;
-			}
-			Unit unit = (Unit) originalUnit;
-
-			units.put(unitID, unit);
-
-			if (unit.getPlayer().isSelf())
-			{
-				myUnits.add(unit);
-			}
-			if (unit.getPlayer().isNeutral())
-			{
-				neutralUnits.add(unit);
-			}
-			if (unit.getPlayer().isEnemy())
-			{
-				enemyUnits.add(unit);
-			}
-			if (unit.getPlayer().isAlly())
-			{
-				allyUnits.add(unit);
-			}
-
-			return unit;
-		}
-		return units.get(unitID);
-	}
-
-	protected void removeUnit(int unitID)
-	{
-		if (units.containsKey(unitID))
-		{
-			Unit unit = units.get(unitID);
-
-			myUnits.remove(unit);
-			neutralUnits.remove(unit);
-			enemyUnits.remove(unit);
-			allyUnits.remove(unit);
-
-			units.remove(unitID);
-		}
+		return jnibwapi;
 	}
 
 	/**
@@ -98,7 +36,7 @@ public class Game
 	 */
 	public Player getSelf()
 	{
-		return bot.BWAPI.getSelf();
+		return jnibwapi.getSelf();
 	}
 
 	/**
@@ -109,7 +47,7 @@ public class Game
 	 */
 	public UnitSet getAllyUnits()
 	{
-		return allyUnits;
+		return new UnitSet(jnibwapi.getAlliedUnits());
 	}
 
 	/**
@@ -119,7 +57,7 @@ public class Game
 	 */
 	public UnitSet getMyUnits()
 	{
-		return myUnits;
+		return new UnitSet(jnibwapi.getMyUnits());
 	}
 
 	/**
@@ -130,7 +68,7 @@ public class Game
 	 */
 	public UnitSet getEnemyUnits()
 	{
-		return enemyUnits;
+		return new UnitSet(jnibwapi.getEnemyUnits());
 	}
 
 	/**
@@ -141,7 +79,16 @@ public class Game
 	 */
 	public UnitSet getNeutralUnits()
 	{
-		return neutralUnits;
+		return new UnitSet(jnibwapi.getNeutralUnits());
+	}
+	
+	/**
+	 * Returns {@link UnitSet} containing static neutral units.
+	 * @return set of static neutral units
+	 */
+	public UnitSet getStaticNeutralUnits()
+	{
+		return new UnitSet(jnibwapi.getStaticNeutralUnits());
 	}
 
 	/**
@@ -151,7 +98,7 @@ public class Game
 	 */
 	public Map getMap()
 	{
-		return bot.BWAPI.getMap();
+		return jnibwapi.getMap();
 	}
 
 	/**
@@ -162,7 +109,7 @@ public class Game
 	 */
 	public void setSpeed(int delay)
 	{
-		bot.BWAPI.setGameSpeed(delay);
+		jnibwapi.setGameSpeed(delay);
 	}
 	
 	/**
@@ -171,7 +118,7 @@ public class Game
 	 */
 	public void enableUserInput()
 	{
-		bot.BWAPI.enableUserInput();
+		jnibwapi.enableUserInput();
 	}
 
 	/**
@@ -179,7 +126,7 @@ public class Game
 	 */
 	public void enablePerfectInformation()
 	{
-		bot.BWAPI.enablePerfectInformation();
+		jnibwapi.enablePerfectInformation();
 	}
 
 	/**
@@ -188,7 +135,7 @@ public class Game
 	 */
 	public int getFrameCount()
 	{
-		return bot.BWAPI.getFrameCount();
+		return jnibwapi.getFrameCount();
 	}
 	
 	/**
@@ -198,6 +145,6 @@ public class Game
 	 */
 	public void sendMessage(String message)
 	{
-		bot.BWAPI.sendText(message);
+		jnibwapi.sendText(message);
 	}
 }

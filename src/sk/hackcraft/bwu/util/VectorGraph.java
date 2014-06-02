@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import jnibwapi.util.BWColor;
-import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.Vector2DMath;
@@ -182,7 +181,7 @@ public class VectorGraph
 		// ensure that every vertex has a value for this system
 		for (Vertex vertex : vertices)
 		{
-			vertex.systemValues.put(system, (double) system.getValueFor(vertex.point));
+			vertex.systemValues.put(system, system.getValueFor(vertex.point));
 		}
 
 		// repeat many times

@@ -2,7 +2,6 @@ package sk.hackcraft.bwu;
 
 import jnibwapi.Map;
 import jnibwapi.Position;
-import jnibwapi.Position.PosType;
 
 /**
  * Class representing two dimensional vector and operations defined on it. This

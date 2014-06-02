@@ -1,8 +1,8 @@
 package sk.nixone.scmai4;
 
+import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import sk.hackcraft.bwu.Game;
-import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.UnitSet;

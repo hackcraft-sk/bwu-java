@@ -1,11 +1,10 @@
 package sk.hackcraft.bwu.selection;
 
 import jnibwapi.Player;
-import jnibwapi.Position;
+import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
 import jnibwapi.types.WeaponType;
-import sk.hackcraft.bwu.Unit;
 
 /**
  * Conatiner for UnitSelectors by boolean, integer or real information
@@ -94,7 +93,7 @@ public interface UnitSelector
 		@Override
 		public WeaponType getObjectFrom(Unit unit)
 		{
-			return unit.getAirWeaponType();
+			return unit.getType().getAirWeapon();
 		}
 	}
 
@@ -108,7 +107,7 @@ public interface UnitSelector
 		@Override
 		public WeaponType getObjectFrom(Unit unit)
 		{
-			return unit.getGroundWeaponType();
+			return unit.getType().getGroundWeapon();
 		}
 	}
 
@@ -328,7 +327,7 @@ public interface UnitSelector
 		public boolean isTrueFor(Unit unit)
 		{
 			// TODO Is this correct selection?
-			return unit.getAirWeaponType().isTargetsAir();
+			return unit.getType().getAirWeapon().isTargetsAir();
 		}
 	};
 	

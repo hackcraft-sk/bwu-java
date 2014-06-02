@@ -1,18 +1,18 @@
 package sk.nixone.scmai4;
 
-import static sk.hackcraft.bwu.Vector2DMath.*;
-
 import java.util.Iterator;
 import java.util.List;
 
 import jnibwapi.Player;
+import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import jnibwapi.util.BWColor;
+import sk.hackcraft.bwu.AbstractBot;
 import sk.hackcraft.bwu.Bot;
+import sk.hackcraft.bwu.BWU;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Minimap;
-import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.selection.DistanceSelector;
@@ -23,7 +23,7 @@ import sk.hackcraft.bwu.util.Clustering;
 import sk.hackcraft.bwu.util.VectorGraph;
 import sk.hackcraft.bwu.util.VectorGraph.InformationSystem;
 
-public class MicroQueen4 extends Bot
+public class MicroQueen4 extends AbstractBot
 {
 	static public float IS_AT_TOLERANCE = 400;
 
@@ -42,12 +42,17 @@ public class MicroQueen4 extends Bot
 
 	static public void main(String[] arguments)
 	{
-		Bot bot = new MicroQueen4();
-		// bot.disableGraphics();
-		bot.start();
+		BWU bwu = new BWU()
+		{
+			@Override
+			protected Bot createBot(Game game)
+			{
+				return new MicroQueen4(game);
+			}
+		};
+		
+		bwu.start();
 	}
-
-	private Game game = null;
 
 	private VectorGraph routeFinder;
 
@@ -55,15 +60,14 @@ public class MicroQueen4 extends Bot
 
 	private Clustering clustering = null;
 
-	public MicroQueen4()
+	public MicroQueen4(Game game)
 	{
-		super(false);
+		super(game);
 	}
 
 	@Override
-	public void gameStarted(Game game)
+	public void gameStarted()
 	{
-		this.game = game;
 		game.enableUserInput();
 		game.setSpeed(20);
 
@@ -75,7 +79,6 @@ public class MicroQueen4 extends Bot
 	@Override
 	public void gameEnded(boolean isWinner)
 	{
-		game = null;
 	}
 
 	private void initialize()

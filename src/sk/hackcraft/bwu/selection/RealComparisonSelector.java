@@ -1,6 +1,6 @@
 package sk.hackcraft.bwu.selection;
 
-import sk.hackcraft.bwu.Unit;
+import jnibwapi.Unit;
 import sk.hackcraft.bwu.selection.UnitSelector.BooleanSelector;
 import sk.hackcraft.bwu.selection.UnitSelector.RealSelector;
 

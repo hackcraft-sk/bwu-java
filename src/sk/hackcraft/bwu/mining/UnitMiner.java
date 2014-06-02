@@ -2,15 +2,13 @@ package sk.hackcraft.bwu.mining;
 
 import java.util.Map;
 
-import jnibwapi.JNIBWAPI;
 import jnibwapi.Position.PosType;
+import jnibwapi.Unit;
 import jnibwapi.types.OrderType;
 import jnibwapi.types.OrderType.OrderTypes;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Drawable;
-import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
-import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.mining.MiningAgent.Miner;

@@ -1,6 +1,7 @@
 package sk.hackcraft.bwu;
 
 import jnibwapi.Map;
+import jnibwapi.Unit;
 import jnibwapi.util.BWColor;
 
 public class Minimap
