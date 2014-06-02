@@ -5,76 +5,79 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jnibwapi.Unit;
+import jnibwapi.types.OrderType;
+import jnibwapi.types.OrderType.OrderTypes;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
 
 public class MiningAgent implements Updateable, Drawable
 {
-	private final Set<Resource> resources;
+	private final Unit resourceDepot;
 	
-	private SurplusMinerListener surplusMinerListener;
+	private final Set<Unit> resources;
+
+	private final Set<Unit> miners;
+	private final Set<Unit> freeMiners;
+	private final Map<Unit, Unit> minersToResourcesAssignments;
 	
-	private final Set<Miner> miners;
+	private final Map<Unit, Integer> actualSaturations;
+	private final Map<Unit, Integer> fullSaturations;
 	
-	private final Map<Miner, Resource> assignments;
-	private final Map<Resource, Integer> actualSaturations;
-	private final Map<Resource, Integer> fullSaturations;
-	
-	public MiningAgent()
+	public MiningAgent(Unit resourceDepot, Set<Unit> resources)
 	{
-		this.resources = new HashSet<>();
+		this.resourceDepot = resourceDepot;
+		this.resources = resources;
 
 		this.miners = new HashSet<>();
+		this.freeMiners = new HashSet<>();
 		
-		this.assignments = new HashMap<>();
+		this.minersToResourcesAssignments = new HashMap<>();
 		this.actualSaturations = new HashMap<>();
 		this.fullSaturations = new HashMap<>();
 	}
 
-	public void setSurplusMinerListener(SurplusMinerListener surplusMinerListener)
-	{
-		this.surplusMinerListener = surplusMinerListener;
-	}
-	
-	public void addResource(Resource resource)
-	{
-		resources.add(resource);
-		
-		actualSaturations.put(resource, 0);
-		
-		// TODO add some heuristic based on ground path distances
-		fullSaturations.put(resource, 3);
-	}
-
-	public void addMiner(Miner miner)
+	public void addMiner(Unit miner)
 	{
 		miners.add(miner);
+		freeMiners.add(miner);
 	}
 
-	public void removeMiner(Miner miner)
+	public void removeMiner(Unit miner)
 	{
-		miners.remove(miner);
+		freeMiner(miner);
+		freeMiners.remove(miner);
 	}
 
-	public int getMinersDeficit()
+	public int getSaturationDifference()
 	{
-		int actualCount = miners.size();
-		int maxCount = 0;
+		return getFullSaturation() - getActualSaturation();
+	}
+	
+	public int getFullSaturation()
+	{
+		int fullSaturation = 0;
 		
-		for (Map.Entry<Resource, Integer> entry : actualSaturations.entrySet())
+		for (int resourceFullSaturaton : actualSaturations.values())
 		{
-			maxCount += entry.getValue();
+			fullSaturation += resourceFullSaturaton;
 		}
 		
-		return maxCount - actualCount;
+		return fullSaturation;
+	}
+	
+	public int getActualSaturation()
+	{
+		return miners.size();
 	}
 	
 	@Override
 	public void update()
 	{
+		checkResources();
 		checkWorkersAssignments();
-		checkResourcesState();
+		checkWorkers();
 	}
 	
 	@Override
@@ -86,21 +89,17 @@ public class MiningAgent implements Updateable, Drawable
 	
 	private void checkWorkersAssignments()
 	{
-		for (Miner miner : miners)
+		for (Unit miner : freeMiners)
 		{
-			if (!assignments.containsKey(miner))
+			if (!minersToResourcesAssignments.containsKey(miner))
 			{
-				Resource resource = selectResourceForAssignment();
+				Unit resource = selectResourceForAssignment();
 				
-				if (resource == null)
+				if (resource != null)
 				{
-					freeMiner(miner);
-				}
-				else
-				{
-					miner.setResource(resource);
+					freeMiners.remove(miner);
 
-					assignments.put(miner, resource);
+					minersToResourcesAssignments.put(miner, resource);
 					
 					int actualSaturation = actualSaturations.get(resource);
 					actualSaturations.put(resource, actualSaturation + 1);
@@ -109,62 +108,90 @@ public class MiningAgent implements Updateable, Drawable
 		}
 	}
 	
-	private void checkResourcesState()
+	private void checkWorkers()
 	{
-		Set<Resource> resourcesCopy = new HashSet<>(resources);
-		for (Resource resource : resourcesCopy)
+		for (Unit miner : miners)
 		{
-			if (!resource.areDataAvailable())
+			if (miner.isIdle())
+			{
+				Unit resource = minersToResourcesAssignments.get(miner);
+				miner.gather(resource, false);
+				continue;
+			}
+			
+			Unit target = miner.getTarget();
+			
+			if (target != null && target.getType().isResourceContainer())
+			{
+				Unit assignedResource = minersToResourcesAssignments.get(miner);
+				if (assignedResource != target)
+				{
+					miner.gather(assignedResource, false);
+				}
+			}
+		}
+		
+		
+	}
+	
+	private void checkResources()
+	{
+		Set<Unit> resourcesCopy = new HashSet<>(resources);
+		for (Unit resource : resourcesCopy)
+		{
+			if (!resource.isVisible())
 			{
 				continue;
 			}
 			
-			if (resource.isMinedOut())
+			if (resource.getResources() <= 0)
 			{
 				removeResource(resource);
 			}
 		}
 	}
 	
-	private void removeResource(Resource resource)
+	private void removeResource(Unit resource)
 	{
-		Map<Miner, Resource> assignmentsCopy = new HashMap<>(assignments);
-		for (Map.Entry<Miner, Resource> entry : assignmentsCopy.entrySet())
+		Unit miner = null;
+		
+		Map<Unit, Unit> assignmentsCopy = new HashMap<>(minersToResourcesAssignments);
+		for (Map.Entry<Unit, Unit> entry : assignmentsCopy.entrySet())
 		{
 			if (entry.getValue() == resource)
 			{
-				assignments.remove(entry.getKey());
+				miner = entry.getKey();
+				break;
 			}
 		}
+		
+		freeMiner(miner);
 		
 		resources.remove(resource);
 		actualSaturations.remove(resource);
 		fullSaturations.remove(resource);
 	}
 	
-	private void freeMiner(Miner miner)
+	private void freeMiner(Unit miner)
 	{
-		Resource assignedResource = miner.getAssignedResource();
+		Unit assignedResource = minersToResourcesAssignments.get(miner);
 		
 		int saturation = actualSaturations.get(assignedResource);
 		actualSaturations.put(assignedResource, saturation - 1);
 		
-		assignments.remove(miner);
-		
-		if (surplusMinerListener != null)
-		{
-			surplusMinerListener.onMinerNotNeeded(miner);
-		}
+		minersToResourcesAssignments.remove(miner);
+
+		freeMiners.add(miner);
 	}
 
-	private Resource selectResourceForAssignment()
+	private Unit selectResourceForAssignment()
 	{
-		Resource leastSaturatedResource = null;
+		Unit leastSaturatedResource = null;
 		int lowestSaturation = Integer.MAX_VALUE;
 		
-		for (Map.Entry<Resource, Integer> entry : actualSaturations.entrySet())
+		for (Map.Entry<Unit, Integer> entry : actualSaturations.entrySet())
 		{
-			Resource resource = entry.getKey();
+			Unit resource = entry.getKey();
 			int actualSaturation = entry.getValue();
 			
 			int fullSaturation = fullSaturations.get(resource);
@@ -177,46 +204,5 @@ public class MiningAgent implements Updateable, Drawable
 		}
 		
 		return leastSaturatedResource;
-	}
-	
-	public interface Resource
-	{
-		boolean areDataAvailable();
-		boolean isMiningPossible();
-		
-		int getValue();
-		boolean isMinedOut();
-	}
-	
-	public interface GasResource
-	{
-		boolean hasExtractorBuilding();
-		boolean isDepleted();
-	}
-	
-	public interface Miner
-	{
-		public enum State
-		{
-			UNDEFINED,
-			MOVING_TO_RESOURCE,
-			WAITING_FOR_RESOURCE,
-			MINING_RESOURCE,
-			RETURNING_RESOURCES;
-		}
-		
-		Resource getAssignedResource();
-		
-		void setResource(Resource resource);
-		
-		State getState();
-		
-		boolean isWorking();
-		boolean canWork();
-	}
-	
-	public interface SurplusMinerListener
-	{
-		void onMinerNotNeeded(Miner miner);
 	}
 }
