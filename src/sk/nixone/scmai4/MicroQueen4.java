@@ -231,11 +231,6 @@ public class MicroQueen4 extends AbstractBot
 	}
 
 	@Override
-	public void onConnected()
-	{
-	}
-
-	@Override
 	public void keyPressed(int keyCode)
 	{
 	}

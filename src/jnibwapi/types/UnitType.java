@@ -572,6 +572,11 @@ public class UnitType {
 		return regenerates;
 	}
 	
+	public boolean isResourceDepot()
+	{
+		return this == UnitTypes.Terran_Command_Center || this == UnitTypes.Zerg_Hatchery || this == UnitTypes.Zerg_Lair || this == UnitTypes.Zerg_Hive || this == UnitTypes.Protoss_Nexus;
+	}
+	
 	public boolean isSpellcaster() {
 		return spellcaster;
 	}

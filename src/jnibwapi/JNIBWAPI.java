@@ -1421,81 +1421,73 @@ public class JNIBWAPI
 	{
 		Unit unit;
 		Player player;
-		
-		try
+
+		EventType event = EventType.getEventType(eventTypeID);
+		switch (event)
 		{
-			EventType event = EventType.getEventType(eventTypeID);
-			switch (event)
-			{
-				case MatchStart:
-					listener.matchStart();
-					break;
-				case MatchEnd:
-					listener.matchEnd(param1 == 1);
-					break;
-				case MatchFrame:
-					listener.matchFrame();
-					break;
-				case MenuFrame:
-					// Unused?
-					break;
-				case SendText:
-					listener.sendText(param3);
-					break;
-				case ReceiveText:
-					listener.receiveText(param3);
-					break;
-				case PlayerLeft:
-					listener.playerLeft(getPlayer(param1));
-					break;
-				case NukeDetect:
-					if (param1 == -1)
-						listener.nukeDetect();
-					else
-						listener.nukeDetect(new Position(param1, param2));
-					break;
-				case UnitDiscover:
-					listener.unitDiscover(getUnit(param1));
-					break;
-				case UnitEvade:
-					listener.unitEvade(getUnit(param1));
-					break;
-				case UnitShow:
-					listener.unitShow(getUnit(param1));
-					break;
-				case UnitHide:
-					listener.unitHide(getUnit(param1));
-					break;
-				case UnitCreate:
-					listener.unitCreate(getUnit(param1));
-					break;
-				case UnitDestroy:
-					listener.unitDestroy(getUnit(param1));
-					break;
-				case UnitMorph:
-					listener.unitMorph(getUnit(param1));
-					break;
-				case UnitRenegade:
-					listener.unitRenegade(getUnit(param1));
-					break;
-				case SaveGame:
-					listener.saveGame(param3);
-					break;
-				case UnitComplete:
-					listener.unitComplete(getUnit(param1));
-					break;
-				case PlayerDropped:
-					listener.playerDropped(getPlayer(param1));
-					break;
-				case None:
-					// Unused?
-					break;
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw e;
+			case MatchStart:
+				listener.matchStart();
+				break;
+			case MatchEnd:
+				listener.matchEnd(param1 == 1);
+				break;
+			case MatchFrame:
+				listener.matchFrame();
+				break;
+			case MenuFrame:
+				// Unused?
+				break;
+			case SendText:
+				listener.sendText(param3);
+				break;
+			case ReceiveText:
+				listener.receiveText(param3);
+				break;
+			case PlayerLeft:
+				listener.playerLeft(getPlayer(param1));
+				break;
+			case NukeDetect:
+				if (param1 == -1)
+					listener.nukeDetect();
+				else
+					listener.nukeDetect(new Position(param1, param2));
+				break;
+			case UnitDiscover:
+				listener.unitDiscover(getUnit(param1));
+				break;
+			case UnitEvade:
+				listener.unitEvade(getUnit(param1));
+				break;
+			case UnitShow:
+				listener.unitShow(getUnit(param1));
+				break;
+			case UnitHide:
+				listener.unitHide(getUnit(param1));
+				break;
+			case UnitCreate:
+				listener.unitCreate(getUnit(param1));
+				break;
+			case UnitDestroy:
+				listener.unitDestroy(getUnit(param1));
+				break;
+			case UnitMorph:
+				listener.unitMorph(getUnit(param1));
+				break;
+			case UnitRenegade:
+				listener.unitRenegade(getUnit(param1));
+				break;
+			case SaveGame:
+				listener.saveGame(param3);
+				break;
+			case UnitComplete:
+				listener.unitComplete(getUnit(param1));
+				break;
+			case PlayerDropped:
+				listener.playerDropped(getPlayer(param1));
+				break;
+			case None:
+				// Unused?
+				break;
 		}
 	}
 

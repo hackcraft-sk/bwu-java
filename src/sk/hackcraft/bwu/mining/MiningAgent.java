@@ -5,12 +5,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jnibwapi.Position;
 import jnibwapi.Unit;
-import jnibwapi.types.OrderType;
 import jnibwapi.types.OrderType.OrderTypes;
+import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
+import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.selection.Convert;
 
 public class MiningAgent implements Updateable, Drawable
 {
@@ -36,6 +39,17 @@ public class MiningAgent implements Updateable, Drawable
 		this.minersToResourcesAssignments = new HashMap<>();
 		this.actualSaturations = new HashMap<>();
 		this.fullSaturations = new HashMap<>();
+		
+		for (Unit resource : resources)
+		{
+			actualSaturations.put(resource, 0);
+			fullSaturations.put(resource, 3);
+		}
+	}
+	
+	public Unit getResourceDepot()
+	{
+		return resourceDepot;
 	}
 
 	public void addMiner(Unit miner)
@@ -83,13 +97,51 @@ public class MiningAgent implements Updateable, Drawable
 	@Override
 	public void draw(Graphics graphics)
 	{
-		// TODO Auto-generated method stub
+		graphics.setGameCoordinates();
 		
+		for (Unit miner : miners)
+		{
+			if (freeMiners.contains(miner))
+			{
+				graphics.setColor(BWColor.Grey);
+				graphics.fillCircle(miner, 3);
+			}
+			
+			if (miner.getOrder() == OrderTypes.MiningMinerals)
+			{
+				graphics.setColor(BWColor.Green);
+				graphics.fillCircle(miner, 3);
+			}
+			
+			if (miner.getOrder() == OrderTypes.WaitForMinerals)
+			{
+				graphics.setColor(BWColor.Orange);
+				graphics.fillCircle(miner, 3);
+			}
+			
+			Unit target = miner.getTarget();
+			if (target != null)
+			{
+				Position targetPosition = target.getPosition();
+				Position minerPosition = miner.getPosition();
+				
+				if (targetPosition.getPDistance(minerPosition) < 500)
+				{
+					graphics.setColor(BWColor.Green);
+					
+					Vector2D from = Convert.toPositionVector(targetPosition);
+					Vector2D to = Convert.toPositionVector(minerPosition);
+					
+					graphics.drawLine(from, to);
+				}
+			}
+		}
 	}
 	
 	private void checkWorkersAssignments()
 	{
-		for (Unit miner : freeMiners)
+		Set<Unit> freeMinersCopy = new HashSet<>(freeMiners);
+		for (Unit miner : freeMinersCopy)
 		{
 			if (!minersToResourcesAssignments.containsKey(miner))
 			{
@@ -130,8 +182,6 @@ public class MiningAgent implements Updateable, Drawable
 				}
 			}
 		}
-		
-		
 	}
 	
 	private void checkResources()

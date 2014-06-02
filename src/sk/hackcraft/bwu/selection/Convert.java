@@ -11,4 +11,12 @@ public class Convert
 	{
 		return Vector2DMath.toVector(p, PosType.PIXEL);
 	}
+	
+	public static Position toPosition(Vector2D vector)
+	{
+		int x = Math.round(vector.getX());
+		int y = Math.round(vector.getY());
+		
+		return new Position(x, y);		
+	}
 }

@@ -336,24 +336,7 @@ public interface UnitSelector
 		@Override
 		public boolean isTrueFor(Unit unit)
 		{
-			UnitType type = unit.getType();
-			
-			if (type == UnitTypes.Terran_Command_Center)
-			{
-				return true;
-			}
-			
-			if (type == UnitTypes.Protoss_Nexus)
-			{
-				return true;
-			}
-			
-			if (type == UnitTypes.Zerg_Hatchery || type == UnitTypes.Zerg_Lair || type == UnitTypes.Zerg_Hive)
-			{
-				return true;
-			}
-
-			return false;
+			return unit.getType().isResourceDepot();
 		}
 	};
 	
@@ -401,12 +384,7 @@ public interface UnitSelector
 		{
 			UnitType type = unit.getType();
 			
-			if (type == UnitTypes.Resource_Mineral_Field || type == UnitTypes.Resource_Mineral_Field_Type_2 || type == UnitTypes.Resource_Mineral_Field_Type_3)
-			{
-				return true;
-			}
-
-			return false;
+			return type == UnitTypes.Resource_Mineral_Field || type == UnitTypes.Resource_Mineral_Field_Type_2 || type == UnitTypes.Resource_Mineral_Field_Type_3;
 		}
 	};
 	
@@ -417,12 +395,29 @@ public interface UnitSelector
 		{
 			UnitType type = unit.getType();
 			
-			if (type == UnitTypes.Resource_Mineral_Field || type == UnitTypes.Resource_Mineral_Field_Type_2 || type == UnitTypes.Resource_Mineral_Field_Type_3)
-			{
-				return true;
-			}
-
-			return false;
+			return type == UnitTypes.Resource_Vespene_Geyser;
+		}
+	};
+	
+	static public final BooleanSelector IS_VESPENE_EXTRACTOR_BUILDING = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			UnitType type = unit.getType();
+			
+			return type == UnitTypes.Terran_Refinery || type == UnitTypes.Zerg_Extractor || type == UnitTypes.Protoss_Assimilator;
+		}
+	};
+	
+	static public final BooleanSelector IS_SPAWNING_LARVAE = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			UnitType type = unit.getType();
+			
+			return type == UnitTypes.Zerg_Hatchery || type == UnitTypes.Zerg_Lair || type == UnitTypes.Zerg_Hive;
 		}
 	};
 }

@@ -1,59 +1,79 @@
-package sk.hackcraft.bwu.sample;
+package sk.hackcraft.creep;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import jnibwapi.Player;
 import jnibwapi.Unit;
+import jnibwapi.types.UnitType.UnitTypes;
 import sk.hackcraft.bwu.AbstractBot;
 import sk.hackcraft.bwu.BWU;
 import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.Vector2DMath;
+import sk.hackcraft.bwu.mining.MiningAgent;
+import sk.hackcraft.bwu.production.LarvaProductionAgent;
+import sk.hackcraft.bwu.selection.DistanceSelector;
+import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
 
-public class SampleBot extends AbstractBot
+public class CreepBot extends AbstractBot
 {
-	static public void main(String[] arguments)
+	public static void main(String[] args)
 	{
 		BWU bwu = new BWU()
 		{
 			@Override
 			protected Bot createBot(Game game)
 			{
-				return new SampleBot(game);
+				return new CreepBot(game);
 			}
 		};
 		
 		bwu.start();
 	}
 	
-	public SampleBot(Game game)
+	public CreepBot(Game game)
 	{
 		super(game);
+		
+		miningAgents = new HashSet<>();
+		productionAgent = new LarvaProductionAgent();
 	}
-
-	@Override
-	public void gameUpdated()
-	{
-		UnitSet myUnits = game.getMyUnits();
-
-		for (Unit unit : myUnits)
-		{
-			if (unit.isIdle() || unit.isStuck())
-			{
-				// generate new position
-				Vector2D position = Vector2DMath.randomVector().scale(game.getMap());
-				// attack move!
-				unit.attack(position);
-			}
-		}
-	}
+	
+	private final Set<MiningAgent> miningAgents;
+	private final LarvaProductionAgent productionAgent;
 
 	@Override
 	public void gameStarted()
 	{
-		// TODO Auto-generated method stub
+		game.enableUserInput();
+		game.setSpeed(15);
+
+		UnitSet myUnits = game.getMyUnits();
 		
+		UnitSet hatcheries = myUnits.where(UnitSelector.IS_SPAWNING_LARVAE);
+		for (Unit hatchery : hatcheries)
+		{
+			productionAgent.addHatchery(hatchery);
+			
+			Set<Unit> nearbyResources = game.getStaticNeutralUnits().where(UnitSelector.IS_MINERAL).whereLessOrEqual(new DistanceSelector(hatchery), 500);
+			
+			if (!nearbyResources.isEmpty())
+			{
+				MiningAgent miningAgent = new MiningAgent(hatchery, nearbyResources);
+				
+				Set<Unit> nearbyWorkers = myUnits.where(UnitSelector.IS_WORKER).whereLessOrEqual(new DistanceSelector(hatchery), 300);
+				
+				for (Unit worker : nearbyWorkers)
+				{
+					miningAgent.addMiner(worker);
+				}
+				
+				miningAgents.add(miningAgent);
+			}
+		}
 	}
 
 	@Override
@@ -61,6 +81,26 @@ public class SampleBot extends AbstractBot
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void gameUpdated()
+	{
+		for (MiningAgent agent : miningAgents)
+		{
+			agent.update();
+		}
+		
+		int availableMinerals = game.getSelf().getMinerals(); 
+		if (availableMinerals >= 50)
+		{
+			boolean result = productionAgent.produce(UnitTypes.Zerg_Drone);
+			
+			if (!result && availableMinerals > 100)
+			{
+				productionAgent.produce(UnitTypes.Zerg_Overlord);
+			}
+		}
 	}
 
 	@Override
@@ -115,7 +155,6 @@ public class SampleBot extends AbstractBot
 	@Override
 	public void unitCreated(Unit unit)
 	{
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -129,8 +168,10 @@ public class SampleBot extends AbstractBot
 	@Override
 	public void unitMorphed(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (unit.getType().isWorker())
+		{
+			miningAgents.iterator().next().addMiner(unit);
+		}
 	}
 
 	@Override
@@ -157,8 +198,10 @@ public class SampleBot extends AbstractBot
 	@Override
 	public void draw(Graphics graphics)
 	{
-		// TODO Auto-generated method stub
-		
+		for (MiningAgent agent : miningAgents)
+		{
+			agent.draw(graphics);
+		}
 	}
 
 	@Override

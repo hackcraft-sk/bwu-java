@@ -6,11 +6,6 @@ import jnibwapi.Unit;
 public interface Bot
 {
 	/**
-	 * Bot connects to StarCraft (not starting the game, only connecting to BWAPI)
-	 */
-	abstract public void onConnected();
-
-	/**
 	 * BWAPI calls this at the start of a match. Typically an AI will execute 
 	 * set up code in this method (initialize data structures, load build orders, etc).
 	 */
