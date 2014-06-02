@@ -135,6 +135,9 @@ public class MiningBotTest extends Bot
 				miner.draw(graphics);
 			}
 		}
+		
+
+		throw new RuntimeException();
 	}
 
 	@Override

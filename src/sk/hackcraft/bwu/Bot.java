@@ -209,442 +209,190 @@ abstract public class Bot
 		@Override
 		public void connected()
 		{
-			try
-			{
-				onConnected();
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onConnected();
 		}
 
 		@Override
 		public void matchStart()
 		{
-			try
-			{
-				graphicsOutputStream = new GraphicsOutputStream();
-				printStream = new PrintStream(graphicsOutputStream);
-				game = new Game(Bot.this);
-				modelFactory.setGame(game);
+			graphicsOutputStream = new GraphicsOutputStream();
+			printStream = new PrintStream(graphicsOutputStream);
+			game = new Game(Bot.this);
+			modelFactory.setGame(game);
 
-				onGameStarted(game);
+			onGameStarted(game);
 
-				for (jnibwapi.Unit jUnit : BWAPI.getAllUnits())
-				{
-					onUnitDiscovered(game.getUnit(jUnit.getID()));
-				}
-			}
-			catch (Throwable t)
+			for (jnibwapi.Unit jUnit : BWAPI.getAllUnits())
 			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
+				onUnitDiscovered(game.getUnit(jUnit.getID()));
 			}
 		}
 
 		@Override
 		public void matchFrame()
 		{
-			try
+			onGameUpdate();
+			if (graphicsEnabled)
 			{
-				onGameUpdate();
-				if (graphicsEnabled)
-				{
-					graphicsOutputStream.drawTo(screenGraphics);
-					onDraw(screenGraphics);
-				}
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
+				graphicsOutputStream.drawTo(screenGraphics);
+				onDraw(screenGraphics);
 			}
 		}
 
 		@Override
 		public void keyPressed(int keyCode)
 		{
-			try
-			{
-				onKeyPressed(keyCode);
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onKeyPressed(keyCode);
 		}
 
 		@Override
 		public void matchEnd(boolean winner)
 		{
-			try
-			{
-				onGameEnded(winner);
-				game = null;
-				modelFactory.setGame(game);
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onGameEnded(winner);
+			game = null;
+			modelFactory.setGame(game);
 		}
 
 		@Override
 		public void playerLeft(int id)
 		{
-			try
-			{
-				onPlayerLeft(BWAPI.getPlayer(id));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onPlayerLeft(BWAPI.getPlayer(id));
 		}
 
 		@Override
 		public void nukeDetect(Position p)
 		{
-			try
-			{
-				if(p.isValid()) {
-					onNukeDetected(new Vector2D(p.getPX(), p.getPY()));
-				} else {
-					onNukeDetected(null);
-				}
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
+			if(p.isValid()) {
+				onNukeDetected(new Vector2D(p.getPX(), p.getPY()));
+			} else {
+				onNukeDetected(null);
 			}
 		}
 
 		@Override
 		public void nukeDetect()
 		{
-			try
-			{
-				onNukeDetected(null);
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onNukeDetected(null);
 		}
 
 		@Override
 		public void unitDiscover(int unitID)
 		{
-			try
-			{
-				if (game == null)
-					return;
+			if (game == null)
+				return;
 
-				onUnitDiscovered(game.getUnit(unitID));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onUnitDiscovered(game.getUnit(unitID));
 		}
 
 		@Override
 		public void unitEvade(int unitID)
 		{
-			try
-			{
-				if (game == null)
-					return;
+			if (game == null)
+				return;
 
-				onUnitEvaded(game.getUnit(unitID));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onUnitEvaded(game.getUnit(unitID));
 		}
 
 		@Override
 		public void unitShow(int unitID)
 		{
-			try
-			{
-				if (game == null)
-					return;
+			if (game == null)
+				return;
 
-				onUnitShown(game.getUnit(unitID));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onUnitShown(game.getUnit(unitID));
 		}
 
 		@Override
 		public void unitHide(int unitID)
 		{
-			try
+			if (game == null)
+				return;
+
+			Unit unit = game.getUnit(unitID);
+
+			onUnitHidden(unit);
+
+			if (!unit.getType().isBuilding())
 			{
-				if (game == null)
-					return;
-
-				Unit unit = game.getUnit(unitID);
-
-				onUnitHidden(unit);
-
-				if (!unit.getType().isBuilding())
-				{
-					game.removeUnit(unitID);
-				}
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
+				game.removeUnit(unitID);
 			}
 		}
 
 		@Override
 		public void unitCreate(int unitID)
 		{
-			try
-			{
-				if (game == null)
-					return;
+			if (game == null)
+				return;
 
-				onUnitCreated(game.getUnit(unitID));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onUnitCreated(game.getUnit(unitID));
 		}
 
 		@Override
 		public void unitDestroy(int unitID)
 		{
-			try
+			if (game == null)
+				return;
+
+			Unit unit = game.getUnit(unitID);
+			if (unit == null)
 			{
-				if (game == null)
-					return;
-
-				Unit unit = game.getUnit(unitID);
-				if (unit == null)
-				{
-					return;
-				}
-
-				onUnitDestroyed(unit);
-
-				game.removeUnit(unitID);
+				return;
 			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+
+			onUnitDestroyed(unit);
+
+			game.removeUnit(unitID);
 		}
 
 		@Override
 		public void unitMorph(int unitID)
 		{
-			try
-			{
-				if (game == null)
-					return;
+			if (game == null)
+				return;
 
-				onUnitMorphed(game.getUnit(unitID));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onUnitMorphed(game.getUnit(unitID));
 		}
 
 		@Override
 		public void playerDropped(int id)
 		{
-			try
-			{
-				onPlayerDropped(BWAPI.getPlayer(id));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onPlayerDropped(BWAPI.getPlayer(id));
 		}
 
 		@Override
 		public void unitComplete(int unitID)
 		{
-			try
-			{
-				if (game == null)
-					return;
+			if (game == null)
+				return;
 
-				onUnitCompleted(game.getUnit(unitID));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onUnitCompleted(game.getUnit(unitID));
 		}
 
 		@Override
 		public void unitRenegade(int unitID)
 		{
-			try
-			{
-				if (game == null)
-					return;
+			if (game == null)
+				return;
 
-				onUnitRenegade(game.getUnit(unitID));
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onUnitRenegade(game.getUnit(unitID));
 		}
 
 		@Override
 		public void sendText(String text)
 		{
-			try
-			{
-				onSentMessage(text);
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onSentMessage(text);
 		}
 
 		@Override
 		public void receiveText(String text)
 		{
-			try
-			{
-				onReceivedMessage(text);
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onReceivedMessage(text);
 		}
 
 		@Override
 		public void saveGame(String gameName)
 		{
-			try
-			{
-				onSavedGame(gameName);
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				t.printStackTrace(printStream);
-				if (failFast)
-				{
-					System.exit(failFastReturnCode);
-				}
-			}
+			onSavedGame(gameName);
 		}
 	};
 
