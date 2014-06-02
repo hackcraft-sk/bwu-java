@@ -67,7 +67,7 @@ public abstract class BWU
 		@Override
 		public void keyPressed(int keyCode)
 		{
-			keyPressed(keyCode);
+			bot.keyPressed(keyCode);
 		}
 
 		@Override
