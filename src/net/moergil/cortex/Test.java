@@ -25,7 +25,7 @@ public class Test
 	{
 		while (true)
 		{
-			Neuron neuron = new Neuron();
+			SigmoidNeuron neuron = new SigmoidNeuron();
 			
 			ManualOutput manualOutput = new ManualOutput();
 			manualOutput.setOutput(-1);

@@ -13,7 +13,7 @@ public class OperandOrganism extends Organism
 		operand1 = new ManualOutput();
 		operand2 = new ManualOutput();
 		
-		Neuron[] neurons = getNeurons();
+		SigmoidNeuron[] neurons = getNeurons();
 		neurons[0].connectTo(new NeuronInput(operand1, 1));
 		neurons[1].connectTo(new NeuronInput(operand2, 1));
 	}

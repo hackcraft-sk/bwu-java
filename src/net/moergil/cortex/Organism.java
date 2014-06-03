@@ -4,24 +4,24 @@ public class Organism
 {
 	private final Genome genome;
 	
-	private final Neuron[] neurons;
+	private final SigmoidNeuron[] neurons;
 	
 	public Organism(Genome genome)
 	{
 		this.genome = genome;
 		
 		int neuronsCount = genome.getNeuronsCount();
-		neurons = new Neuron[neuronsCount];
+		neurons = new SigmoidNeuron[neuronsCount];
 
 		for (int i = 0; i < neuronsCount; i++)
 		{
-			neurons[i] = new Neuron();
+			neurons[i] = new SigmoidNeuron();
 		}
 		
-		Connection connections[] = genome.getConnections();
+		GenomeConnection connections[] = genome.getConnections();
 		for (int i = 0; i < connections.length; i = i + 2)
 		{
-			Connection connection = connections[i];
+			GenomeConnection connection = connections[i];
 			
 			int from = connection.getFrom();
 			int to = connection.getTo();
@@ -36,19 +36,19 @@ public class Organism
 		return genome;
 	}
 	
-	public Neuron[] getNeurons()
+	public SigmoidNeuron[] getNeurons()
 	{
 		return neurons;
 	}
 	
 	public void update()
 	{
-		for (Neuron neuron : neurons)
+		for (SigmoidNeuron neuron : neurons)
 		{
 			neuron.updateInputs();
 		}
 		
-		for (Neuron neuron : neurons)
+		for (SigmoidNeuron neuron : neurons)
 		{
 			neuron.updateOutput();
 		}

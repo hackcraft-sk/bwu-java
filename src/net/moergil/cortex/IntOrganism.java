@@ -10,7 +10,7 @@ public class IntOrganism extends Organism implements NeuronOutput
 	{
 		super(random, genome);
 
-		Neuron[] neurons = getNeurons();
+		SigmoidNeuron[] neurons = getNeurons();
 		neurons[0].connectToInput(this);
 	}
 	

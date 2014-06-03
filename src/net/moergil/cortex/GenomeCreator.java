@@ -8,7 +8,7 @@ public class GenomeCreator
 	public Genome generate(Random random, int neuronsCount)
 	{		
 		int connectionsCount = 5;
-		Connection[] connections = new Connection[neuronsCount * connectionsCount];
+		GenomeConnection[] connections = new GenomeConnection[neuronsCount * connectionsCount];
 		int index = 0;
 		for (int i = 0; i < neuronsCount; i++)
 		{
@@ -19,7 +19,7 @@ public class GenomeCreator
 				
 				float weight = generateWeight(random, 0, 10);
 				
-				connections[index] = new Connection(from, to, weight);
+				connections[index] = new GenomeConnection(from, to, weight);
 				index++;
 			}
 		}
@@ -29,7 +29,7 @@ public class GenomeCreator
 	
 	public Genome mutate(Random random, Genome genome, int stepsMutationsCount, int connectionsMutationsCount)
 	{
-		Connection[] connections = Arrays.copyOf(genome.getConnections(), genome.getConnections().length);
+		GenomeConnection[] connections = Arrays.copyOf(genome.getConnections(), genome.getConnections().length);
 		for (int i = 0; i < connectionsMutationsCount; i++)
 		{
 			int index = random.nextInt(connections.length);
@@ -38,7 +38,7 @@ public class GenomeCreator
 			int to = random.nextInt(genome.getNeuronsCount());
 			float weight = generateWeight(random, 0, 10);
 			
-			connections[index] = new Connection(from, to, weight);
+			connections[index] = new GenomeConnection(from, to, weight);
 		}
 		
 		return new Genome(genome.getNeuronsCount(), connections);

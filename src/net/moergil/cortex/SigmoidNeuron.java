@@ -3,14 +3,14 @@ package net.moergil.cortex;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Neuron implements Output, Input
+public class SigmoidNeuron implements Output, Input
 {
 	private float tmpValue;
 	private float outputValue;
 	
 	private final Set<NeuronInput> inputs;
 	
-	public Neuron()
+	public SigmoidNeuron()
 	{
 		inputs = new HashSet<>();
 	}

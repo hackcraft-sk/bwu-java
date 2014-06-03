@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
-import net.moergil.cortex.Neuron;
+import net.moergil.cortex.SigmoidNeuron;
 import net.moergil.cortex.NeuronInput;
 import net.moergil.cortex.Organism;
 
@@ -18,7 +18,7 @@ public class NeuroCanvas
 {
 	private Organism organism;
 	
-	private Map<Neuron, Point> neuronsPositions;
+	private Map<SigmoidNeuron, Point> neuronsPositions;
 	
 	private float step;
 	private float radius = 100;
@@ -29,12 +29,12 @@ public class NeuroCanvas
 		
 		neuronsPositions = new HashMap<>();
 		
-		Neuron[] neurons = organism.getNeurons();
+		SigmoidNeuron[] neurons = organism.getNeurons();
 		step = ((float)Math.PI * 2) / neurons.length;
 		
 		for (int i = 0; i < neurons.length; i++)
 		{
-			Neuron neuron = neurons[i];
+			SigmoidNeuron neuron = neurons[i];
 			Point position = getNeuronPosition(i);
 			
 			neuronsPositions.put(neuron, position);
@@ -76,7 +76,7 @@ public class NeuroCanvas
 		}*/
 	}
 	
-	private void drawNeuron(Graphics2D graphics, Point position, Neuron neuron)
+	private void drawNeuron(Graphics2D graphics, Point position, SigmoidNeuron neuron)
 	{
 		/*float red = neuron.outputValue() / 100;
 		if (red > 1)

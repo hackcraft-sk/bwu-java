@@ -8,9 +8,9 @@ import java.util.Arrays;
 public class Genome
 {
 	private final int neuronsCount;
-	private final Connection[] connections;
+	private final GenomeConnection[] connections;
 	
-	public Genome(int neuronsCount, Connection[] connections)
+	public Genome(int neuronsCount, GenomeConnection[] connections)
 	{
 		this.neuronsCount = neuronsCount;
 		this.connections = connections;
@@ -20,14 +20,14 @@ public class Genome
 	{
 		neuronsCount = input.readInt();
 		
-		connections = new Connection[input.readInt()];
+		connections = new GenomeConnection[input.readInt()];
 		for (int i = 0; i < connections.length; i++)
 		{
 			int from = input.readInt();
 			int to = input.readInt();
 			float weight = input.readFloat();
 
-			connections[i] = new Connection(from, to, weight);
+			connections[i] = new GenomeConnection(from, to, weight);
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class Genome
 		output.writeInt(connections.length);
 		for (int i = 0; i < connections.length; i++)
 		{
-			Connection connection = connections[i];
+			GenomeConnection connection = connections[i];
 			
 			output.writeInt(connection.getFrom());
 			output.writeInt(connection.getTo());
@@ -51,7 +51,7 @@ public class Genome
 		return neuronsCount;
 	}
 	
-	public Connection[] getConnections()
+	public GenomeConnection[] getConnections()
 	{
 		return connections;
 	}

@@ -1,11 +1,11 @@
 package net.moergil.cortex;
 
-public class Connection
+public class GenomeConnection
 {
 	private final int from, to;
 	private final float weight;
 	
-	public Connection(int from, int to, float weight)
+	public GenomeConnection(int from, int to, float weight)
 	{
 		this.from = from;
 		this.to = to;
