@@ -1,5 +1,11 @@
 package net.moergil.cortex;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Random;
@@ -10,32 +16,67 @@ public class Test
 {
 	public static void main(String[] args)
 	{
+		playground();
 		//runNeuroevolution();
-		test();
+		//tryOrganism();
 	}
 	
-	private static void test()
+	private static void playground()
 	{
-		Random random = new Random(1);
-		
+		while (true)
+		{
+			Neuron neuron = new Neuron();
+			
+			ManualOutput manualOutput = new ManualOutput();
+			manualOutput.setOutput(-1);
+			
+			neuron.connectTo(new NeuronInput(manualOutput, 1));
+			
+			neuron.updateInputs();
+			neuron.updateOutput();
+			
+			System.out.println(neuron.outputValue());
+		}
+	}
+	
+	private static void tryOrganism()
+	{
 		try (Scanner scanner = new Scanner(System.in))
 		{
-			while (true)
+			String genomeId = scanner.next();
+			
+			File file = new File("Genome-" + genomeId + ".gnm");
+			
+			try
+			(
+					FileInputStream fileInput = new FileInputStream(file);
+					DataInputStream dataInput = new DataInputStream(fileInput);
+			)
 			{
-				float input = scanner.nextFloat();
-				
-				IntOrganism organism = new IntOrganism(random, new HardcodedGenome());
-				
-				organism.setInput(input);
-				
-				int tries = 0;
-				while (!organism.hasResult() && tries < 1000)
+				Genome genome = new Genome(dataInput);
+
+				while (true)
 				{
-					organism.update();
-					tries++;
+					OperandOrganism organism = new OperandOrganism(genome);
+					
+					float value1 = scanner.nextFloat();
+					float value2 = scanner.nextFloat();
+					
+					organism.setInput(value1, value2);
+					
+					int tries = 0;
+					while (/*!organism.hasResult() && */tries < 100)
+					{
+						organism.update();
+						tries++;
+					}
+					
+					System.out.println(organism.getResult() + " " + tries + " iterations");
 				}
-				
-				System.out.println(organism.getResult() + " " + tries + " iterations");
+			}
+			catch (IOException e)
+			{
+				System.out.println("Can't save genome: " + e.getMessage());
 			}
 		}
 	}
@@ -50,32 +91,42 @@ public class Test
 
 		for (int i = 0; i < 100; i++)
 		{
-			genomes.add(creator.generate(random, 10));
+			genomes.add(creator.generate(random, 30));
 		}
 		
 		PriorityQueue<Score> scores = new PriorityQueue<>();
 
-		Genome bestGenome = null;
-		int highestSuccess = 0;
+		float highestScore = 0;
 		
+		final float[][] data = {
+				{1, 1, 1},
+				{1, 0, 0},
+				{0, 1, 0},
+				{0, 0, 0}
+		};
+		
+		Genome bestGenome = null;
 		int generation = 0;
-		for (int t = 0; t < 100000; t++)
+		while (true)
 		{
 			for (Genome genome : genomes)
 			{
-				float[] inputs = { 1, 2, 3, 4, 5 };
-				float[] outputs = { 1, 4, 6, 8, 10 };
-				
-				int successCount = 0;
+				float accuracy = 0;
+				float freeEnergy = 0;
 
-				IntOrganism organism = new IntOrganism(random, genome);
+				OperandOrganism organism = new OperandOrganism(genome);
 
-				for (int i = 0; i < inputs.length; i++)
+				for (int i = 0; i < data.length; i++)
 				{
-					organism.setInput(inputs[i]);
+					final float value1 = data[i][0];
+					final float value2 = data[i][1];
+					final float expectedResult = data[i][2];
+					
+					organism.setInput(value1, value2);
 
 					int tries = 0;
-					while (!organism.hasResult() && tries < 1000)
+					int limit = 1000;
+					while (!organism.hasResult() && tries < limit)
 					{
 						organism.update();
 						tries++;
@@ -83,17 +134,21 @@ public class Test
 
 					float result = organism.getResult();
 
-					if (Math.abs(result - outputs[i]) < 0.1)
+					accuracy -= Math.abs(result - expectedResult);
+					
+					/*if (Math.abs(result - expectedResult) < 0.1)
 					{
-						successCount++;
-					}
+						accuracy++;
+						freeEnergy += (limit - tries) * 0.00001;
+					}*/
 				}
 				
-				scores.add(new Score(successCount, genome));
+				float score = accuracy + freeEnergy;
+				scores.add(new Score(score, genome));
 				
-				if (successCount > highestSuccess)
+				if (score > highestScore)
 				{
-					highestSuccess = successCount;
+					highestScore = score;
 					bestGenome = genome;
 				}
 			}
@@ -115,8 +170,32 @@ public class Test
 			
 			if (generation % 1000 == 0)
 			{
-				System.out.println("Highest success: " + highestSuccess);
-				System.out.println("Genome: " + bestGenome);
+				System.out.println();
+				System.out.println("Highest score:" + highestScore);
+			}
+			
+			if (generation % 1000 == 0)
+			{
+				System.out.println();
+				System.out.println("Saving...");
+				
+				if (bestGenome != null)
+				{
+					File file = new File("Genome-" + System.currentTimeMillis() + ".gnm");
+					
+					try
+					(
+							FileOutputStream fileOutput = new FileOutputStream(file);
+							DataOutputStream dataOutput = new DataOutputStream(fileOutput);
+					)
+					{
+						bestGenome.writeTo(dataOutput);
+					}
+					catch (IOException e)
+					{
+						System.out.println("Can't save genome: " + e.getMessage());
+					}
+				}
 			}
 
 			Set<Genome> survivors = new HashSet<>();
@@ -135,7 +214,7 @@ public class Test
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					Genome mutant = creator.mutate(random, genome, 3, 3);
+					Genome mutant = creator.mutate(random, genome, 1, 1);
 					genomes.add(mutant);
 				}
 			}
@@ -147,7 +226,7 @@ public class Test
 		private float score;
 		private Genome genome;
 		
-		public Score(int score, Genome genome)
+		public Score(float score, Genome genome)
 		{
 			this.score = score;
 			this.genome = genome;

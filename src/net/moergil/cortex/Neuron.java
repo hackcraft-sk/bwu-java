@@ -3,46 +3,68 @@ package net.moergil.cortex;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Neuron implements NeuronOutput
+public class Neuron implements Output, Input
 {
-	private final int step;
-	private float inputValue;
+	private float tmpValue;
 	private float outputValue;
 	
-	private final Set<NeuronOutput> inputs;
+	private final Set<NeuronInput> inputs;
 	
-	public Neuron(int step)
+	public Neuron()
 	{
-		this.step = step;
 		inputs = new HashSet<>();
 	}
 	
-	public void connectToInput(NeuronOutput inputNeuron)
+	@Override
+	public void connectTo(NeuronInput input)
 	{
-		inputs.add(inputNeuron);
+		inputs.add(input);
 	}
 	
-	public void update()
+	public void updateInputs()
 	{
-		inputValue = 0;
-		for (NeuronOutput input : inputs)
+		float inputValue = 0;
+		for (NeuronInput input : inputs)
 		{
-			inputValue += input.output();
+			inputValue += input.value();
 		}
 		
-		float difference = inputValue - outputValue;
-		
-		if (difference > step)
-		{
-			difference = (difference / difference) * step;
-		}
-		
-		outputValue += difference;
+		tmpValue = activationFunction(inputValue);
 	}
 	
-	public float output()
+	public void updateOutput()
+	{
+		outputValue = tmpValue;
+	}
+	
+	private float activationFunction(float value)
+	{
+		// approximated sigmoid function
+		if (value >= 4f)
+		{
+			return 1f;
+		}
+				 
+		float tmp = 1f - 0.25f * value;
+		tmp *= tmp;
+		tmp *= tmp;
+		tmp *= tmp;
+		tmp *= tmp;
+		return 1f / (1f + tmp);
+		
+		// precise sigmoid function
+		//return (float)(1 / (1 + Math.pow(Math.E, -value)));
+	}
+	
+	@Override
+	public float outputValue()
 	{
 		return outputValue;
+	}
+	
+	public Set<NeuronInput> getInputs()
+	{
+		return inputs;
 	}
 	
 	@Override

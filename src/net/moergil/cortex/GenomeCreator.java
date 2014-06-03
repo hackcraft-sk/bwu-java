@@ -6,51 +6,46 @@ import java.util.Random;
 public class GenomeCreator
 {	
 	public Genome generate(Random random, int neuronsCount)
-	{
-		int[] neuronsSteps = new int[neuronsCount];
-		for (int i = 0; i < neuronsSteps.length; i++)
-		{
-			neuronsSteps[i] = random.nextInt(5);
-		}
-		
+	{		
 		int connectionsCount = 5;
-		int[] connections = new int[neuronsCount * connectionsCount * 2];
+		Connection[] connections = new Connection[neuronsCount * connectionsCount];
 		int index = 0;
 		for (int i = 0; i < neuronsCount; i++)
 		{
 			for (int j = 0; j < connectionsCount; j++)
 			{
+				int from = random.nextInt(neuronsCount);
 				int to = random.nextInt(neuronsCount);
 				
-				connections[index] = i;
-				connections[index + 1] = to;
+				float weight = generateWeight(random, 0, 10);
 				
-				index += 2;
+				connections[index] = new Connection(from, to, weight);
+				index++;
 			}
 		}
 		
-		return new Genome(neuronsSteps, connections);
+		return new Genome(neuronsCount, connections);
 	}
 	
 	public Genome mutate(Random random, Genome genome, int stepsMutationsCount, int connectionsMutationsCount)
 	{
-		int[] steps = Arrays.copyOf(genome.getSteps(), genome.getSteps().length);
-
-		for (int i = 0; i < stepsMutationsCount; i++)
-		{
-			int index = random.nextInt(steps.length);
-			steps[index] = random.nextInt(5);
-		}
-		
-		int[] connections = Arrays.copyOf(genome.getConnections(), genome.getConnections().length);
+		Connection[] connections = Arrays.copyOf(genome.getConnections(), genome.getConnections().length);
 		for (int i = 0; i < connectionsMutationsCount; i++)
 		{
-			int neuronIndex = random.nextInt(genome.getNeuronsCount());
 			int index = random.nextInt(connections.length);
 			
-			connections[index] = neuronIndex;
+			int from = random.nextInt(genome.getNeuronsCount());
+			int to = random.nextInt(genome.getNeuronsCount());
+			float weight = generateWeight(random, 0, 10);
+			
+			connections[index] = new Connection(from, to, weight);
 		}
 		
-		return new Genome(steps, connections);
+		return new Genome(genome.getNeuronsCount(), connections);
+	}
+	
+	private float generateWeight(Random random, float center, int range)
+	{
+		return (random.nextFloat() - 0.5f) * random.nextInt(range) - center;
 	}
 }
