@@ -116,6 +116,8 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
+		jnibwapi.drawText(new Position(10, 10), Integer.toString(game.getFrameCount()), true);
+		
 		game.setSpeed(0);
 		jnibwapi.setFrameSkip(8);
 		
