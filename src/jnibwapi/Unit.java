@@ -1,15 +1,25 @@
 package jnibwapi;
 
+import static sk.hackcraft.bwu.Vector2DMath.sub;
+import static sk.hackcraft.bwu.Vector2DMath.toPosition;
+import static sk.hackcraft.bwu.Vector2DMath.toVector;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import jnibwapi.Position.PosType;
-import jnibwapi.types.*;
+import jnibwapi.types.OrderType;
 import jnibwapi.types.OrderType.OrderTypes;
+import jnibwapi.types.TechType;
 import jnibwapi.types.TechType.TechTypes;
+import jnibwapi.types.UnitCommandType;
 import jnibwapi.types.UnitCommandType.UnitCommandTypes;
+import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
+import jnibwapi.types.UpgradeType;
 import jnibwapi.types.UpgradeType.UpgradeTypes;
+import jnibwapi.types.WeaponType;
+import sk.hackcraft.bwu.Vector2D;
 
 /**
  * Represents a StarCraft unit.
@@ -407,11 +417,13 @@ public class Unit implements Cloneable {
 	}
 	
 	/** @deprecated use {@link #getPosition()} */
+	@Deprecated
 	public int getX() {
 		return x;
 	}
 	
 	/** @deprecated use {@link #getPosition()} */
+	@Deprecated
 	public int getY() {
 		return y;
 	}
@@ -426,11 +438,13 @@ public class Unit implements Cloneable {
 	}
 	
 	/** @deprecated use {@link #getTilePosition()} */
+	@Deprecated
 	public int getTileX() {
 		return tileX;
 	}
 	
 	/** @deprecated use {@link #getTilePosition()} */
+	@Deprecated
 	public int getTileY() {
 		return tileY;
 	}
@@ -499,21 +513,25 @@ public class Unit implements Cloneable {
 	}
 	
 	/** @deprecated use {@link #getInitialPosition()} */
+	@Deprecated
 	public int getInitialX() {
 		return initialX;
 	}
 	
 	/** @deprecated use {@link #getInitialPosition()} */
+	@Deprecated
 	public int getInitialY() {
 		return initialY;
 	}
 	
 	/** @deprecated use {@link #getInitialPosition()} */
+	@Deprecated
 	public int getInitialTileX() {
 		return initialTileX;
 	}
 	
 	/** @deprecated use {@link #getInitialPosition()} */
+	@Deprecated
 	public int getInitialTileY() {
 		return initialTileY;
 	}
@@ -1247,5 +1265,43 @@ public class Unit implements Cloneable {
 		if (ID != other.ID)
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Unit " + getType().getName() + " #" + getID();
+	}
+	
+	// TODO
+	// COMPATIBILITY
+	public boolean isAt(Vector2D position, double tolerance)
+	{
+		return sub(getPositionVector(), position).getLength() <= tolerance;
+	}
+
+	public Vector2D getPositionVector()
+	{
+		return toVector(getPosition(), PosType.PIXEL);
+	}
+
+	public void attack(Vector2D position)
+	{
+		attack(position, false);
+	}
+
+	public void attack(Vector2D vector, boolean queued)
+	{
+		attack(toPosition(vector, PosType.PIXEL), false);
+	}
+
+	public WeaponType getGroundWeaponType()
+	{
+		return getType().getGroundWeapon();
+	}
+
+	public WeaponType getAirWeaponType()
+	{
+		return getType().getAirWeapon();
 	}
 }

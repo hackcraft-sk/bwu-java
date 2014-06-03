@@ -49,21 +49,25 @@ public class BaseLocation {
 	}
 	
 	/** @deprecated use {@link #getPosition()} instead */
+	@Deprecated
 	public int getX() {
 		return position.getPX();
 	}
 	
 	/** @deprecated use {@link #getPosition()} instead */
+	@Deprecated
 	public int getY() {
 		return position.getPY();
 	}
 	
 	/** @deprecated use {@link #getPosition()} instead */
+	@Deprecated
 	public int getTx() {
 		return position.getBX();
 	}
 	
 	/** @deprecated use {@link #getPosition()} instead */
+	@Deprecated
 	public int getTy() {
 		return position.getBY();
 	}
@@ -73,6 +77,7 @@ public class BaseLocation {
 	}
 	
 	/** @deprecated use {@link #getRegion()} instead */
+	@Deprecated
 	public int getRegionID() {
 		return region.getID();
 	}

@@ -514,6 +514,11 @@ public class UnitType {
 		return WeaponTypes.getWeaponType(groundWeaponID);
 	}
 	
+	public WeaponType getAirWeapon()
+	{
+		return WeaponTypes.getWeaponType(airWeaponID);
+	}
+	
 	@Deprecated
 	public int getGroundWeaponID() {
 		return groundWeaponID;
@@ -565,6 +570,11 @@ public class UnitType {
 	
 	public boolean isRegenerates() {
 		return regenerates;
+	}
+	
+	public boolean isResourceDepot()
+	{
+		return this == UnitTypes.Terran_Command_Center || this == UnitTypes.Zerg_Hatchery || this == UnitTypes.Zerg_Lair || this == UnitTypes.Zerg_Hive || this == UnitTypes.Protoss_Nexus;
 	}
 	
 	public boolean isSpellcaster() {

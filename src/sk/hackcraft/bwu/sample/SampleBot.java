@@ -1,62 +1,184 @@
 package sk.hackcraft.bwu.sample;
 
 import jnibwapi.Player;
+import jnibwapi.Unit;
+import sk.hackcraft.bwu.AbstractBot;
+import sk.hackcraft.bwu.BWU;
 import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
-import sk.hackcraft.bwu.Unit;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.selection.UnitSet;
 
-public class SampleBot extends Bot {
-	static public void main(String [] arguments) {
-		SampleBot bot = new SampleBot();
-		bot.start();
-	}
-	
-	private Game game = null;
-	
-	public SampleBot() {
-		super(false);
-	}
-	
-	public void onConnected() {}
-	public void onGameStarted(Game game) {
-		this.game = game;		
-	}
-	public void onGameEnded() {
-		this.game = null;
-	}
-	public void onGameUpdate() {
-		UnitSet myUnits = game.getMyUnits();
+public class SampleBot extends AbstractBot
+{
+	static public void main(String[] arguments)
+	{
+		BWU bwu = new BWU()
+		{
+			@Override
+			protected Bot createBot(Game game)
+			{
+				return new SampleBot(game);
+			}
+		};
 		
-		for(Unit unit : myUnits) {
-			if(unit.isIdle() || unit.isStuck()) {
+		bwu.start();
+	}
+	
+	public SampleBot(Game game)
+	{
+		super(game);
+	}
+
+	@Override
+	public void gameUpdated()
+	{
+		UnitSet myUnits = game.getMyUnits();
+
+		for (Unit unit : myUnits)
+		{
+			if (unit.isIdle() || unit.isStuck())
+			{
 				// generate new position
-				Vector2D position = Vector2D.random().scale(
-					game.getMap().getWidth()*Game.TILE_SIZE,
-					game.getMap().getHeight()*Game.TILE_SIZE
-				);
+				Vector2D position = Vector2DMath.randomVector().scale(game.getMap());
 				// attack move!
 				unit.attack(position);
 			}
 		}
 	}
-	
-	public void onDisconnected() {}
-	public void onKeyPressed(int keyCode) {}
-	public void onGameEnded(boolean isWinner) {}
-	public void onPlayerDropped(Player player) {}
-	public void onNukeDetected(Vector2D position) {}
-	public void onUnitDiscovered(Unit unit) {}
-	public void onUnitDestroyed(Unit unit) {}
-	public void onUnitEvaded(Unit unit) {}
-	public void onUnitCreated(Unit unit) {}
-	public void onUnitMorphed(Unit unit) {}
-	public void onUnitShown(Unit unit) {}
-	public void onUnitHidden(Unit unit) {}
-	public void onDraw(Graphics graphics) {}
-	public void onPlayerLeft(Player player) {}
-	public void onUnitCompleted(Unit unit) {}
-	public void onUnitRenegade(Unit unit) {}
+
+	@Override
+	public void gameStarted()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gameEnded(boolean isWinner)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(int keyCode)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void playerLeft(Player player)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void playerDropped(Player player)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void nukeDetected(Vector2D target)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitDiscovered(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitDestroyed(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitEvaded(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitCreated(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitCompleted(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitMorphed(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitShowed(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitHid(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unitRenegaded(Unit unit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void draw(Graphics graphics)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void messageSent(String message)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void messageReceived(String message)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gameSaved(String gameName)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

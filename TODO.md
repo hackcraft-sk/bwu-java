@@ -1,17 +1,5 @@
 # TODO
 
-## sk.hackcraft.bwu.Unit
+Anything that should be done in future by any of the collaborators, should be put here.
 
-* missing method Set<Unit> getLoadedUnits();
-* missing method Unit getNydusExit();
-* missing method Unit getCarrier();
-* missing method Set<Unit> getInterceptors();
-* missing method Unit getHatchery();
-* missing method Set<Unit> getLarva();
-* missing method Unit getPowerUp();
-* missing method boolean isConstructing();
-* missing method boolean isInWeaponRange(Unit);
-* missing method boolean isResearching();
-* missing method boolean isSelected();
-* missing method boolean isUnderDarkSwarm();
-* missing method boolean isUnderDisruptionWeb();
+The TODO list is empty for now.

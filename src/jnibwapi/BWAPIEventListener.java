@@ -25,18 +25,18 @@ public interface BWAPIEventListener {
 	// BWAPI callbacks
 	public void sendText(String text);
 	public void receiveText(String text);
-	public void playerLeft(int playerID);
+	public void playerLeft(Player player);
 	public void nukeDetect(Position p);
 	public void nukeDetect();
-	public void unitDiscover(int unitID);
-	public void unitEvade(int unitID);
-	public void unitShow(int unitID);
-	public void unitHide(int unitID);
-	public void unitCreate(int unitID);
-	public void unitDestroy(int unitID);
-	public void unitMorph(int unitID);
-	public void unitRenegade(int unitID);
+	public void unitDiscover(Unit unit);
+	public void unitEvade(Unit unit);
+	public void unitShow(Unit unit);
+	public void unitHide(Unit unit);
+	public void unitCreate(Unit unit);
+	public void unitDestroy(Unit unit);
+	public void unitMorph(Unit unit);
+	public void unitRenegade(Unit unit);
 	public void saveGame(String gameName);
-	public void unitComplete(int unitID);
-	public void playerDropped(int playerID);
+	public void unitComplete(Unit unit);
+	public void playerDropped(Player player);
 }

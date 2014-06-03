@@ -123,21 +123,25 @@ public class Map {
 	}
 	
 	/** @deprecated Width in build tiles (32px). Use {@link #getSize()} instead. */
+	@Deprecated
 	public int getWidth() {
 		return size.getBX();
 	}
 	
 	/** @deprecated Height in build tiles (32px). Use {@link #getSize()} instead. */
+	@Deprecated
 	public int getHeight() {
 		return size.getBY();
 	}
 	
 	/** @deprecated Width in walk tiles (32px). Use {@link #getSize()} instead. */
+	@Deprecated
 	public int getWalkWidth() {
 		return size.getWX();
 	}
 	
 	/** @deprecated Height in walk tiles (32px). Use {@link #getSize()} instead. */
+	@Deprecated
 	public int getWalkHeight() {
 		return size.getWY();
 	}

@@ -42,11 +42,13 @@ public class Region {
 	}
 	
 	/** @deprecated use {@link #getCenter()} instead */
+	@Deprecated
 	public int getCenterX() {
 		return center.getPX();
 	}
 	
 	/** @deprecated use {@link #getCenter()} instead */
+	@Deprecated
 	public int getCenterY() {
 		return center.getPY();
 	}

@@ -55,11 +55,13 @@ public class ChokePoint {
 	}
 	
 	/** @deprecated use {@link #getCenter()} instead */
+	@Deprecated
 	public int getCenterX() {
 		return center.getPX();
 	}
 	
 	/** @deprecated use {@link #getCenter()} instead */
+	@Deprecated
 	public int getCenterY() {
 		return center.getPY();
 	}
@@ -69,11 +71,13 @@ public class ChokePoint {
 	}
 	
 	/** @deprecated use {@link #getFirstRegion()} instead */
+	@Deprecated
 	public int getFirstRegionID() {
 		return firstRegionID;
 	}
 	
 	/** @deprecated use {@link #getSecondRegion()} instead */
+	@Deprecated
 	public int getSecondRegionID() {
 		return secondRegionID;
 	}
@@ -87,21 +91,25 @@ public class ChokePoint {
 	}
 	
 	/** @deprecated use {@link #getFirstSide()} instead */
+	@Deprecated
 	public int getFirstSideX() {
 		return firstSide.getPX();
 	}
 	
 	/** @deprecated use {@link #getFirstSide()} instead */
+	@Deprecated
 	public int getFirstSideY() {
 		return firstSide.getPY();
 	}
 	
 	/** @deprecated use {@link #getSecondSide()} instead */
+	@Deprecated
 	public int getSecondSideX() {
 		return secondSide.getPX();
 	}
 	
 	/** @deprecated use {@link #getSecondSide()} instead */
+	@Deprecated
 	public int getSecondSideY() {
 		return secondSide.getPY();
 	}

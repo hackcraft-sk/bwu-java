@@ -1,6 +1,5 @@
 package jnibwapi;
 
-import sk.hackcraft.bwu.Vector2D;
 
 
 /** Generalised representation of a position for JNIBWAPI. Immutable. */
