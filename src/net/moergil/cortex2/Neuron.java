@@ -1,11 +1,9 @@
 package net.moergil.cortex2;
 
-public interface Neuron
+public interface Neuron extends NeuronOutput
 {
-	void addInput(Neuron input, float weight);
+	void addInput(NeuronOutput input, float weight);
 	
 	void readInputs();
 	void updateOutput();
-	
-	float getOutput();
 }
