@@ -11,12 +11,22 @@ import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
+import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.AbstractBot;
 import sk.hackcraft.bwu.BWU;
 import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.map.BorderLayerProcessor;
+import sk.hackcraft.bwu.map.Dimension;
+import sk.hackcraft.bwu.map.GameLayerFactory;
+import sk.hackcraft.bwu.map.GradientFloodFillProcessor;
+import sk.hackcraft.bwu.map.Layer;
+import sk.hackcraft.bwu.map.LayerDrawable;
+import sk.hackcraft.bwu.map.LayerColorDrawable;
+import sk.hackcraft.bwu.map.MapColorAssigner;
+import sk.hackcraft.bwu.map.Point;
 import sk.hackcraft.bwu.mining.MiningAgent;
 import sk.hackcraft.bwu.production.DroneBuildingConstructionAgent;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
@@ -56,6 +66,9 @@ public class CreepBot extends AbstractBot
 	
 	private final Map<Unit, Position> enemyBuildings;
 	
+	private Layer plainsLayer;
+	private LayerDrawable plainsLayerDrawable;
+	
 	public CreepBot(Game game)
 	{
 		super(game);
@@ -71,6 +84,30 @@ public class CreepBot extends AbstractBot
 	{
 		game.enableUserInput();
 		game.setSpeed(0);
+		
+		plainsLayer = GameLayerFactory.createBuildableLayer(jnibwapi, 0, 1);
+		
+		BorderLayerProcessor borderLayerProcessor = new BorderLayerProcessor(10, 1);
+		Layer bordersLayer = borderLayerProcessor.process(plainsLayer);
+		
+		plainsLayer = plainsLayer.add(bordersLayer);
+
+		GradientFloodFillProcessor gradientFloofFillProcessor = new GradientFloodFillProcessor(11, 1)
+		{
+			@Override
+			protected boolean evaluateCell(int cellValue, int newValue)
+			{
+				return cellValue < newValue;
+			}
+		};
+		
+		//plainsLayer = gradientFloofFillProcessor.process(plainsLayer);
+		
+		HashMap<Integer, BWColor> colors = new HashMap<>();
+		colors.put(1, BWColor.Red);
+		colors.put(11, BWColor.Green);
+		MapColorAssigner colorAssigner = new MapColorAssigner(colors);
+		plainsLayerDrawable = new LayerColorDrawable(plainsLayer, 32, colorAssigner);
 
 		UnitSet myUnits = game.getMyUnits();
 		
@@ -118,8 +155,7 @@ public class CreepBot extends AbstractBot
 	{
 		jnibwapi.drawText(new Position(10, 10), Integer.toString(game.getFrameCount()), true);
 		
-		game.setSpeed(0);
-		jnibwapi.setFrameSkip(8);
+		game.setSpeed(25);
 		
 		for (MiningAgent agent : miningAgents)
 		{
@@ -359,6 +395,8 @@ public class CreepBot extends AbstractBot
 		{
 			agent.draw(graphics);
 		}
+		
+		plainsLayerDrawable.draw(graphics);
 	}
 
 	@Override
