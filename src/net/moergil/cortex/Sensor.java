@@ -1,4 +1,4 @@
-package net.moergil.cortex2;
+package net.moergil.cortex;
 
 public class Sensor implements NeuronOutput
 {

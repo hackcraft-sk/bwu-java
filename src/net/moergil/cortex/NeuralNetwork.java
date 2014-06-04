@@ -1,11 +1,11 @@
-package net.moergil.cortex2;
+package net.moergil.cortex;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.moergil.cortex.Updateable;
+import sk.hackcraft.bwu.Updateable;
 
 public class NeuralNetwork implements Updateable
 {

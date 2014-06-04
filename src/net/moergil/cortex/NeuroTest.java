@@ -1,4 +1,4 @@
-package net.moergil.cortex2;
+package net.moergil.cortex;
 
 import java.util.Random;
 import java.util.Scanner;

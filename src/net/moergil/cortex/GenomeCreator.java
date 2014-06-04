@@ -1,51 +1,92 @@
 package net.moergil.cortex;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+
+import net.moergil.cortex.Genome;
+import net.moergil.cortex.Genome.Synapse;
 
 public class GenomeCreator
 {	
-	public Genome generate(Random random, int neuronsCount)
-	{		
-		int connectionsCount = 5;
-		GenomeConnection[] connections = new GenomeConnection[neuronsCount * connectionsCount];
-		int index = 0;
+	public Genome generate(String name, Random random, int neuronsCount, int[] inputs, int[] outputs)
+	{
+		float[] thresholds = new float[neuronsCount];
 		for (int i = 0; i < neuronsCount; i++)
 		{
-			for (int j = 0; j < connectionsCount; j++)
+			thresholds[i] = generate(random, 0, 10);
+		}
+
+		List<Synapse> synapsesList = new ArrayList<>();
+		for (int i = 0; i < neuronsCount; i++)
+		{
+			for (int j = 0; j < random.nextInt(5); j++)
 			{
 				int from = random.nextInt(neuronsCount);
 				int to = random.nextInt(neuronsCount);
 				
-				float weight = generateWeight(random, 0, 10);
+				float weight = generate(random, 0, 10);
 				
-				connections[index] = new GenomeConnection(from, to, weight);
-				index++;
+				Synapse synapse = new Synapse(from, to, weight);
+				synapsesList.add(synapse);
 			}
 		}
 		
-		return new Genome(neuronsCount, connections);
+		Synapse[] synapses = new Synapse[synapsesList.size()];
+		synapses = synapsesList.toArray(synapses);
+		
+		return new Genome(name, inputs, outputs, thresholds, synapses);
 	}
 	
-	public Genome mutate(Random random, Genome genome, int stepsMutationsCount, int connectionsMutationsCount)
+	public Genome mutate(Random random, Genome genome, String newName, int thresholdsMutationsCount, int weightsMutationsCount, int synapsesChangesCount)
 	{
-		GenomeConnection[] connections = Arrays.copyOf(genome.getConnections(), genome.getConnections().length);
-		for (int i = 0; i < connectionsMutationsCount; i++)
+		float[] thresholds = Arrays.copyOf(genome.getNeuronsThresholds(), genome.getNeuronsThresholds().length);
+		for (int i = 0; i < thresholdsMutationsCount; i++)
 		{
-			int index = random.nextInt(connections.length);
+			int index = random.nextInt(thresholds.length);
 			
-			int from = random.nextInt(genome.getNeuronsCount());
-			int to = random.nextInt(genome.getNeuronsCount());
-			float weight = generateWeight(random, 0, 10);
-			
-			connections[index] = new GenomeConnection(from, to, weight);
+			thresholds[index] = generate(random, 0, 10);
 		}
 		
-		return new Genome(genome.getNeuronsCount(), connections);
+		Synapse[] synapses = Arrays.copyOf(genome.getSynapses(), genome.getSynapses().length);
+		for (int i = 0; i < weightsMutationsCount; i++)
+		{
+			int index = random.nextInt(synapses.length);
+			
+			Synapse originalSynapse = synapses[index];
+			
+			int from = originalSynapse.getFrom();
+			int to = originalSynapse.getTo();
+			float weight = mutate(random, originalSynapse.getWeight());
+			
+			synapses[index] = new Synapse(from, to, weight);
+		}
+		
+		int neuronsCount = genome.getNeuronsCount();
+		for (int i = 0; i < synapsesChangesCount; i++)
+		{	
+			int index = random.nextInt(synapses.length);
+			
+			int from = random.nextInt(neuronsCount);
+			int to = random.nextInt(neuronsCount);
+			
+			float weight = generate(random, 0, 10);			
+			Synapse synapse = new Synapse(from, to, weight);
+
+			synapses[index] = synapse;
+		}
+		
+		return new Genome(newName, genome.getInputs(), genome.getOutputs(), thresholds, synapses);
 	}
 	
-	private float generateWeight(Random random, float center, int range)
+	private float generate(Random random, float center, int range)
 	{
 		return (random.nextFloat() - 0.5f) * random.nextInt(range) - center;
+	}
+	
+	private float mutate(Random random, float original)
+	{
+		return (random.nextFloat() - 0.5f) + original;
 	}
 }

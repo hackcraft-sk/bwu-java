@@ -1,44 +1,97 @@
 package net.moergil.cortex;
 
+import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Genome
 {
-	private final int neuronsCount;
-	private final GenomeConnection[] connections;
+	private final String name;
 	
-	public Genome(int neuronsCount, GenomeConnection[] connections)
+	private final int[] inputs;
+	private final int[] outputs;
+	private final float[] thresholds;
+	private final Synapse[] synapses;
+	
+	public Genome(String name, int[] inputs, int[] outputs, float[] thresholds, Synapse[] connections)
 	{
-		this.neuronsCount = neuronsCount;
-		this.connections = connections;
+		this.name = name;
+		this.inputs = inputs;
+		this.outputs = outputs;
+		this.thresholds = thresholds;
+		this.synapses = connections;
 	}
 	
 	public Genome(DataInputStream input) throws IOException
 	{
-		neuronsCount = input.readInt();
+		name = input.readUTF();
+
+		inputs = new int[input.readInt()];
+		readIntArray(input, inputs);
 		
-		connections = new GenomeConnection[input.readInt()];
-		for (int i = 0; i < connections.length; i++)
+		outputs = new int[input.readInt()];
+		readIntArray(input, outputs);
+		
+		thresholds = new float[input.readInt()];
+		readFloatArray(input, thresholds);
+		
+		synapses = new Synapse[input.readInt()];
+		for (int i = 0; i < synapses.length; i++)
 		{
 			int from = input.readInt();
 			int to = input.readInt();
 			float weight = input.readFloat();
 
-			connections[i] = new GenomeConnection(from, to, weight);
+			synapses[i] = new Synapse(from, to, weight);
+		}
+	}
+	
+	private void readIntArray(DataInput input, int[] storeArray) throws IOException
+	{
+		for (int i = 0; i < storeArray.length; i++)
+		{
+			storeArray[i] = input.readInt();
+		}
+	}
+	
+	private void readFloatArray(DataInput input, float[] storeArray) throws IOException
+	{
+		for (int i = 0; i < storeArray.length; i++)
+		{
+			storeArray[i] = input.readFloat();
+		}
+	}
+	
+	private void writeIntArray(DataOutput output, int[] saveArray) throws IOException
+	{
+		for (int i = 0; i < saveArray.length; i++)
+		{
+			output.writeInt(saveArray[i]);
+		}
+	}
+	
+	private void writeFloatArray(DataOutput output, float[] saveArray) throws IOException
+	{
+		for (int i = 0; i < saveArray.length; i++)
+		{
+			output.writeFloat(saveArray[i]);
 		}
 	}
 	
 	public void writeTo(DataOutputStream output) throws IOException
 	{
-		output.writeInt(neuronsCount);
+		output.writeUTF(name);
 		
-		output.writeInt(connections.length);
-		for (int i = 0; i < connections.length; i++)
+		writeIntArray(output, inputs);
+		writeIntArray(output, inputs);
+		writeFloatArray(output, thresholds);
+		
+		output.writeInt(synapses.length);
+		for (int i = 0; i < synapses.length; i++)
 		{
-			GenomeConnection connection = connections[i];
+			Synapse connection = synapses[i];
 			
 			output.writeInt(connection.getFrom());
 			output.writeInt(connection.getTo());
@@ -46,19 +99,73 @@ public class Genome
 		}
 	}
 	
-	public int getNeuronsCount()
+	public String getName()
 	{
-		return neuronsCount;
+		return name;
 	}
 	
-	public GenomeConnection[] getConnections()
+	public int[] getInputs()
 	{
-		return connections;
+		return inputs;
+	}
+	
+	public int[] getOutputs()
+	{
+		return outputs;
+	}
+	
+	public int getNeuronsCount()
+	{
+		return thresholds.length;
+	}
+	
+	public float[] getNeuronsThresholds()
+	{
+		return thresholds;
+	}
+	
+	public Synapse[] getSynapses()
+	{
+		return synapses;
 	}
 	
 	@Override
 	public String toString()
 	{
-		return "connections: " + Arrays.toString(connections);
+		return String.format("Genome %s,  %d neurons, %d synapses", name, thresholds.length, synapses.length);
+	}
+	
+	public static class Synapse
+	{
+		private final int from, to;
+		private final float weight;
+		
+		public Synapse(int from, int to, float weight)
+		{
+			this.from = from;
+			this.to = to;
+			this.weight = weight;
+		}
+		
+		public int getFrom()
+		{
+			return from;
+		}
+		
+		public int getTo()
+		{
+			return to;
+		}
+		
+		public float getWeight()
+		{
+			return weight;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return String.format("(%d,%d)[%.2f]", from, to, weight);
+		}
 	}
 }

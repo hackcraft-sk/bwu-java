@@ -1,6 +1,6 @@
-package net.moergil.cortex2;
+package net.moergil.cortex;
 
-import net.moergil.cortex2.Genome.Synapse;
+import net.moergil.cortex.Genome.Synapse;
 
 public class NeuralNetworkFactory
 {
