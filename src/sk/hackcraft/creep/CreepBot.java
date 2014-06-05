@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 
 import jnibwapi.Player;
 import jnibwapi.Position;
@@ -19,14 +20,19 @@ import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.map.BorderLayerProcessor;
+import sk.hackcraft.bwu.map.Bounds;
+import sk.hackcraft.bwu.map.ColorAssigner;
 import sk.hackcraft.bwu.map.Dimension;
 import sk.hackcraft.bwu.map.GameLayerFactory;
 import sk.hackcraft.bwu.map.GradientFloodFillProcessor;
 import sk.hackcraft.bwu.map.Layer;
 import sk.hackcraft.bwu.map.LayerDrawable;
 import sk.hackcraft.bwu.map.LayerColorDrawable;
-import sk.hackcraft.bwu.map.MapColorAssigner;
+import sk.hackcraft.bwu.map.MapExactColorAssigner;
+import sk.hackcraft.bwu.map.MapGradientColorAssignment;
+import sk.hackcraft.bwu.map.MatrixLayer;
 import sk.hackcraft.bwu.map.Point;
+import sk.hackcraft.bwu.map.ValuesChangerLayerProcessor;
 import sk.hackcraft.bwu.mining.MiningAgent;
 import sk.hackcraft.bwu.production.DroneBuildingConstructionAgent;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
@@ -84,30 +90,6 @@ public class CreepBot extends AbstractBot
 	{
 		game.enableUserInput();
 		game.setSpeed(0);
-		
-		plainsLayer = GameLayerFactory.createBuildableLayer(jnibwapi, 0, 1);
-		
-		BorderLayerProcessor borderLayerProcessor = new BorderLayerProcessor(10, 1);
-		Layer bordersLayer = borderLayerProcessor.process(plainsLayer);
-		
-		plainsLayer = plainsLayer.add(bordersLayer);
-
-		GradientFloodFillProcessor gradientFloofFillProcessor = new GradientFloodFillProcessor(11, 1)
-		{
-			@Override
-			protected boolean evaluateCell(int cellValue, int newValue)
-			{
-				return cellValue < newValue;
-			}
-		};
-		
-		//plainsLayer = gradientFloofFillProcessor.process(plainsLayer);
-		
-		HashMap<Integer, BWColor> colors = new HashMap<>();
-		colors.put(1, BWColor.Red);
-		colors.put(11, BWColor.Green);
-		MapColorAssigner colorAssigner = new MapColorAssigner(colors);
-		plainsLayerDrawable = new LayerColorDrawable(plainsLayer, 32, colorAssigner);
 
 		UnitSet myUnits = game.getMyUnits();
 		
@@ -135,7 +117,7 @@ public class CreepBot extends AbstractBot
 		
 		Position startLocation = game.getSelf().getStartLocation();
 		
-		constructionAgent = new DroneBuildingConstructionAgent(jnibwapi, startLocation);
+		constructionAgent = new DroneBuildingConstructionAgent(bwapi, startLocation);
 	}
 
 	@Override
@@ -153,7 +135,42 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
-		jnibwapi.drawText(new Position(10, 10), Integer.toString(game.getFrameCount()), true);
+		game.setSpeed(200);
+		int maxDistance = 5;
+		
+		plainsLayer = GameLayerFactory.createLowResWalkableLayer(game.getMap());
+		
+		BorderLayerProcessor borderLayerProcessor = new BorderLayerProcessor(2, 0);
+		Layer bordersLayer = borderLayerProcessor.process(plainsLayer);
+		
+		plainsLayer = plainsLayer.add(bordersLayer);
+
+		HashMap<Integer, Integer> changeMap = new HashMap<>();
+		changeMap.put(2, maxDistance);
+		changeMap.put(0, maxDistance + 1);
+		changeMap.put(1, 0);
+		plainsLayer = new ValuesChangerLayerProcessor(changeMap).process(plainsLayer);
+
+		GradientFloodFillProcessor gradientFloofFillProcessor = new GradientFloodFillProcessor(maxDistance, -1)
+		{
+			@Override
+			protected boolean fillCell(int cellValue, int newValue)
+			{
+				return cellValue < newValue;
+			}
+		};
+		
+		plainsLayer = gradientFloofFillProcessor.process(plainsLayer);
+		
+		TreeMap<Integer, BWColor> colors = new TreeMap<>();
+		colors.put(maxDistance + 1, BWColor.Red);
+		colors.put(maxDistance, BWColor.Orange);
+		colors.put(1, BWColor.Green);
+		colors.put(0, BWColor.Blue);
+		ColorAssigner colorAssigner = new MapGradientColorAssignment(colors);
+		plainsLayerDrawable = new LayerColorDrawable(plainsLayer, jnibwapi.Map.BUILD_TILE_SIZE, colorAssigner);
+		
+		bwapi.drawText(new Position(10, 10), Integer.toString(game.getFrameCount()), true);
 		
 		game.setSpeed(25);
 		

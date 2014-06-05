@@ -4,11 +4,11 @@ import java.util.Map;
 
 import jnibwapi.util.BWColor;
 
-public class MapColorAssigner implements ColorAssigner
+public class MapExactColorAssigner implements ColorAssigner
 {
 	private final Map<Integer, BWColor> colors;
 	
-	public MapColorAssigner(Map<Integer, BWColor> colors)
+	public MapExactColorAssigner(Map<Integer, BWColor> colors)
 	{
 		this.colors = colors;
 	}

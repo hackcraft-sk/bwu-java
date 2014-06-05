@@ -8,10 +8,19 @@ public abstract class LayerDrawable implements Drawable
 	private final Layer layer;
 	private final Dimension cellDimension;
 	
+	private Bounds bounds;
+	
 	public LayerDrawable(Layer layer, int cellDimension)
 	{
 		this.layer = layer;
 		this.cellDimension = new Dimension(cellDimension, cellDimension);
+
+		this.bounds = new Bounds(Point.ORIGIN, layer.getDimension());
+	}
+	
+	public void setBounds(Bounds bounds)
+	{
+		this.bounds = bounds;
 	}
 	
 	@Override
@@ -25,6 +34,12 @@ public abstract class LayerDrawable implements Drawable
 			for (int y = 0; y < dimension.getHeight(); y++)
 			{
 				Point cellPosition = new Point(x, y);
+				
+				if (!bounds.isInside(cellPosition))
+				{
+					continue;
+				}
+				
 				int value = layer.get(cellPosition);
 				
 				Point drawPosition = new Point(x * cellDimension.getWidth(), y * cellDimension.getHeight());

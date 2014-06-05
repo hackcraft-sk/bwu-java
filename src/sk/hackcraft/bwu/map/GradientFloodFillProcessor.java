@@ -18,23 +18,23 @@ public abstract class GradientFloodFillProcessor implements LayerProcessor
 	@Override
 	public Layer process(Layer layer)
 	{
-		Layer newLayer = new MatrixLayer(layer.getDimension());
+		final Layer newLayer = new MatrixLayer(layer);
 		
-		Queue<Point> continuePoints = new LinkedList<>();
+		final Queue<Point> continuePoints = new LinkedList<>();
 		
-		Dimension dimension = layer.getDimension();
-		for (int x = 0; x < dimension.getWidth(); x++)
+		LayerIterator iterator = new LayerIterator(newLayer)
 		{
-			for (int y = 0; y < dimension.getWidth(); y++)
+			@Override
+			protected void nextCell(Point coordinates, int value)
 			{
-				Point point = new Point(x, y);
-				
-				if (layer.get(point) == startValue)
+				if (newLayer.get(coordinates) == startValue)
 				{
-					continuePoints.add(point);
+					continuePoints.add(coordinates);
 				}
 			}
-		}
+		};
+		
+		iterator.iterate();
 
 		Point[] directions = {
 				new Point( 1,  0),
@@ -47,25 +47,25 @@ public abstract class GradientFloodFillProcessor implements LayerProcessor
 		{
 			Point point = continuePoints.remove();
 			
-			int actualValue = layer.get(point);
+			int actualValue = newLayer.get(point);
 			
-			int newValue = actualValue += addFactor;
+			int newValue = actualValue + addFactor;
 			
 			for (Point direction : directions)
 			{
 				Point cellPosition = point.add(direction);
 				
-				if (!layer.isValid(cellPosition))
+				if (!newLayer.isValid(cellPosition))
 				{
 					continue;
 				}
 				
-				int cellValue = layer.get(cellPosition);
+				int cellValue = newLayer.get(cellPosition);
 				
-				if (evaluateCell(cellValue, newValue))
+				if (fillCell(cellValue, newValue))
 				{
 					newLayer.set(cellPosition, newValue);
-					//continuePoints.add(cellPosition);
+					continuePoints.add(cellPosition);
 				}
 			}
 		}
@@ -73,5 +73,5 @@ public abstract class GradientFloodFillProcessor implements LayerProcessor
 		return newLayer;
 	}
 	
-	protected abstract boolean evaluateCell(int cellValue, int newValue);
+	protected abstract boolean fillCell(int cellValue, int newValue);
 }

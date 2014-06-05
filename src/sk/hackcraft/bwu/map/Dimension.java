@@ -38,4 +38,10 @@ public class Dimension
 	{
 		return width * 31 + height;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("Dimension %dx%d", width, height);
+	}
 }

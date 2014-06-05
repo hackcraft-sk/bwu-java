@@ -16,7 +16,7 @@ public class MatrixLayer implements Layer
 		this.matrix = new int[dimension.getWidth() * dimension.getHeight()];
 	}
 	
-	public MatrixLayer(MatrixLayer layer, int offsetX, int lengthX, int offsetY, int lengthY)
+	public MatrixLayer(Layer layer, int offsetX, int lengthX, int offsetY, int lengthY)
 	{
 		this(new Dimension(lengthX, lengthY));
 		
@@ -36,7 +36,7 @@ public class MatrixLayer implements Layer
 					continue;
 				}
 				
-				int value = layer.get(x, y);
+				int value = layer.get(new Point(x, y));
 				set(thisX, thisY, value);
 				
 				thisY++;
@@ -47,7 +47,7 @@ public class MatrixLayer implements Layer
 		}
 	}
 	
-	public MatrixLayer(MatrixLayer layer)
+	public MatrixLayer(Layer layer)
 	{
 		this(layer, 0, layer.getDimension().getWidth(), 0, layer.getDimension().getHeight());
 	}
@@ -59,15 +59,15 @@ public class MatrixLayer implements Layer
 	}
 	
 	@Override
-	public boolean isValid(Point point)
+	public boolean isValid(Point coordinates)
 	{
-		int x = point.getX();
+		int x = coordinates.getX();
 		if (x < 0 || x >= dimension.getWidth())
 		{
 			return false;
 		}
 		
-		int y = point.getY();
+		int y = coordinates.getY();
 		if (y < 0 || y >= dimension.getHeight())
 		{
 			return false;
@@ -84,9 +84,9 @@ public class MatrixLayer implements Layer
 	}
 	
 	@Override
-	public int get(Point point)
+	public int get(Point coordinates)
 	{
-		return get(point.getX(), point.getY());
+		return get(coordinates.getX(), coordinates.getY());
 	}
 	
 	@Override
@@ -97,9 +97,9 @@ public class MatrixLayer implements Layer
 	}
 	
 	@Override
-	public void set(Point point, int value)
+	public void set(Point coordinates, int value)
 	{
-		set(point.getX(), point.getY(), value);
+		set(coordinates.getX(), coordinates.getY(), value);
 	}
 	
 	private int positionToIndex(int x, int y)
