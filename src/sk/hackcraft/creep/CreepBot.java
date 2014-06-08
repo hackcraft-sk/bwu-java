@@ -135,7 +135,7 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
-		game.setSpeed(200);
+		game.setSpeed(10);
 		int maxDistance = 5;
 		
 		plainsLayer = GameLayerFactory.createLowResWalkableLayer(game.getMap());
@@ -171,8 +171,6 @@ public class CreepBot extends AbstractBot
 		plainsLayerDrawable = new LayerColorDrawable(plainsLayer, jnibwapi.Map.BUILD_TILE_SIZE, colorAssigner);
 		
 		bwapi.drawText(new Position(10, 10), Integer.toString(game.getFrameCount()), true);
-		
-		game.setSpeed(25);
 		
 		for (MiningAgent agent : miningAgents)
 		{
