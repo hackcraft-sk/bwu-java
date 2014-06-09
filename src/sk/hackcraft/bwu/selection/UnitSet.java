@@ -7,6 +7,7 @@ import java.util.Iterator;
 import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
+import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Vector2D;
 
 /**
@@ -347,5 +348,10 @@ public class UnitSet extends HashSet<Unit>
 	public boolean areAt(Vector2D position, double tolerance)
 	{
 		return getAverageDistanceFrom(position) <= tolerance;
+	}
+	
+	public Unit pick(Picker picker)
+	{
+		return picker.pickFrom(this);
 	}
 }

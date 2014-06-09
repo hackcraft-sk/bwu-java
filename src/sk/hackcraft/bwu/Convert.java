@@ -1,9 +1,7 @@
-package sk.hackcraft.bwu.selection;
+package sk.hackcraft.bwu;
 
 import jnibwapi.Position;
 import jnibwapi.Position.PosType;
-import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.Vector2DMath;
 
 public class Convert
 {

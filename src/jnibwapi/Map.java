@@ -17,7 +17,8 @@ import jnibwapi.util.BWColor;
  * Stores information about a StarCraft map.
  */
 public class Map {
-	public static final int TILE_SIZE = 32;
+	public static final int BUILD_TILE_SIZE = 32;
+	public static final int WALK_TILE_SIZE = 8;
 	
 	private final Position size;
 	private final String name;
@@ -282,7 +283,7 @@ public class Map {
 		while (!openTiles.isEmpty()) {
 			Position p = openTiles.poll().tilePos;
 			if (p.equals(end))
-				return gmap.get(p) * TILE_SIZE / (double) mvmtCost;
+				return gmap.get(p) * BUILD_TILE_SIZE / (double) mvmtCost;
 			int gvalue = gmap.get(p);
 			closedTiles.add(p);
 			// Explore the neighbours of p

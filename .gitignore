@@ -1,4 +1,8 @@
+# Eclipse files
 bin
 .classpath
 .project
 .settings
+
+# error logs
+*.log

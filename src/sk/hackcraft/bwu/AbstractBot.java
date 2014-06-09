@@ -16,7 +16,7 @@ import jnibwapi.JNIBWAPI;
  */
 abstract public class AbstractBot implements Bot
 {
-	protected final JNIBWAPI jnibwapi;
+	protected final JNIBWAPI bwapi;
 	protected final Game game;
 
 	private final GraphicsOutputStream graphicsOutputStream = new GraphicsOutputStream();
@@ -29,7 +29,7 @@ abstract public class AbstractBot implements Bot
 	 */
 	public AbstractBot(Game game)
 	{
-		this.jnibwapi = game.getJNIBWAPI();
+		this.bwapi = game.getJNIBWAPI();
 		this.game = game;
 	}
 
