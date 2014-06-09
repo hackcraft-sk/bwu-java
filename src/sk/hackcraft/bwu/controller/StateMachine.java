@@ -80,8 +80,9 @@ public class StateMachine implements Updateable
 		currentState.update();
 	}
 	
-	public interface State extends Updateable
+	public interface State
 	{
+		void update();
 	}
 	
 	public interface StateTransition

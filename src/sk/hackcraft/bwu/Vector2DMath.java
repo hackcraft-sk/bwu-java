@@ -3,6 +3,7 @@ package sk.hackcraft.bwu;
 import java.util.Random;
 
 import jnibwapi.Position;
+import jnibwapi.Unit;
 import jnibwapi.Position.PosType;
 
 public class Vector2DMath
@@ -41,6 +42,17 @@ public class Vector2DMath
 	static public float dotProduct(Vector2D vectorA, Vector2D vectorB)
 	{
 		return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
+	}
+	
+	public static Vector2D createVector(Unit from, Unit to)
+	{
+		Position fromPosition = from.getPosition();
+		Position toPosition = to.getPosition();
+		
+		Vector2D fromVector = toVector(fromPosition, PosType.PIXEL);
+		Vector2D toVector = toVector(toPosition, PosType.PIXEL);
+		
+		return toVector.sub(fromVector);
 	}
 	
 	public static Vector2D toVector(Position position, PosType posType)

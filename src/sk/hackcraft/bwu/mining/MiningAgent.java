@@ -9,11 +9,11 @@ import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.OrderType.OrderTypes;
 import jnibwapi.util.BWColor;
+import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.selection.Convert;
 
 public class MiningAgent implements Updateable, Drawable
 {
