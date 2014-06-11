@@ -1,10 +1,10 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
-public class Dimension
+public class LayerDimension
 {
 	private final int width, height;
 
-	public Dimension(int width, int height)
+	public LayerDimension(int width, int height)
 	{
 		this.width = width;
 		this.height = height;
@@ -23,12 +23,12 @@ public class Dimension
 	@Override
 	public boolean equals(Object object)
 	{
-		if (!(object instanceof Dimension))
+		if (!(object instanceof LayerDimension))
 		{
 			return false;
 		}
 		
-		Dimension dimension = (Dimension)object;
+		LayerDimension dimension = (LayerDimension)object;
 		
 		return dimension.width == width && dimension.height == height;
 	}

@@ -1,8 +1,15 @@
 package sk.hackcraft.creep;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
 
+import net.moergil.cortex.Genome;
+import net.moergil.cortex.GenomeCreator;
+import net.moergil.cortex.NeuralNetwork;
 import jnibwapi.Player;
 import jnibwapi.Position;
 import jnibwapi.Unit;
@@ -13,41 +20,73 @@ import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
+import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.controller.Brain;
+import sk.hackcraft.bwu.controller.ScreamerAgent;
 import sk.hackcraft.bwu.controller.StateMachine;
 import sk.hackcraft.bwu.controller.StateMachine.State;
 import sk.hackcraft.bwu.controller.StateMachine.StateTransition;
+import sk.hackcraft.bwu.production.LarvaProductionAgent;
 import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.NearestPicker;
 import sk.hackcraft.bwu.selection.TypeSelector;
+import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
 
 public class ZerglingsLearningBot extends AbstractBot
-{
+{	
 	public static void main(String[] args)
 	{
-		new BWU()
+		while (true)
 		{
-			
-			@Override
-			protected Bot createBot(Game game)
+			new BWU()
 			{
-				return new ZerglingsLearningBot(game);
-			}
-		}.start();
+				@Override
+				protected Bot createBot(Game game)
+				{
+					return new ZerglingsLearningBot(game);
+				}
+			}.start();
+		}
 	}
+	
+	private final GenomeCreator genomeCreator;
+	private final Random random;
+	
+	private float averageUnitKillEfficiency;
 
-	private List<StateMachine> zerglingsStateMachines;
-	private List<Brain> brains;
+	private List<ScreamerAgent> screamers;
+	
+	private Position attackPosition;
+
+	private LarvaProductionAgent production;
+	
+	private Queue<Genome> genomePool;
 	
 	public ZerglingsLearningBot(Game game)
 	{
 		super(game);
 
-		zerglingsStateMachines = new ArrayList<StateMachine>();
-		brains = new ArrayList<>();
+		genomeCreator = new GenomeCreator();
+		random = new Random();
+		
+		screamers = new ArrayList<ScreamerAgent>();
+		
+		production = new LarvaProductionAgent();
+		
+		genomePool = new LinkedList<Genome>();
+		
+		for (int i = 0; i < 30; i++)
+		{
+			int[] inputs = {0, 1, 2};
+			int[] outputs = {10, 11};
+			
+			Genome genome = genomeCreator.generate("G0-" + i, random, 25, inputs, outputs);
+			
+			genomePool.add(genome);
+		}
 	}
 	
 	@Override
@@ -58,101 +97,27 @@ public class ZerglingsLearningBot extends AbstractBot
 		UnitSet zerglings = game.getMyUnits().where(new TypeSelector(UnitTypes.Zerg_Zergling));
 		for (Unit zergling : zerglings)
 		{
-			initializeZergling(zergling);
+			initializeScreamer(zergling);
+		}
+		
+		Player enemyPlayer = game.getJNIBWAPI().getEnemies().iterator().next();
+		attackPosition = enemyPlayer.getStartLocation();
+		
+		UnitSet hatcheries = game.getMyUnits().where(UnitSelector.IS_SPAWNING_LARVAE);
+		for (Unit hatchery : hatcheries)
+		{
+			production.addHatchery(hatchery);
 		}
 	}
 	
-	private void initializeZergling(final Unit zergling)
+	private void initializeScreamer(Unit unit)
 	{
-		final State runAway = new State()
-		{
-			@Override
-			public void update()
-			{
-				if (!zergling.isMoving() || zergling.isAttacking())
-				{
-					Unit nearestEnemy = game.getEnemyUnits().pick(new NearestPicker(zergling));
-					
-					if (nearestEnemy != null)
-					{
-						Vector2D directionToEnemy = Vector2DMath.createVector(zergling, nearestEnemy);
-						
-						Vector2D position = Convert.toPositionVector(zergling.getPosition());
-						Vector2D runVector = directionToEnemy.invert().normalize().scale(100);
-						
-						Position runPosition = Convert.toPosition(position.add(runVector));
-						
-						zergling.move(runPosition, false);
-					}
-				}
-			}
-			
-			@Override
-			public String toString()
-			{
-				return "RUN_AWAY";
-			}
-		};
+		NeuralNetwork brain = null;
+		ScreamerAgent screamer = new ScreamerAgent(game, unit, brain);
 		
-		final State attack = new State()
-		{
-			@Override
-			public void update()
-			{
-				if (!zergling.isAttacking())
-				{
-					int sightRange = zergling.getType().getSightRange();
-					UnitSet enemyUnits = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(zergling), sightRange);
-					Unit target = enemyUnits.pick(new NearestPicker(zergling));
-					
-					if (target != null)
-					{
-						zergling.attack(target, false);
-					}
-				}
-			}
-			
-			@Override
-			public String toString()
-			{
-				return "ATTACK";
-			}
-		};
+		screamers.add(screamer);
 
-		final StateMachine machine = new StateMachine(runAway);
-		machine.addState(attack);
-		
-		machine.addTransition(runAway, attack, StateTransition.ALWAYS);
-		machine.addTransition(attack, runAway, StateTransition.ALWAYS);
-		
-		zerglingsStateMachines.add(machine);
-		
-		Brain brain = new Brain()
-		{
-			int runTimeout = 100;
-			@Override
-			public void update()
-			{
-				if (runTimeout > 0)
-				{
-					runTimeout--;
-				}
-				
-				if (machine.getCurrentState() != runAway && zergling.isUnderAttack())
-				{
-					machine.changeState(runAway);
-					runTimeout = 100;
-				}
-				
-				Unit nearestEnemy = game.getEnemyUnits().pick(new NearestPicker(zergling));
-				if (machine.getCurrentState() != attack && (nearestEnemy == null || Vector2DMath.createVector(nearestEnemy, zergling).getLength() < 100 && runTimeout <= 0))
-				{
-					machine.changeState(attack);
-				}
-			}
-		};
-		
-		brains.add(brain);
+		screamer.attack(attackPosition);
 	}
 
 	@Override
@@ -165,14 +130,14 @@ public class ZerglingsLearningBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
-		for (StateMachine machine : zerglingsStateMachines)
+		for (Updateable updateable : screamers)
 		{
-			machine.update();
+			updateable.update();
 		}
 		
-		for (Brain brain : brains)
+		for (Unit larva : production.getAvailableLarvae())
 		{
-			brain.update();
+			production.produce(UnitTypes.Zerg_Zergling, larva);
 		}
 	}
 
@@ -214,8 +179,10 @@ public class ZerglingsLearningBot extends AbstractBot
 	@Override
 	public void unitDestroyed(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (unit.getPlayer() == game.getSelf())
+		{
+			
+		}
 	}
 
 	@Override
@@ -228,8 +195,10 @@ public class ZerglingsLearningBot extends AbstractBot
 	@Override
 	public void unitCreated(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (game.getMyUnits().contains(unit) && unit.getType() == UnitTypes.Zerg_Zergling)
+		{
+			initializeScreamer(unit);
+		}
 	}
 
 	@Override

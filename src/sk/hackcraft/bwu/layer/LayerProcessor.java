@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 public interface LayerProcessor
 {

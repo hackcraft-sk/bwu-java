@@ -1,65 +1,28 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class MatrixLayer implements Layer
+public class MatrixLayer extends AbstractLayer
 {
-	private final Dimension dimension;
 	private final int[] matrix;
 	
-	public MatrixLayer(Dimension dimension)
+	public MatrixLayer(LayerDimension dimension)
 	{
-		this.dimension = dimension;
+		super(dimension);
 		
 		this.matrix = new int[dimension.getWidth() * dimension.getHeight()];
 	}
 	
-	public MatrixLayer(Layer layer, int offsetX, int lengthX, int offsetY, int lengthY)
-	{
-		this(new Dimension(lengthX, lengthY));
-		
-		int thisX = 0, thisY = 0;
-		
-		for (int x = 0; x < layer.getDimension().getWidth(); x++)
-		{
-			if (x < offsetX || x >= offsetX + lengthX)
-			{
-				continue;
-			}
-			
-			for (int y = 0; y < layer.getDimension().getHeight(); y++)
-			{
-				if (y < offsetY || y >= offsetY + lengthY)
-				{
-					continue;
-				}
-				
-				int value = layer.get(new Point(x, y));
-				set(thisX, thisY, value);
-				
-				thisY++;
-			}
-			
-			thisX++;
-			thisY = 0;
-		}
-	}
-	
-	public MatrixLayer(Layer layer)
-	{
-		this(layer, 0, layer.getDimension().getWidth(), 0, layer.getDimension().getHeight());
-	}
-	
 	@Override
-	public Dimension getDimension()
+	public LayerDimension getDimension()
 	{
 		return dimension;
 	}
 	
 	@Override
-	public boolean isValid(Point coordinates)
+	public boolean isValid(LayerPoint coordinates)
 	{
 		int x = coordinates.getX();
 		if (x < 0 || x >= dimension.getWidth())
@@ -84,7 +47,7 @@ public class MatrixLayer implements Layer
 	}
 	
 	@Override
-	public int get(Point coordinates)
+	public int get(LayerPoint coordinates)
 	{
 		return get(coordinates.getX(), coordinates.getY());
 	}
@@ -97,7 +60,7 @@ public class MatrixLayer implements Layer
 	}
 	
 	@Override
-	public void set(Point coordinates, int value)
+	public void set(LayerPoint coordinates, int value)
 	{
 		set(coordinates.getX(), coordinates.getY(), value);
 	}
@@ -111,14 +74,14 @@ public class MatrixLayer implements Layer
 	@Override
 	public String toString()
 	{
-		Dimension dimension = getDimension();
+		LayerDimension dimension = getDimension();
 		return String.format("Layer %dx%d", dimension.getWidth(), dimension.getHeight());
 	}
 
 	@Override
 	public Layer add(Layer layer)
 	{
-		Dimension dimension = getDimension();
+		LayerDimension dimension = getDimension();
 		
 		MatrixLayer newLayer = new MatrixLayer(dimension);
 		
@@ -126,7 +89,7 @@ public class MatrixLayer implements Layer
 		{
 			for (int y = 0; y < dimension.getHeight(); y++)
 			{
-				Point point = new Point(x, y);
+				LayerPoint point = new LayerPoint(x, y);
 				int value = get(point) + layer.get(point);
 				newLayer.set(point, value);
 			}

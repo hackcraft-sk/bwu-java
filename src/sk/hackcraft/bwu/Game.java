@@ -45,7 +45,7 @@ public class Game
 	 * 
 	 * @return
 	 */
-	public UnitSet getAllyUnits()
+	public UnitSet getAlliedUnits()
 	{
 		return new UnitSet(jnibwapi.getAlliedUnits());
 	}
@@ -89,6 +89,15 @@ public class Game
 	public UnitSet getStaticNeutralUnits()
 	{
 		return new UnitSet(jnibwapi.getStaticNeutralUnits());
+	}
+	
+	/**
+	 * returns {@link UnitSet} containing all units.
+	 * @return set of all units
+	 */
+	public UnitSet getAllUnits()
+	{
+		return new UnitSet(jnibwapi.getAllUnits());
 	}
 
 	/**

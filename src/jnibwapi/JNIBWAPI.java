@@ -1310,64 +1310,49 @@ public class JNIBWAPI
 	 */
 	private void gameUpdate()
 	{
-		try
+		// update game state
+		gameFrame = getFrame();
+		if (!isReplay())
 		{
-			// update game state
-			gameFrame = getFrame();
-			if (!isReplay())
+			self.update(getPlayerUpdate(self.getID()));
+			self.updateResearch(getResearchStatus(self.getID()), getUpgradeStatus(self.getID()));
+		}
+		else
+		{
+			for (Integer playerID : players.keySet())
 			{
-				self.update(getPlayerUpdate(self.getID()));
-				self.updateResearch(getResearchStatus(self.getID()), getUpgradeStatus(self.getID()));
+				players.get(playerID).update(getPlayerUpdate(playerID));
+				players.get(playerID).updateResearch(getResearchStatus(playerID), getUpgradeStatus(playerID));
 			}
-			else
+		}
+		// update units
+		int[] unitData = getAllUnitsData();
+		HashSet<Integer> deadUnits = new HashSet<>(units.keySet());
+		ArrayList<Unit> playerList = new ArrayList<>();
+		ArrayList<Unit> alliedList = new ArrayList<>();
+		ArrayList<Unit> enemyList = new ArrayList<>();
+		ArrayList<Unit> neutralList = new ArrayList<>();
+
+		for (int index = 0; index < unitData.length; index += Unit.numAttributes)
+		{
+			int id = unitData[index];
+
+			deadUnits.remove(id);
+
+			Unit unit = units.get(id);
+			if (unit == null)
 			{
-				for (Integer playerID : players.keySet())
-				{
-					players.get(playerID).update(getPlayerUpdate(playerID));
-					players.get(playerID).updateResearch(getResearchStatus(playerID), getUpgradeStatus(playerID));
-				}
+				unit = factory.createUnit(id, this);
+				units.put(id, unit);
 			}
-			// update units
-			int[] unitData = getAllUnitsData();
-			HashSet<Integer> deadUnits = new HashSet<>(units.keySet());
-			ArrayList<Unit> playerList = new ArrayList<>();
-			ArrayList<Unit> alliedList = new ArrayList<>();
-			ArrayList<Unit> enemyList = new ArrayList<>();
-			ArrayList<Unit> neutralList = new ArrayList<>();
 
-			for (int index = 0; index < unitData.length; index += Unit.numAttributes)
+			unit.update(unitData, index);
+
+			if (self != null)
 			{
-				int id = unitData[index];
-
-				deadUnits.remove(id);
-
-				Unit unit = units.get(id);
-				if (unit == null)
+				if (unit.getPlayer() == self)
 				{
-					unit = factory.createUnit(id, this);
-					units.put(id, unit);
-				}
-
-				unit.update(unitData, index);
-
-				if (self != null)
-				{
-					if (unit.getPlayer() == self)
-					{
-						playerList.add(unit);
-					}
-					else if (allies.contains(unit.getPlayer()))
-					{
-						alliedList.add(unit);
-					}
-					else if (enemies.contains(unit.getPlayer()))
-					{
-						enemyList.add(unit);
-					}
-					else
-					{
-						neutralList.add(unit);
-					}
+					playerList.add(unit);
 				}
 				else if (allies.contains(unit.getPlayer()))
 				{
@@ -1382,21 +1367,29 @@ public class JNIBWAPI
 					neutralList.add(unit);
 				}
 			}
-
-			// update the unit lists
-			playerUnits = playerList;
-			alliedUnits = alliedList;
-			enemyUnits = enemyList;
-			neutralUnits = neutralList;
-			for (Integer unitID : deadUnits)
+			else if (allies.contains(unit.getPlayer()))
 			{
-				units.get(unitID).setDestroyed();
-				units.remove(unitID);
+				alliedList.add(unit);
+			}
+			else if (enemies.contains(unit.getPlayer()))
+			{
+				enemyList.add(unit);
+			}
+			else
+			{
+				neutralList.add(unit);
 			}
 		}
-		catch (Throwable t)
+
+		// update the unit lists
+		playerUnits = playerList;
+		alliedUnits = alliedList;
+		enemyUnits = enemyList;
+		neutralUnits = neutralList;
+		for (Integer unitID : deadUnits)
 		{
-			t.printStackTrace();
+			units.get(unitID).setDestroyed();
+			units.remove(unitID);
 		}
 	}
 
@@ -1498,13 +1491,6 @@ public class JNIBWAPI
 	 */
 	public void keyPressed(int keyCode)
 	{
-		try
-		{
-			listener.keyPressed(keyCode);
-		}
-		catch (Throwable t)
-		{
-			t.printStackTrace();
-		}
+		listener.keyPressed(keyCode);
 	}
 }

@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,14 +16,14 @@ public class LayerColorDrawable extends LayerDrawable
 		HashMap<Integer, BWColor> colors = new HashMap<>();
 		colors.put(0, BWColor.Black);
 		colors.put(0, BWColor.White);
-		ColorAssigner colorAssigner = new MapExactColorAssigner(colors);
+		ColorAssigner<BWColor> colorAssigner = new MapExactColorAssigner<>(colors);
 		
 		return new LayerColorDrawable(layer, cellDimension, colorAssigner);
 	}
 	
-	private final ColorAssigner colorAssigner;
+	private final ColorAssigner<BWColor> colorAssigner;
 
-	public LayerColorDrawable(Layer layer, int cellDimension, ColorAssigner colorAssigner)
+	public LayerColorDrawable(Layer layer, int cellDimension, ColorAssigner<BWColor> colorAssigner)
 	{
 		super(layer, cellDimension);
 		
@@ -31,7 +31,7 @@ public class LayerColorDrawable extends LayerDrawable
 	}
 
 	@Override
-	protected void drawCell(Graphics graphics, Point cellPosition, Dimension cellDimension, int value)
+	protected void drawCell(Graphics graphics, LayerPoint cellPosition, LayerDimension cellDimension, int value)
 	{
 		Vector2D topLeftCorner = new Vector2D(cellPosition.getX() + 1, cellPosition.getY() + 1);
 		Vector2D bottomRightCorner = new Vector2D(cellPosition.getX() + cellDimension.getWidth() - 1, cellPosition.getY() + cellDimension.getHeight() - 1);

@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 import jnibwapi.JNIBWAPI;
 import jnibwapi.Map;
@@ -76,12 +76,12 @@ public class GameLayerFactory
 		
 		public Layer create()
 		{
-			final MatrixLayer layer = new MatrixLayer(new Dimension(width, height));
+			final MatrixLayer layer = new MatrixLayer(new LayerDimension(width, height));
 			
 			LayerIterator iterator = new LayerIterator(layer)
 			{
 				@Override
-				protected void nextCell(Point coordinates, int value)
+				protected void nextCell(LayerPoint coordinates, int value)
 				{
 					int x = coordinates.getX();
 					int y = coordinates.getY();

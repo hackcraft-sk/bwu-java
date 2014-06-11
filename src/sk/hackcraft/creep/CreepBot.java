@@ -1,5 +1,6 @@
 package sk.hackcraft.creep;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,20 +21,23 @@ import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.map.BorderLayerProcessor;
-import sk.hackcraft.bwu.map.Bounds;
-import sk.hackcraft.bwu.map.ColorAssigner;
-import sk.hackcraft.bwu.map.Dimension;
-import sk.hackcraft.bwu.map.GameLayerFactory;
-import sk.hackcraft.bwu.map.GradientFloodFillProcessor;
-import sk.hackcraft.bwu.map.Layer;
-import sk.hackcraft.bwu.map.LayerDrawable;
-import sk.hackcraft.bwu.map.LayerColorDrawable;
-import sk.hackcraft.bwu.map.MapExactColorAssigner;
-import sk.hackcraft.bwu.map.MapGradientColorAssignment;
-import sk.hackcraft.bwu.map.MatrixLayer;
-import sk.hackcraft.bwu.map.Point;
-import sk.hackcraft.bwu.map.ValuesChangerLayerProcessor;
+import sk.hackcraft.bwu.layer.BorderLayerProcessor;
+import sk.hackcraft.bwu.layer.Bounds;
+import sk.hackcraft.bwu.layer.ColorAssigner;
+import sk.hackcraft.bwu.layer.GameLayerFactory;
+import sk.hackcraft.bwu.layer.GradientFloodFillProcessor;
+import sk.hackcraft.bwu.layer.Layer;
+import sk.hackcraft.bwu.layer.LayerColorDrawable;
+import sk.hackcraft.bwu.layer.LayerDimension;
+import sk.hackcraft.bwu.layer.LayerDrawable;
+import sk.hackcraft.bwu.layer.MapExactColorAssigner;
+import sk.hackcraft.bwu.layer.MapGradientColorAssignment;
+import sk.hackcraft.bwu.layer.MatrixLayer;
+import sk.hackcraft.bwu.layer.LayerPoint;
+import sk.hackcraft.bwu.layer.UnitsLayer;
+import sk.hackcraft.bwu.layer.ValuesChangerLayerProcessor;
+import sk.hackcraft.bwu.map.visualization.LayersPainter;
+import sk.hackcraft.bwu.map.visualization.SwingLayersVisualization;
 import sk.hackcraft.bwu.mining.MiningAgent;
 import sk.hackcraft.bwu.production.DroneBuildingConstructionAgent;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
@@ -48,16 +52,19 @@ public class CreepBot extends AbstractBot
 	
 	public static void main(String[] args)
 	{
-		BWU bwu = new BWU()
+		while (true)
 		{
-			@Override
-			protected Bot createBot(Game game)
+			BWU bwu = new BWU()
 			{
-				return new CreepBot(game);
-			}
-		};
-		
-		bwu.start();
+				@Override
+				protected Bot createBot(Game game)
+				{
+					return new CreepBot(game);
+				}
+			};
+			
+			bwu.start();
+		}
 	}
 
 	private final Set<MiningAgent> miningAgents;
@@ -73,7 +80,13 @@ public class CreepBot extends AbstractBot
 	private final Map<Unit, Position> enemyBuildings;
 	
 	private Layer plainsLayer;
+	private UnitsLayer unitsLayer;
 	private LayerDrawable plainsLayerDrawable;
+	
+	// visualizaton
+	
+	SwingLayersVisualization visualization;
+	LayersPainter layersPainter;
 	
 	public CreepBot(Game game)
 	{
@@ -88,6 +101,14 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameStarted()
 	{
+		jnibwapi.Map map = game.getMap();
+		LayerDimension dimension = Convert.toLayerDimension(map.getSize());
+				
+		layersPainter = new LayersPainter(dimension);
+		visualization = new SwingLayersVisualization(layersPainter);
+		
+		// ---
+		
 		game.enableUserInput();
 		game.setSpeed(0);
 
@@ -118,24 +139,9 @@ public class CreepBot extends AbstractBot
 		Position startLocation = game.getSelf().getStartLocation();
 		
 		constructionAgent = new DroneBuildingConstructionAgent(bwapi, startLocation);
-	}
-
-	@Override
-	public void gameEnded(boolean isWinner)
-	{
-		games++;
-		if (isWinner)
-		{
-			wins++;
-		}
 		
-		System.out.println(games + " " + wins);
-	}
-
-	@Override
-	public void gameUpdated()
-	{
-		game.setSpeed(10);
+		// map layers
+		
 		int maxDistance = 5;
 		
 		plainsLayer = GameLayerFactory.createLowResWalkableLayer(game.getMap());
@@ -167,8 +173,49 @@ public class CreepBot extends AbstractBot
 		colors.put(maxDistance, BWColor.Orange);
 		colors.put(1, BWColor.Green);
 		colors.put(0, BWColor.Blue);
-		ColorAssigner colorAssigner = new MapGradientColorAssignment(colors);
+		ColorAssigner<BWColor> colorAssigner = new MapGradientColorAssignment<>(colors);
 		plainsLayerDrawable = new LayerColorDrawable(plainsLayer, jnibwapi.Map.BUILD_TILE_SIZE, colorAssigner);
+		
+		TreeMap<Integer, Color> colors2 = new TreeMap<>();
+		colors2.put(maxDistance + 1, Color.RED);
+		colors2.put(maxDistance, Color.ORANGE);
+		colors2.put(1, Color.GREEN);
+		colors2.put(0, Color.BLUE);
+		ColorAssigner<Color> colorAssigner2 = new MapGradientColorAssignment<>(colors2);
+		layersPainter.addLayer(plainsLayer, colorAssigner2);
+		
+		visualization.start();
+
+		unitsLayer = new UnitsLayer(dimension, game);
+		
+		TreeMap<Integer, Color> colors3 = new TreeMap<>();
+		colors3.put(UnitsLayer.MINE, Color.GREEN);
+		colors3.put(UnitsLayer.ALLY, Color.BLUE);
+		colors3.put(UnitsLayer.ENEMY, Color.RED);
+		colors3.put(UnitsLayer.NEUTRAL, Color.GRAY);
+		colors3.put(0, new Color(0, 0, 0, 0));
+		ColorAssigner<Color> colorAssigner3 = new MapExactColorAssigner<>(colors3);
+		layersPainter.addLayer(unitsLayer, colorAssigner3);
+	}
+
+	@Override
+	public void gameEnded(boolean isWinner)
+	{
+		visualization.close();
+		
+		games++;
+		if (isWinner)
+		{
+			wins++;
+		}
+		
+		System.out.println(games + " " + wins);
+	}
+
+	@Override
+	public void gameUpdated()
+	{
+		game.setSpeed(10);
 		
 		bwapi.drawText(new Position(10, 10), Integer.toString(game.getFrameCount()), true);
 		
@@ -297,6 +344,13 @@ public class CreepBot extends AbstractBot
 				}
 			}
 		}
+		
+		unitsLayer.update();
+		
+		if (game.getFrameCount() % 100 == 0)
+		{
+			layersPainter.update();
+		}
 	}
 
 	@Override
@@ -372,7 +426,10 @@ public class CreepBot extends AbstractBot
 			}
 			else
 			{
-				miningAgents.iterator().next().addMiner(unit);
+				if (!miningAgents.isEmpty())
+				{
+					miningAgents.iterator().next().addMiner(unit);
+				}
 			}
 		}
 		
@@ -411,7 +468,7 @@ public class CreepBot extends AbstractBot
 			agent.draw(graphics);
 		}
 		
-		plainsLayerDrawable.draw(graphics);
+		//plainsLayerDrawable.draw(graphics);
 	}
 
 	@Override

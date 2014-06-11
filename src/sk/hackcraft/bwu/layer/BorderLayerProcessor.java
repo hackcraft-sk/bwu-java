@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 public class BorderLayerProcessor implements LayerProcessor
 {
@@ -15,20 +15,20 @@ public class BorderLayerProcessor implements LayerProcessor
 	{
 		Layer newLayer = new MatrixLayer(layer.getDimension());
 		
-		Dimension dimension = layer.getDimension();
+		LayerDimension dimension = layer.getDimension();
 		
-		Point[] directions = {
-			new Point( 1,  0),
-			new Point( 0,  1),
-			new Point(-1,  0),
-			new Point( 0, -1),
+		LayerPoint[] directions = {
+			new LayerPoint( 1,  0),
+			new LayerPoint( 0,  1),
+			new LayerPoint(-1,  0),
+			new LayerPoint( 0, -1),
 		};
 
 		for (int x = 0; x < dimension.getWidth(); x++)
 		{
 			for (int y = 0; y < dimension.getHeight(); y++)
 			{
-				Point cellPosition = new Point(x, y);
+				LayerPoint cellPosition = new LayerPoint(x, y);
 				
 				if (layer.get(cellPosition) != sourceValue)
 				{
@@ -37,9 +37,9 @@ public class BorderLayerProcessor implements LayerProcessor
 				
 				boolean border = false;
 				
-				for (Point direction : directions)
+				for (LayerPoint direction : directions)
 				{
-					Point point = cellPosition.add(direction);
+					LayerPoint point = cellPosition.add(direction);
 					
 					if (!layer.isValid(point))
 					{

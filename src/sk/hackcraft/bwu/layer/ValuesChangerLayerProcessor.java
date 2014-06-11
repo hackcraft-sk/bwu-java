@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 import java.util.Map;
 
@@ -19,7 +19,7 @@ public class ValuesChangerLayerProcessor implements LayerProcessor
 		LayerIterator iterator = new LayerIterator(layer)
 		{
 			@Override
-			protected void nextCell(Point coordinates, int value)
+			protected void nextCell(LayerPoint coordinates, int value)
 			{
 				if (changeMap.containsKey(value))
 				{

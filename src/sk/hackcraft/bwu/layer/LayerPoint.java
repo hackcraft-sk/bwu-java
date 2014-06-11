@@ -1,12 +1,12 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
-public class Point
+public class LayerPoint
 {
-	public static final Point ORIGIN = new Point(0, 0);
+	public static final LayerPoint ORIGIN = new LayerPoint(0, 0);
 
 	private final int x, y;
 	
-	public Point(int x, int y)
+	public LayerPoint(int x, int y)
 	{
 		this.x = x;
 		this.y = y;
@@ -22,20 +22,20 @@ public class Point
 		return y;
 	}
 	
-	public Point add(Point point)
+	public LayerPoint add(LayerPoint point)
 	{
-		return new Point(x + point.x, y + point.y);
+		return new LayerPoint(x + point.x, y + point.y);
 	}
 	
 	@Override
 	public boolean equals(Object object)
 	{
-		if (!(object instanceof Point))
+		if (!(object instanceof LayerPoint))
 		{
 			return false;
 		}
 		
-		Point point = (Point)object;
+		LayerPoint point = (LayerPoint)object;
 		
 		return point.x == x && point.y == y;
 	}

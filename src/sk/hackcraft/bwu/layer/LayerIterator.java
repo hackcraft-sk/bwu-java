@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 public abstract class LayerIterator
 {
@@ -11,12 +11,12 @@ public abstract class LayerIterator
 
 	public void iterate()
 	{
-		Dimension dimension = layer.getDimension();
+		LayerDimension dimension = layer.getDimension();
 		for (int x = 0; x < dimension.getWidth(); x++)
 		{
 			for (int y = 0; y < dimension.getHeight(); y++)
 			{
-				Point coordinates = new Point(x, y);
+				LayerPoint coordinates = new LayerPoint(x, y);
 				int value = layer.get(coordinates);
 				
 				nextCell(coordinates, value);
@@ -24,5 +24,5 @@ public abstract class LayerIterator
 		}
 	}
 	
-	protected abstract void nextCell(Point coordinates, int value);
+	protected abstract void nextCell(LayerPoint coordinates, int actualValue);
 }

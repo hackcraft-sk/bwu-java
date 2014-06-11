@@ -1,21 +1,19 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public interface Layer
 {
-	Dimension getDimension();
+	LayerDimension getDimension();
 	
-	boolean isValid(Point point);
+	boolean isValid(LayerPoint point);
 	
-	@Deprecated
 	int get(int x, int y);
-	int get(Point point);
+	int get(LayerPoint point);
 	
-	@Deprecated
 	void set(int x, int y, int value);
-	void set(Point point, int value);
+	void set(LayerPoint point, int value);
 	
 	Layer add(Layer layer);
 	Layer substract(Layer layer);

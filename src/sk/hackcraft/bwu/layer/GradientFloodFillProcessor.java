@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,14 +18,15 @@ public abstract class GradientFloodFillProcessor implements LayerProcessor
 	@Override
 	public Layer process(Layer layer)
 	{
-		final Layer newLayer = new MatrixLayer(layer);
+		final Layer newLayer = new MatrixLayer(layer.getDimension());
+		Layers.copy(layer, newLayer);
 		
-		final Queue<Point> continuePoints = new LinkedList<>();
+		final Queue<LayerPoint> continuePoints = new LinkedList<>();
 		
 		LayerIterator iterator = new LayerIterator(newLayer)
 		{
 			@Override
-			protected void nextCell(Point coordinates, int value)
+			protected void nextCell(LayerPoint coordinates, int value)
 			{
 				if (newLayer.get(coordinates) == startValue)
 				{
@@ -36,24 +37,24 @@ public abstract class GradientFloodFillProcessor implements LayerProcessor
 		
 		iterator.iterate();
 
-		Point[] directions = {
-				new Point( 1,  0),
-				new Point( 0,  1),
-				new Point(-1,  0),
-				new Point( 0, -1)
+		LayerPoint[] directions = {
+				new LayerPoint( 1,  0),
+				new LayerPoint( 0,  1),
+				new LayerPoint(-1,  0),
+				new LayerPoint( 0, -1)
 		};
 		
 		while (!continuePoints.isEmpty())
 		{
-			Point point = continuePoints.remove();
+			LayerPoint point = continuePoints.remove();
 			
 			int actualValue = newLayer.get(point);
 			
 			int newValue = actualValue + addFactor;
 			
-			for (Point direction : directions)
+			for (LayerPoint direction : directions)
 			{
-				Point cellPosition = point.add(direction);
+				LayerPoint cellPosition = point.add(direction);
 				
 				if (!newLayer.isValid(cellPosition))
 				{

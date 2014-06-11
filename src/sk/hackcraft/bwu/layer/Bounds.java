@@ -1,11 +1,11 @@
-package sk.hackcraft.bwu.map;
+package sk.hackcraft.bwu.layer;
 
 public class Bounds
 {
-	private final Point position;
-	private final Dimension dimension;
+	private final LayerPoint position;
+	private final LayerDimension dimension;
 	
-	public Bounds(Point position, Dimension dimension)
+	public Bounds(LayerPoint position, LayerDimension dimension)
 	{
 		this.position = position;
 		this.dimension = dimension;
@@ -13,20 +13,20 @@ public class Bounds
 	
 	public Bounds(int x, int y, int width, int height)
 	{
-		this(new Point(x, y), new Dimension(width, height));
+		this(new LayerPoint(x, y), new LayerDimension(width, height));
 	}
 	
-	public Point getPosition()
+	public LayerPoint getPosition()
 	{
 		return position;
 	}
 	
-	public Dimension getDimension()
+	public LayerDimension getDimension()
 	{
 		return dimension;
 	}
 	
-	public boolean isInside(Point point)
+	public boolean isInside(LayerPoint point)
 	{
 		int x = point.getX();
 		int y = point.getY();
