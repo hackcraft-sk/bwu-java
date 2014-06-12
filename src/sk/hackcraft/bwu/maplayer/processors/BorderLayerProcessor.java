@@ -1,4 +1,10 @@
-package sk.hackcraft.bwu.layer;
+package sk.hackcraft.bwu.maplayer.processors;
+
+import sk.hackcraft.bwu.maplayer.Layer;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.LayerProcessor;
+import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
 public class BorderLayerProcessor implements LayerProcessor
 {

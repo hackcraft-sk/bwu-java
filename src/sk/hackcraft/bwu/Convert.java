@@ -1,7 +1,7 @@
 package sk.hackcraft.bwu;
 
-import sk.hackcraft.bwu.layer.LayerDimension;
-import sk.hackcraft.bwu.layer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
 import jnibwapi.Position;
 import jnibwapi.Position.PosType;
 

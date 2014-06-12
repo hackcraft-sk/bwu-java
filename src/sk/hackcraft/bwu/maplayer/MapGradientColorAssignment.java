@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.layer;
+package sk.hackcraft.bwu.maplayer;
 
 import java.util.Map;
 import java.util.TreeMap;

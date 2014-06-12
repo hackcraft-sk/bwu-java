@@ -12,9 +12,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import sk.hackcraft.bwu.layer.LayerDimension;
-import sk.hackcraft.bwu.layer.Layers;
-import sk.hackcraft.bwu.layer.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.Layers;
+import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
 public class LayerTest
 {

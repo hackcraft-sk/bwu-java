@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map.visualization;
+package sk.hackcraft.bwu.maplayer.visualization;
 
 import java.awt.Container;
 import java.awt.GridBagConstraints;
@@ -20,11 +20,11 @@ import javax.swing.event.ListDataListener;
 
 import com.sun.prism.paint.Color;
 
-import sk.hackcraft.bwu.layer.Layer;
-import sk.hackcraft.bwu.layer.LayerDimension;
-import sk.hackcraft.bwu.layer.LayerDrawable;
-import sk.hackcraft.bwu.layer.MatrixLayer;
-import sk.hackcraft.bwu.layer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.Layer;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerDrawable;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
 public class SwingLayersVisualization
 {

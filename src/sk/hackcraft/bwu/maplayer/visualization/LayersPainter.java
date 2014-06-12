@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map.visualization;
+package sk.hackcraft.bwu.maplayer.visualization;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -12,11 +12,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import sk.hackcraft.bwu.Updateable;
-import sk.hackcraft.bwu.layer.ColorAssigner;
-import sk.hackcraft.bwu.layer.Layer;
-import sk.hackcraft.bwu.layer.LayerDimension;
-import sk.hackcraft.bwu.layer.LayerIterator;
-import sk.hackcraft.bwu.layer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.ColorAssigner;
+import sk.hackcraft.bwu.maplayer.Layer;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerIterator;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
 
 public class LayersPainter implements Updateable
 {

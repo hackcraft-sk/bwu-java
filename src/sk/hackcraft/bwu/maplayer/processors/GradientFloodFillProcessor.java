@@ -1,17 +1,25 @@
-package sk.hackcraft.bwu.layer;
+package sk.hackcraft.bwu.maplayer.processors;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+
+import sk.hackcraft.bwu.maplayer.Layer;
+import sk.hackcraft.bwu.maplayer.LayerIterator;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.LayerProcessor;
+import sk.hackcraft.bwu.maplayer.Layers;
+import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
 public abstract class GradientFloodFillProcessor implements LayerProcessor
 {
-	private final int startValue;
+	private final Set<LayerPoint> startPoints;
 	private final int addFactor;
 	
-	public GradientFloodFillProcessor(int startValue, int addFactor)
+	public GradientFloodFillProcessor(Set<LayerPoint> startPoints, int addFactor)
 	{
-		this.startValue = startValue;
+		this.startPoints = startPoints;
 		this.addFactor = addFactor;
 	}
 	
@@ -21,21 +29,7 @@ public abstract class GradientFloodFillProcessor implements LayerProcessor
 		final Layer newLayer = new MatrixLayer(layer.getDimension());
 		Layers.copy(layer, newLayer);
 		
-		final Queue<LayerPoint> continuePoints = new LinkedList<>();
-		
-		LayerIterator iterator = new LayerIterator(newLayer)
-		{
-			@Override
-			protected void nextCell(LayerPoint coordinates, int value)
-			{
-				if (newLayer.get(coordinates) == startValue)
-				{
-					continuePoints.add(coordinates);
-				}
-			}
-		};
-		
-		iterator.iterate();
+		final Queue<LayerPoint> continuePoints = new LinkedList<>(startPoints);
 
 		LayerPoint[] directions = {
 				new LayerPoint( 1,  0),

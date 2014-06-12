@@ -21,23 +21,24 @@ import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.layer.BorderLayerProcessor;
-import sk.hackcraft.bwu.layer.Bounds;
-import sk.hackcraft.bwu.layer.ColorAssigner;
-import sk.hackcraft.bwu.layer.GameLayerFactory;
-import sk.hackcraft.bwu.layer.GradientFloodFillProcessor;
-import sk.hackcraft.bwu.layer.Layer;
-import sk.hackcraft.bwu.layer.LayerColorDrawable;
-import sk.hackcraft.bwu.layer.LayerDimension;
-import sk.hackcraft.bwu.layer.LayerDrawable;
-import sk.hackcraft.bwu.layer.MapExactColorAssigner;
-import sk.hackcraft.bwu.layer.MapGradientColorAssignment;
-import sk.hackcraft.bwu.layer.MatrixLayer;
-import sk.hackcraft.bwu.layer.LayerPoint;
-import sk.hackcraft.bwu.layer.UnitsLayer;
-import sk.hackcraft.bwu.layer.ValuesChangerLayerProcessor;
-import sk.hackcraft.bwu.map.visualization.LayersPainter;
-import sk.hackcraft.bwu.map.visualization.SwingLayersVisualization;
+import sk.hackcraft.bwu.maplayer.Bounds;
+import sk.hackcraft.bwu.maplayer.ColorAssigner;
+import sk.hackcraft.bwu.maplayer.GameLayerFactory;
+import sk.hackcraft.bwu.maplayer.Layer;
+import sk.hackcraft.bwu.maplayer.LayerColorDrawable;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerDrawable;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.Layers;
+import sk.hackcraft.bwu.maplayer.MapExactColorAssigner;
+import sk.hackcraft.bwu.maplayer.MapGradientColorAssignment;
+import sk.hackcraft.bwu.maplayer.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.UnitsLayer;
+import sk.hackcraft.bwu.maplayer.processors.BorderLayerProcessor;
+import sk.hackcraft.bwu.maplayer.processors.GradientFloodFillProcessor;
+import sk.hackcraft.bwu.maplayer.processors.ValuesChangerLayerProcessor;
+import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
+import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
 import sk.hackcraft.bwu.mining.MiningAgent;
 import sk.hackcraft.bwu.production.DroneBuildingConstructionAgent;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
@@ -157,7 +158,8 @@ public class CreepBot extends AbstractBot
 		changeMap.put(1, 0);
 		plainsLayer = new ValuesChangerLayerProcessor(changeMap).process(plainsLayer);
 
-		GradientFloodFillProcessor gradientFloofFillProcessor = new GradientFloodFillProcessor(maxDistance, -1)
+		Set<LayerPoint> startPoints = Layers.getPointsWithValue(plainsLayer, maxDistance);
+		GradientFloodFillProcessor gradientFloofFillProcessor = new GradientFloodFillProcessor(startPoints, -1)
 		{
 			@Override
 			protected boolean fillCell(int cellValue, int newValue)

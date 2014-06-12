@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.map.visualization;
+package sk.hackcraft.bwu.maplayer.visualization;
 
 import java.awt.Color;
 import java.awt.Graphics;

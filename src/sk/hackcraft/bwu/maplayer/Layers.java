@@ -1,4 +1,7 @@
-package sk.hackcraft.bwu.layer;
+package sk.hackcraft.bwu.maplayer;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Layers
 {
@@ -47,5 +50,24 @@ public class Layers
 				layer.set(coordinates, value);
 			}
 		}.iterate();;
+	}
+	
+	public static Set<LayerPoint> getPointsWithValue(Layer layer, final int value)
+	{
+		final Set<LayerPoint> points = new HashSet<>();
+		
+		new LayerIterator(layer)
+		{
+			@Override
+			protected void nextCell(LayerPoint coordinates, int actualValue)
+			{
+				if (actualValue == value)
+				{
+					points.add(coordinates);
+				}
+			}
+		}.iterate();
+		
+		return points;
 	}
 }

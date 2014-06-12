@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.layer;
+package sk.hackcraft.bwu.maplayer;
 
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;

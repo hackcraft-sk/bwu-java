@@ -1,4 +1,4 @@
-package sk.hackcraft.bwu.layer;
+package sk.hackcraft.bwu.maplayer;
 
 import jnibwapi.JNIBWAPI;
 import jnibwapi.Map;
