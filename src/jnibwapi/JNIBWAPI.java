@@ -1165,14 +1165,7 @@ public class JNIBWAPI
 	 */
 	private void javaPrint(String msg)
 	{
-		try
-		{
-			System.out.println("Bridge: " + msg);
-		}
-		catch (Throwable t)
-		{
-			t.printStackTrace();
-		}
+		System.out.println("Bridge: " + msg);
 	}
 
 	/**
@@ -1183,15 +1176,8 @@ public class JNIBWAPI
 	 */
 	private void connected()
 	{
-		try
-		{
-			loadTypeData();
-			listener.connected();
-		}
-		catch (Throwable t)
-		{
-			t.printStackTrace();
-		}
+		loadTypeData();
+		listener.connected();
 	}
 
 	/**
@@ -1205,98 +1191,90 @@ public class JNIBWAPI
 	 */
 	private void gameStarted()
 	{
-		try
+		// get the players
+		self = null;
+		allies.clear();
+		enemies.clear();
+		players.clear();
+
+		int[] playerData = getPlayersData();
+		for (int index = 0; index < playerData.length; index += Player.numAttributes)
 		{
-			// get the players
-			self = null;
-			allies.clear();
-			enemies.clear();
-			players.clear();
+			String name = new String(getPlayerName(playerData[index]), charset);
+			// Player player = new Player(playerData, index, name);
+			Player player = factory.createPlayer(playerData, index, name);
 
-			int[] playerData = getPlayersData();
-			for (int index = 0; index < playerData.length; index += Player.numAttributes)
+			players.put(player.getID(), player);
+
+			if (player.isSelf())
 			{
-				String name = new String(getPlayerName(playerData[index]), charset);
-				// Player player = new Player(playerData, index, name);
-				Player player = factory.createPlayer(playerData, index, name);
-
-				players.put(player.getID(), player);
-
-				if (player.isSelf())
-				{
-					self = player;
-				}
-				else if (player.isAlly())
-				{
-					allies.add(player);
-				}
-				else if (player.isEnemy())
-				{
-					enemies.add(player);
-				}
-				else if (player.isNeutral())
-				{
-					neutralPlayer = player;
-				}
+				self = player;
 			}
-
-			// get unit data
-			units.clear();
-			playerUnits.clear();
-			alliedUnits.clear();
-			enemyUnits.clear();
-			neutralUnits.clear();
-			int[] unitData = getAllUnitsData();
-
-			for (int index = 0; index < unitData.length; index += Unit.numAttributes)
+			else if (player.isAlly())
 			{
-				int id = unitData[index];
-				Unit unit = factory.createUnit(id, this);
+				allies.add(player);
+			}
+			else if (player.isEnemy())
+			{
+				enemies.add(player);
+			}
+			else if (player.isNeutral())
+			{
+				neutralPlayer = player;
+			}
+		}
+
+		// get unit data
+		units.clear();
+		playerUnits.clear();
+		alliedUnits.clear();
+		enemyUnits.clear();
+		neutralUnits.clear();
+		int[] unitData = getAllUnitsData();
+
+		for (int index = 0; index < unitData.length; index += Unit.numAttributes)
+		{
+			int id = unitData[index];
+			Unit unit = factory.createUnit(id, this);
+			unit.update(unitData, index);
+
+			units.put(id, unit);
+			if (self != null && unit.getPlayer() == self)
+			{
+				playerUnits.add(unit);
+			}
+			else if (allies.contains(unit.getPlayer()))
+			{
+				alliedUnits.add(unit);
+			}
+			else if (enemies.contains(unit.getPlayer()))
+			{
+				enemyUnits.add(unit);
+			}
+			else
+			{
+				neutralUnits.add(unit);
+			}
+		}
+		staticNeutralUnits.clear();
+		unitData = getStaticNeutralUnitsData();
+		for (int index = 0; index < unitData.length; index += Unit.numAttributes)
+		{
+			int id = unitData[index];
+
+			// Ensure we don't have duplicate units
+			Unit unit = units.get(id);
+			if (unit == null)
+			{
+				unit = factory.createUnit(id, this);
 				unit.update(unitData, index);
-
-				units.put(id, unit);
-				if (self != null && unit.getPlayer() == self)
-				{
-					playerUnits.add(unit);
-				}
-				else if (allies.contains(unit.getPlayer()))
-				{
-					alliedUnits.add(unit);
-				}
-				else if (enemies.contains(unit.getPlayer()))
-				{
-					enemyUnits.add(unit);
-				}
-				else
-				{
-					neutralUnits.add(unit);
-				}
-			}
-			staticNeutralUnits.clear();
-			unitData = getStaticNeutralUnitsData();
-			for (int index = 0; index < unitData.length; index += Unit.numAttributes)
-			{
-				int id = unitData[index];
-
-				// Ensure we don't have duplicate units
-				Unit unit = units.get(id);
-				if (unit == null)
-				{
-					unit = factory.createUnit(id, this);
-					unit.update(unitData, index);
-				}
-
-				staticNeutralUnits.add(unit);
 			}
 
-			gameFrame = getFrame();
-			loadMapData();
+			staticNeutralUnits.add(unit);
+		}
 
-		}
-		catch (Throwable t)
-		{
-			t.printStackTrace();
-		}
+		gameFrame = getFrame();
+		loadMapData();
 	}
 
 	/**

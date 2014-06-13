@@ -1,15 +1,19 @@
 package sk.hackcraft.bwu.maplayer;
 
+import java.util.function.Predicate;
+
 public abstract class LayerIterator
 {
 	private final Layer layer;
+	protected final IterateListener listener;
 
-	public LayerIterator(Layer layer)
+	public LayerIterator(Layer layer, IterateListener listener)
 	{
 		this.layer = layer;
+		this.listener = listener;
 	}
 
-	public void iterate()
+	public void iterateAll()
 	{
 		LayerDimension dimension = layer.getDimension();
 		for (int x = 0; x < dimension.getWidth(); x++)
@@ -19,10 +23,15 @@ public abstract class LayerIterator
 				LayerPoint coordinates = new LayerPoint(x, y);
 				int value = layer.get(coordinates);
 				
-				nextCell(coordinates, value);
+				listener.nextCell(coordinates, value);
 			}
 		}
 	}
 	
-	protected abstract void nextCell(LayerPoint coordinates, int actualValue);
+	public abstract void iterateFeature();
+
+	public interface IterateListener
+	{
+		void nextCell(LayerPoint cellCoordinates, int cellValue);
+	}
 }

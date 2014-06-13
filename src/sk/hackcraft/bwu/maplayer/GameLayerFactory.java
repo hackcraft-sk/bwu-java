@@ -78,21 +78,20 @@ public class GameLayerFactory
 		{
 			final MatrixLayer layer = new MatrixLayer(new LayerDimension(width, height));
 			
-			LayerIterator iterator = new LayerIterator(layer)
+			layer.createLayerIterator(new LayerIterator.IterateListener()
 			{
+				
 				@Override
-				protected void nextCell(LayerPoint coordinates, int value)
+				public void nextCell(LayerPoint cellCoordinates, int cellValue)
 				{
-					int x = coordinates.getX();
-					int y = coordinates.getY();
+					int x = cellCoordinates.getX();
+					int y = cellCoordinates.getY();
 
 					int newValue = evaluate(x, y) ? 1 : 0;
 
-					layer.set(coordinates, newValue);
+					layer.set(cellCoordinates, newValue);
 				}
-			};
-			
-			iterator.iterate();
+			}).iterateAll();
 			
 			return layer;
 		}

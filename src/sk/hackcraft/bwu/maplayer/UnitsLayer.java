@@ -28,7 +28,7 @@ public class UnitsLayer extends SparseLayer implements Updateable
 	@Override
 	public void update()
 	{
-		Layers.fill(this, 0);
+		clear();
 		
 		UnitSet units = game.getAllUnits();
 

@@ -1,7 +1,10 @@
 package sk.hackcraft.bwu.maplayer;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+
+import sk.hackcraft.bwu.maplayer.LayerIterator.IterateListener;
 
 public class SparseLayer extends AbstractLayer
 {
@@ -52,5 +55,26 @@ public class SparseLayer extends AbstractLayer
 		{
 			map.put(coordinates, value);
 		}
+	}
+	
+	@Override
+	public LayerIterator createLayerIterator(IterateListener listener)
+	{
+		return new LayerIterator(this, listener)
+		{
+			@Override
+			public void iterateFeature()
+			{
+				for (Map.Entry<LayerPoint, Integer> entry : map.entrySet())
+				{
+					listener.nextCell(entry.getKey(), entry.getValue());
+				}
+			}
+		};
+	}
+	
+	protected void clear()
+	{
+		map.clear();
 	}
 }

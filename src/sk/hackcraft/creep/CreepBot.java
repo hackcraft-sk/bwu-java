@@ -3,11 +3,13 @@ package sk.hackcraft.creep;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
+import jnibwapi.BaseLocation;
 import jnibwapi.Player;
 import jnibwapi.Position;
 import jnibwapi.Unit;
@@ -28,18 +30,23 @@ import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerColorDrawable;
 import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerDrawable;
+import sk.hackcraft.bwu.maplayer.LayerIterator;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
 import sk.hackcraft.bwu.maplayer.Layers;
 import sk.hackcraft.bwu.maplayer.MapExactColorAssigner;
 import sk.hackcraft.bwu.maplayer.MapGradientColorAssignment;
 import sk.hackcraft.bwu.maplayer.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.RandomColorAssigner;
 import sk.hackcraft.bwu.maplayer.UnitsLayer;
 import sk.hackcraft.bwu.maplayer.processors.BorderLayerProcessor;
 import sk.hackcraft.bwu.maplayer.processors.GradientFloodFillProcessor;
+import sk.hackcraft.bwu.maplayer.processors.ValueFloodFillProcessor;
 import sk.hackcraft.bwu.maplayer.processors.ValuesChangerLayerProcessor;
 import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
 import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
+import sk.hackcraft.bwu.mining.MapResourcesAgent;
 import sk.hackcraft.bwu.mining.MiningAgent;
+import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
 import sk.hackcraft.bwu.production.DroneBuildingConstructionAgent;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
 import sk.hackcraft.bwu.selection.DistanceSelector;
@@ -68,21 +75,19 @@ public class CreepBot extends AbstractBot
 		}
 	}
 
-	private final Set<MiningAgent> miningAgents;
+	private final MapResourcesAgent mapResourcesAgent;
 	private final LarvaProductionAgent productionAgent;
 	
 	private DroneBuildingConstructionAgent constructionAgent;
 	private boolean spawningPoolBuilt;
 	
-	private int lastHatcheryBuilt = 2000;
-	
-	private Unit constructorWorker;
-	
-	private final Map<Unit, Position> enemyBuildings;
+	private final Map<Position, Unit> enemyBuildings;
 	
 	private Layer plainsLayer;
 	private UnitsLayer unitsLayer;
 	private LayerDrawable plainsLayerDrawable;
+	
+	private Unit constructorWorker;
 	
 	// visualizaton
 	
@@ -93,7 +98,7 @@ public class CreepBot extends AbstractBot
 	{
 		super(game);
 		
-		miningAgents = new HashSet<>();
+		mapResourcesAgent = new MapResourcesAgent(bwapi);
 		productionAgent = new LarvaProductionAgent();
 		
 		enemyBuildings = new HashMap<>();
@@ -114,27 +119,17 @@ public class CreepBot extends AbstractBot
 		game.setSpeed(0);
 
 		UnitSet myUnits = game.getMyUnits();
+		UnitSet workers = myUnits.where(UnitSelector.IS_WORKER);
+		
+		for (Unit worker : workers)
+		{
+			mapResourcesAgent.addWorker(worker);
+		}
 		
 		UnitSet hatcheries = myUnits.where(UnitSelector.IS_SPAWNING_LARVAE);
 		for (Unit hatchery : hatcheries)
 		{
 			productionAgent.addHatchery(hatchery);
-			
-			Set<Unit> nearbyResources = game.getStaticNeutralUnits().where(UnitSelector.IS_MINERAL).whereLessOrEqual(new DistanceSelector(hatchery), 500);
-			
-			if (!nearbyResources.isEmpty())
-			{
-				MiningAgent miningAgent = new MiningAgent(hatchery, nearbyResources);
-				
-				Set<Unit> nearbyWorkers = myUnits.where(UnitSelector.IS_WORKER).whereLessOrEqual(new DistanceSelector(hatchery), 300);
-				
-				for (Unit worker : nearbyWorkers)
-				{
-					miningAgent.addMiner(worker);
-				}
-				
-				miningAgents.add(miningAgent);
-			}
 		}
 		
 		Position startLocation = game.getSelf().getStartLocation();
@@ -184,7 +179,7 @@ public class CreepBot extends AbstractBot
 		colors2.put(1, Color.GREEN);
 		colors2.put(0, Color.BLUE);
 		ColorAssigner<Color> colorAssigner2 = new MapGradientColorAssignment<>(colors2);
-		layersPainter.addLayer(plainsLayer, colorAssigner2);
+		//layersPainter.addLayer(plainsLayer, colorAssigner2);
 		
 		visualization.start();
 
@@ -197,7 +192,66 @@ public class CreepBot extends AbstractBot
 		colors3.put(UnitsLayer.NEUTRAL, Color.GRAY);
 		colors3.put(0, new Color(0, 0, 0, 0));
 		ColorAssigner<Color> colorAssigner3 = new MapExactColorAssigner<>(colors3);
-		layersPainter.addLayer(unitsLayer, colorAssigner3);
+		//layersPainter.addLayer(unitsLayer, colorAssigner3);
+		
+		Layer resourcesPartitioningLayer = GameLayerFactory.createLowResWalkableLayer(map);
+		List<BaseLocation> baseLocations = map.getBaseLocations();
+		final Set<LayerPoint> startPoints2 = new HashSet<>();
+		Map<Integer, BaseLocation> baseLocationsIndex = new HashMap<>();
+		int value = 2;
+		for (BaseLocation baseLocation : baseLocations)
+		{
+			Position position = baseLocation.getCenter();
+			
+			if (!position.isValid())
+			{
+				continue;
+			}
+			
+			LayerPoint point = Convert.toLayerPoint(position);
+			
+			startPoints2.add(point);
+			
+			resourcesPartitioningLayer.set(point, value);
+			baseLocationsIndex.put(value, baseLocation);
+			value++;
+		}
+		
+		resourcesPartitioningLayer = new ValueFloodFillProcessor(startPoints2, 1).process(resourcesPartitioningLayer);
+		Map<BaseLocation, Set<Unit>> resourceClusters = new HashMap<>();
+		for (Unit unit : game.getStaticNeutralUnits().where(UnitSelector.IS_RESOURCE))
+		{
+			LayerPoint coordinates = Convert.toLayerPoint(unit.getPosition());
+			
+			int resourceGroup = resourcesPartitioningLayer.get(coordinates);
+			BaseLocation baseLocation = baseLocationsIndex.get(resourceGroup);
+			
+			if (!resourceClusters.containsKey(baseLocation))
+			{
+				resourceClusters.put(baseLocation, new HashSet<Unit>());
+			}
+			
+			resourceClusters.get(baseLocation).add(unit);
+		}
+
+		for (Map.Entry<BaseLocation, Set<Unit>> entry : resourceClusters.entrySet())
+		{
+			Position positon = entry.getKey().getPosition();
+			UnitSet resources = new UnitSet(entry.getValue());
+			ExpandInfo expand = new ExpandInfo(positon, resources);
+			mapResourcesAgent.addExpand(expand);
+		}
+		
+		Random r = new Random();
+		ColorAssigner<Color> randomColorAssigner = new RandomColorAssigner<Color>(r)
+		{
+			@Override
+			protected Color createColor(int r, int g, int b)
+			{
+				return new Color(r, g, b);
+			}
+		};
+		layersPainter.addLayer(resourcesPartitioningLayer, randomColorAssigner);
 	}
 
 	@Override
@@ -219,11 +273,15 @@ public class CreepBot extends AbstractBot
 	{
 		game.setSpeed(10);
 		
-		bwapi.drawText(new Position(10, 10), Integer.toString(game.getFrameCount()), true);
+		bwapi.drawText(new Position(10, 10), "Frame: " + game.getFrameCount(), true);
 		
-		for (MiningAgent agent : miningAgents)
+		mapResourcesAgent.update();
+		
+		if (constructorWorker != null && game.getFrameCount() % 500 == 0 && game.getSelf().getMinerals() >= 300)
 		{
-			agent.update();
+			mapResourcesAgent.spawnMiningOperation(constructorWorker);
+			
+			constructorWorker = null;
 		}
 		
 		if (constructorWorker != null && !spawningPoolBuilt)
@@ -240,20 +298,6 @@ public class CreepBot extends AbstractBot
 			constructorWorker = null;
 		}
 		
-		if (constructorWorker != null && game.getFrameCount() - lastHatcheryBuilt > 2000 && game.getMyUnits().where(UnitSelector.IS_WORKER).size() > 10 && game.getSelf().getMinerals() >= 300)
-		{
-			constructionAgent.construct(constructorWorker, UnitTypes.Zerg_Hatchery, new DroneBuildingConstructionAgent.ConstructionListener()
-			{
-				
-				@Override
-				public void onFailed()
-				{
-				}
-			});
-			
-			constructorWorker = null;
-		}
-		
 		constructionAgent.update();
 		
 		int availableMinerals = game.getSelf().getMinerals(); 
@@ -261,12 +305,12 @@ public class CreepBot extends AbstractBot
 		UnitSet spawningPools = game.getMyUnits().where(new TypeSelector(UnitTypes.Zerg_Spawning_Pool));
 		if ((workers.size() <= 8 && spawningPools.isEmpty()) || !spawningPools.isEmpty())
 		{
-			if (availableMinerals >= 50)
+			if ((availableMinerals >= 50 && game.getFrameCount() < 3000) || availableMinerals >= 400)
 			{
 				boolean zerglings = new Random().nextBoolean();
 				
 				UnitType type;
-				if (zerglings && !spawningPools.isEmpty() || workers.size() > 25)
+				if (zerglings && !spawningPools.isEmpty() || workers.size() > mapResourcesAgent.getWorkersDeficit() + 5)
 				{
 					type = UnitTypes.Zerg_Zergling;
 				}
@@ -303,44 +347,72 @@ public class CreepBot extends AbstractBot
 			
 			for (Unit unit : visibleEnemyBuildings)
 			{
-				enemyBuildings.put(unit, unit.getPosition());
+				enemyBuildings.put(unit.getPosition(), unit);
 			}
 		}
 		
 		// check outdated attack
-		Map<Unit, Position> enemyBuildingsCopy = new HashMap<>(enemyBuildings);
-		for (Unit unit : enemyBuildingsCopy.keySet())
+		Map<Position, Unit> enemyBuildingsCopy = new HashMap<>(enemyBuildings);
+		for (Position position : enemyBuildingsCopy.keySet())
 		{
-			if (unit.isVisible() && !unit.isExists())
+			if (bwapi.isVisible(position))
 			{
-				enemyBuildings.remove(unit);
+				Unit unit = enemyBuildings.get(position);
+				
+				if (!unit.isExists())
+				{
+					enemyBuildings.remove(position);
+				}
+				else
+				{
+					bwapi.drawText(position, unit.isExists() + " " + unit.getHitPoints(), false);
+				}
 			}
 		}
-		
-		Vector2D startPosition = Convert.toPositionVector(game.getSelf().getStartLocation());
-		UnitSet enemies = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(startPosition), 1000);
+
 		UnitSet zerglings = game.getMyUnits().where(new TypeSelector(UnitTypes.Zerg_Zergling));
 		
-		if (!enemies.isEmpty())
+		bwapi.drawText(new Position(10, 30), "Zerglings: " + zerglings.size(), true);
+		
+		UnitSet buildingsUnderAttack = game.getMyUnits().where(UnitSelector.IS_BUILDING).where(UnitSelector.IS_UNDER_ATTACK);
+
+		if (!buildingsUnderAttack.isEmpty())
 		{
 			game.setSpeed(25);
-			Unit unit = enemies.iterator().next();
 			
+			Position defendPosition = buildingsUnderAttack.iterator().next().getPosition();
+			UnitSet enemies = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(Convert.toPositionVector(defendPosition)), 1000);
+
+			Position attackPos = (!enemies.isEmpty()) ? enemies.iterator().next().getPosition() : defendPosition;
+
 			for (Unit zergling : zerglings)
 			{	
 				if (zergling.isIdle())
 				{
-					zergling.attack(unit.getPosition(), false);
+					zergling.attack(attackPos, false);
+				}
+			}
+		}
+		else if (!enemyBuildings.isEmpty() && zerglings.size() > 150)
+		{
+			Position attackPosition = enemyBuildings.keySet().iterator().next();
+			
+			for (Unit zergling : zerglings)
+			{
+				if (zergling.isIdle())
+				{
+					zergling.attack(attackPosition, false);
 				}
 			}
 		}
 		else
 		{
-			if (game.getFrameCount() % 1000 == 0 && !enemyBuildings.isEmpty())
+			Position attackPosition = game.getMap().getSize();
+			attackPosition = new Position(attackPosition.getPX() / 2, attackPosition.getPY() / 2);
+			
+			for (Unit zergling : zerglings)
 			{
-				Position attackPosition = enemyBuildings.values().iterator().next();
-				
-				for (Unit zergling : zerglings)
+				if (zergling.isIdle())
 				{
 					zergling.attack(attackPosition, false);
 				}
@@ -349,10 +421,7 @@ public class CreepBot extends AbstractBot
 		
 		unitsLayer.update();
 		
-		if (game.getFrameCount() % 100 == 0)
-		{
-			layersPainter.update();
-		}
+		layersPainter.update();
 	}
 
 	@Override
@@ -422,16 +491,13 @@ public class CreepBot extends AbstractBot
 	{
 		if (unit.getType().isWorker())
 		{
-			if (game.getMyUnits().where(UnitSelector.IS_WORKER).size() > 8 && constructorWorker == null)
+			if (constructorWorker == null && game.getMyUnits().where(UnitSelector.IS_WORKER).size() > 8)
 			{
 				constructorWorker = unit;
 			}
 			else
 			{
-				if (!miningAgents.isEmpty())
-				{
-					miningAgents.iterator().next().addMiner(unit);
-				}
+				mapResourcesAgent.addWorker(unit);
 			}
 		}
 		
@@ -465,12 +531,21 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void draw(Graphics graphics)
 	{
-		for (MiningAgent agent : miningAgents)
+		mapResourcesAgent.draw(graphics);
+		
+		if (constructorWorker != null)
 		{
-			agent.draw(graphics);
+			bwapi.drawCircle(constructorWorker.getPosition(), 6, BWColor.Yellow, true, false);
+			
+			Position targetPosition = constructorWorker.getTargetPosition();
+			
+			if (targetPosition != null)
+			{
+				bwapi.drawLine(constructorWorker.getPosition(), targetPosition, BWColor.Yellow, false);
+			}
 		}
 		
-		//plainsLayerDrawable.draw(graphics);
+		
 	}
 
 	@Override

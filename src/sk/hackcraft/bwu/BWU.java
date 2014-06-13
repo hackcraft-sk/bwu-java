@@ -20,7 +20,7 @@ public abstract class BWU
 
 	public BWU()
 	{
-		this.jnibwapi = new JNIBWAPI(listener, false);
+		this.jnibwapi = new JNIBWAPI(listener, true);
 
 		graphics = new Graphics(jnibwapi);
 	}

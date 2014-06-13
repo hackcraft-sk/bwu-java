@@ -3,6 +3,8 @@ package sk.hackcraft.bwu.maplayer;
 import java.util.Iterator;
 import java.util.Map;
 
+import sk.hackcraft.bwu.maplayer.LayerIterator.IterateListener;
+
 public interface Layer
 {
 	LayerDimension getDimension();
@@ -14,6 +16,8 @@ public interface Layer
 	
 	void set(int x, int y, int value);
 	void set(LayerPoint point, int value);
+	
+	LayerIterator createLayerIterator(IterateListener listener);
 	
 	Layer add(Layer layer);
 	Layer substract(Layer layer);

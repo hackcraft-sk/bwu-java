@@ -39,35 +39,35 @@ public class Layers
 		copy(from, to, 0, from.getDimension().getWidth(), 0, from.getDimension().getHeight());
 	}
 	
-	public static void fill(final Layer layer, final int value)
+	public static void fill(final Layer layer, final int fillValue)
 	{
-		new LayerIterator(layer)
+		layer.createLayerIterator(new LayerIterator.IterateListener()
 		{
-			
 			@Override
-			protected void nextCell(LayerPoint coordinates, int actualValue)
+			public void nextCell(LayerPoint cellCoordinates, int cellValue)
 			{
-				layer.set(coordinates, value);
+				layer.set(cellCoordinates, fillValue);
 			}
-		}.iterate();;
+		}).iterateAll();
 	}
 	
-	public static Set<LayerPoint> getPointsWithValue(Layer layer, final int value)
+	public static Set<LayerPoint> getPointsWithValue(Layer layer, final int specifiedValue)
 	{
 		final Set<LayerPoint> points = new HashSet<>();
 		
-		new LayerIterator(layer)
+		layer.createLayerIterator(new LayerIterator.IterateListener()
 		{
+			
 			@Override
-			protected void nextCell(LayerPoint coordinates, int actualValue)
+			public void nextCell(LayerPoint cellCoordinates, int cellValue)
 			{
-				if (actualValue == value)
+				if (cellValue == specifiedValue)
 				{
-					points.add(coordinates);
+					points.add(cellCoordinates);
 				}
 			}
-		}.iterate();
-		
+		}).iterateAll();
+
 		return points;
 	}
 }

@@ -22,24 +22,23 @@ public class ValuesChangerLayerProcessor implements LayerProcessor
 	{
 		final MatrixLayer newLayer = new MatrixLayer(layer.getDimension());
 		
-		LayerIterator iterator = new LayerIterator(layer)
+		layer.createLayerIterator(new LayerIterator.IterateListener()
 		{
+			
 			@Override
-			protected void nextCell(LayerPoint coordinates, int value)
+			public void nextCell(LayerPoint cellCoordinates, int cellValue)
 			{
-				if (changeMap.containsKey(value))
+				if (changeMap.containsKey(cellValue))
 				{
-					int newValue = changeMap.get(value);
-					newLayer.set(coordinates, newValue);
+					int newValue = changeMap.get(cellValue);
+					newLayer.set(cellCoordinates, newValue);
 				}
 				else
 				{
-					newLayer.set(coordinates, value);
+					newLayer.set(cellCoordinates, cellValue);
 				}
 			}
-		};
-		
-		iterator.iterate();
+		}).iterateAll();
 		
 		return newLayer;
 	}

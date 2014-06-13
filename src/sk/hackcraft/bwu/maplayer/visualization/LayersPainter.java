@@ -56,23 +56,26 @@ public class LayersPainter implements Updateable
 	{
 		final Graphics2D g2d = (Graphics2D)backBuffer.getGraphics();
 		
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(0, 0, backBuffer.getWidth(), backBuffer.getHeight());
+		
 		for (final Layer layer : layers)
-		{			
-			new LayerIterator(layer)
+		{
+			layer.createLayerIterator(new LayerIterator.IterateListener()
 			{
 				@Override
-				protected void nextCell(LayerPoint coordinates, int value)
+				public void nextCell(LayerPoint cellCoordinates, int cellValue)
 				{
-					int x = coordinates.getX();
-					int y = coordinates.getY();
+					int x = cellCoordinates.getX();
+					int y = cellCoordinates.getY();
 					
 					ColorAssigner<Color> colorAssigner = colorAssigners.get(layer);
-					Color color = colorAssigner.assignColor(value);
+					Color color = colorAssigner.assignColor(cellValue);
 					
 					g2d.setColor(color);
 					g2d.fillRect(x, y, 1, 1);
 				}
-			}.iterate();
+			}).iterateFeature();
 		}
 	}
 	
