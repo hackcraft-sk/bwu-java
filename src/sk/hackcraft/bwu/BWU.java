@@ -143,7 +143,7 @@ public abstract class BWU
 		@Override
 		public void unitDestroy(Unit unit)
 		{
-			bot.unitCompleted(unit);
+			bot.unitDestroyed(unit);
 		}
 
 		@Override

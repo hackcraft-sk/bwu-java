@@ -20,12 +20,16 @@ import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
+import sk.hackcraft.bwu.resource.EntityPool.Contract;
+import sk.hackcraft.bwu.resource.EntityPool.ContractListener;
+import sk.hackcraft.bwu.selection.Pickers;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
 
 public class MapResourcesAgent implements Updateable, Drawable
 {
 	private final JNIBWAPI bwapi;
+	private final Contract<Unit> unitsContract;
 	
 	private final Set<MiningAgent> miningAgents;
 	private final Map<Unit, MiningAgent> resourceDepotsAssignments;
@@ -35,12 +39,10 @@ public class MapResourcesAgent implements Updateable, Drawable
 	private final Set<ExpandInfo> freeExpands;
 	private final Map<Unit, ExpandInfo> spawningMap;
 	
-	private final Set<Unit> freeWorkers;
-	private final Set<Unit> workers;
-	
-	public MapResourcesAgent(JNIBWAPI bwapi)
+	public MapResourcesAgent(JNIBWAPI bwapi, Contract<Unit> unitsContract)
 	{
 		this.bwapi = bwapi;
+		this.unitsContract = unitsContract;
 		
 		miningAgents = new HashSet<>();
 		resourceDepotsAssignments = new HashMap<>();
@@ -49,21 +51,12 @@ public class MapResourcesAgent implements Updateable, Drawable
 		
 		freeExpands = new HashSet<>();
 		spawningMap = new HashMap<>();
-		
-		freeWorkers = new HashSet<>();
-		workers = new HashSet<>();
 	}
 	
 	public void addExpand(ExpandInfo expand)
 	{
 		expandsInformations.add(expand);
 		freeExpands.add(expand);
-	}
-	
-	public void addWorker(Unit worker)
-	{
-		freeWorkers.add(worker);
-		workers.add(worker);
 	}
 	
 	public Set<ExpandInfo> getExpandInfos()
@@ -123,20 +116,6 @@ public class MapResourcesAgent implements Updateable, Drawable
 	@Override
 	public void update()
 	{
-		Set<Unit> workersCopy = new HashSet<>(workers);
-		for (Unit worker : workersCopy)
-		{
-			if (!worker.isExists())
-			{
-				workers.remove(worker);
-				freeWorkers.remove(worker);
-				
-				for (MiningAgent agent : miningAgents)
-				{
-					agent.removeMiner(worker);
-				}
-			}
-		}
 		checkFreeExpands();
 		
 		if (bwapi.getSelf().getMinerals() >= 300)
@@ -185,15 +164,26 @@ public class MapResourcesAgent implements Updateable, Drawable
 			freeExpands.remove(expand);
 		}
 		
-		for (MiningAgent agent : miningAgents)
+		for (final MiningAgent agent : miningAgents)
 		{
 			int saturationDifference = agent.getSaturationDifference();
 			if (saturationDifference > 0)
 			{
-				if (!freeWorkers.isEmpty())
+				UnitSet workers = new UnitSet(unitsContract.getAcquirableEntities(false)).where(UnitSelector.IS_WORKER);
+				
+				if (!workers.isEmpty())
 				{
-					Unit worker = freeWorkers.iterator().next();
-					freeWorkers.remove(worker);
+					Unit worker = workers.pick(Pickers.FIRST);
+					
+					ContractListener<Unit> listener = new ContractListener<Unit>()
+					{
+						@Override
+						public void entityRemoved(Unit entity)
+						{
+							agent.removeMiner(entity);
+						}
+					};
+					unitsContract.requestEntity(worker, listener, false);
 					
 					agent.addMiner(worker);
 				}
@@ -203,8 +193,7 @@ public class MapResourcesAgent implements Updateable, Drawable
 				Set<Unit> agentFreeWorkers = agent.getFreeMiners();
 				for (Unit worker : agentFreeWorkers)
 				{
-					agent.removeMiner(worker);
-					freeWorkers.add(worker);
+					unitsContract.returnEntity(worker);
 				}
 			}
 

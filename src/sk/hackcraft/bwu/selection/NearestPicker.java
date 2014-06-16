@@ -2,15 +2,24 @@ package sk.hackcraft.bwu.selection;
 
 import java.util.Set;
 
+import jnibwapi.Position;
 import jnibwapi.Unit;
 
 public class NearestPicker implements Picker
 {
 	private final Unit unit;
+	private final Position position;
 	
 	public NearestPicker(Unit unit)
 	{
 		this.unit = unit;
+		this.position = null;
+	}
+	
+	public NearestPicker(Position position)
+	{
+		this.unit = null;
+		this.position = position;
 	}
 	
 	@Override
@@ -21,7 +30,8 @@ public class NearestPicker implements Picker
 		
 		for (Unit setUnit : units)
 		{
-			double distance = setUnit.getDistance(unit);
+			Position position = getPosition();
+			double distance = setUnit.getDistance(position);
 			
 			if (distance < shortestDistance)
 			{
@@ -31,5 +41,17 @@ public class NearestPicker implements Picker
 		}
 		
 		return selectedUnit;
+	}
+	
+	private Position getPosition()
+	{
+		if (unit != null)
+		{
+			return unit.getPosition();
+		}
+		else
+		{
+			return position;
+		}
 	}
 }

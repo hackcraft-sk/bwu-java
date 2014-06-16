@@ -49,6 +49,9 @@ import sk.hackcraft.bwu.mining.MiningAgent;
 import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
 import sk.hackcraft.bwu.production.DroneBuildingConstructionAgent;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
+import sk.hackcraft.bwu.resource.EntityPool;
+import sk.hackcraft.bwu.resource.FirstTakeEntityPool;
+import sk.hackcraft.bwu.resource.EntityPool.Contract;
 import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.TypeSelector;
 import sk.hackcraft.bwu.selection.UnitSelector;
@@ -74,6 +77,8 @@ public class CreepBot extends AbstractBot
 			bwu.start();
 		}
 	}
+	
+	private final EntityPool<Unit> unitsPool;
 
 	private final MapResourcesAgent mapResourcesAgent;
 	private final LarvaProductionAgent productionAgent;
@@ -98,8 +103,17 @@ public class CreepBot extends AbstractBot
 	{
 		super(game);
 		
-		mapResourcesAgent = new MapResourcesAgent(bwapi);
-		productionAgent = new LarvaProductionAgent();
+		unitsPool = new FirstTakeEntityPool<>();
+		
+		{
+			Contract<Unit> contract = unitsPool.createContract("MapResources");
+			mapResourcesAgent = new MapResourcesAgent(bwapi, contract);
+		}
+		
+		{
+			Contract<Unit> contract = unitsPool.createContract("Production");
+			productionAgent = new LarvaProductionAgent(contract);
+		}
 		
 		enemyBuildings = new HashMap<>();
 	}
@@ -119,22 +133,17 @@ public class CreepBot extends AbstractBot
 		game.setSpeed(0);
 
 		UnitSet myUnits = game.getMyUnits();
-		UnitSet workers = myUnits.where(UnitSelector.IS_WORKER);
-		
-		for (Unit worker : workers)
+		for (Unit unit : myUnits)
 		{
-			mapResourcesAgent.addWorker(worker);
-		}
-		
-		UnitSet hatcheries = myUnits.where(UnitSelector.IS_SPAWNING_LARVAE);
-		for (Unit hatchery : hatcheries)
-		{
-			productionAgent.addHatchery(hatchery);
+			unitsPool.add(unit);
 		}
 		
 		Position startLocation = game.getSelf().getStartLocation();
 		
-		constructionAgent = new DroneBuildingConstructionAgent(bwapi, startLocation);
+		{
+			EntityPool.Contract<Unit> contract = unitsPool.createContract("BuildingConstruction");
+			constructionAgent = new DroneBuildingConstructionAgent(bwapi, startLocation, contract);
+		}
 		
 		// map layers
 		
@@ -276,6 +285,10 @@ public class CreepBot extends AbstractBot
 		bwapi.drawText(new Position(10, 10), "Frame: " + game.getFrameCount(), true);
 		
 		mapResourcesAgent.update();
+		productionAgent.update();
+		constructionAgent.update();
+		
+		//////
 		
 		if (constructorWorker != null && game.getFrameCount() % 500 == 0 && game.getSelf().getMinerals() >= 300)
 		{
@@ -292,13 +305,13 @@ public class CreepBot extends AbstractBot
 				public void onFailed()
 				{
 				}
-			});
+			}, true);
 			
 			spawningPoolBuilt = true;
 			constructorWorker = null;
 		}
 		
-		constructionAgent.update();
+		
 		
 		int availableMinerals = game.getSelf().getMinerals(); 
 		UnitSet workers = game.getMyUnits().where(UnitSelector.IS_WORKER);
@@ -462,8 +475,10 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitDestroyed(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (unit.getPlayer().isSelf())
+		{
+			unitsPool.remove(unit);
+		}
 	}
 
 	@Override
@@ -476,35 +491,22 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitCreated(Unit unit)
 	{
-		
 	}
 
 	@Override
 	public void unitCompleted(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (unit.getPlayer().isSelf())
+		{
+			unitsPool.add(unit);
+		}
 	}
 
 	@Override
 	public void unitMorphed(Unit unit)
 	{
-		if (unit.getType().isWorker())
-		{
-			if (constructorWorker == null && game.getMyUnits().where(UnitSelector.IS_WORKER).size() > 8)
-			{
-				constructorWorker = unit;
-			}
-			else
-			{
-				mapResourcesAgent.addWorker(unit);
-			}
-		}
-		
-		if (UnitSelector.IS_SPAWNING_LARVAE.isTrueFor(unit))
-		{
-			productionAgent.addHatchery(unit);
-		}
+		unitsPool.remove(unit);
+		unitsPool.add(unit);
 	}
 
 	@Override
@@ -524,8 +526,7 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitRenegaded(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		unitsPool.remove(unit);
 	}
 
 	@Override

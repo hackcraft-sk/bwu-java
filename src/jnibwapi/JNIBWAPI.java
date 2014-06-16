@@ -60,7 +60,7 @@ import jnibwapi.util.BWColor;
  */
 public class JNIBWAPI
 {
-
+	private static final int NONE_UNIT_ID = -1;
 	// load the BWAPI client library
 	static
 	{
@@ -151,6 +151,7 @@ public class JNIBWAPI
 	// game state
 	private int gameFrame = 0;
 	private Map map;
+	private HashMap<Integer, Unit> allCreatedUnits = new HashMap<>();
 	private HashMap<Integer, Unit> units = new HashMap<>();
 	private ArrayList<Unit> playerUnits = new ArrayList<>();
 	private ArrayList<Unit> alliedUnits = new ArrayList<>();
@@ -819,7 +820,19 @@ public class JNIBWAPI
 
 	public Unit getUnit(int unitID)
 	{
-		return units.get(unitID);
+		if (unitID == NONE_UNIT_ID)
+		{
+			return null;
+		}
+
+		Unit unit = allCreatedUnits.get(unitID);
+
+		if (unit == null)
+		{
+			throw new IllegalStateException("This id doesn't belongs to any alive unit.");
+		}
+
+		return unit;
 	}
 
 	// game state accessors
@@ -1239,6 +1252,7 @@ public class JNIBWAPI
 			unit.update(unitData, index);
 
 			units.put(id, unit);
+			allCreatedUnits.put(id, unit);
 			if (self != null && unit.getPlayer() == self)
 			{
 				playerUnits.add(unit);
@@ -1305,7 +1319,7 @@ public class JNIBWAPI
 		}
 		// update units
 		int[] unitData = getAllUnitsData();
-		HashSet<Integer> deadUnits = new HashSet<>(units.keySet());
+		HashSet<Integer> recentlyDeceasedUnits = new HashSet<>(units.keySet());
 		ArrayList<Unit> playerList = new ArrayList<>();
 		ArrayList<Unit> alliedList = new ArrayList<>();
 		ArrayList<Unit> enemyList = new ArrayList<>();
@@ -1315,13 +1329,14 @@ public class JNIBWAPI
 		{
 			int id = unitData[index];
 
-			deadUnits.remove(id);
+			recentlyDeceasedUnits.remove(id);
 
 			Unit unit = units.get(id);
 			if (unit == null)
 			{
 				unit = factory.createUnit(id, this);
 				units.put(id, unit);
+				allCreatedUnits.put(id, unit);
 			}
 
 			unit.update(unitData, index);
@@ -1364,10 +1379,10 @@ public class JNIBWAPI
 		alliedUnits = alliedList;
 		enemyUnits = enemyList;
 		neutralUnits = neutralList;
-		for (Integer unitID : deadUnits)
+		for (Integer unitID : recentlyDeceasedUnits)
 		{
-			units.get(unitID).setDestroyed();
-			units.remove(unitID);
+			Unit deadUnit = units.remove(unitID);
+			deadUnit.setDestroyed();
 		}
 	}
 
