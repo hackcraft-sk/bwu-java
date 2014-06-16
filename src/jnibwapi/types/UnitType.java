@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import jnibwapi.types.RaceType.RaceTypes;
 import jnibwapi.types.UnitSizeType.UnitSizeTypes;
 import jnibwapi.types.WeaponType.WeaponTypes;
 
@@ -401,8 +402,14 @@ public class UnitType {
 		return ID;
 	}
 	
+	@Deprecated
 	public int getRaceID() {
 		return raceID;
+	}
+	
+	public RaceType getRaceType()
+	{
+		return RaceTypes.getRaceType(raceID);
 	}
 	
 	public int getWhatBuildID() {

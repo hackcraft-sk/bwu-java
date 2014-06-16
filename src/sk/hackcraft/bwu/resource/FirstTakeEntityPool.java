@@ -5,9 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import sk.hackcraft.bwu.Drawable;
-import sk.hackcraft.bwu.Graphics;
-
 public class FirstTakeEntityPool<E> implements EntityPool<E>
 {
 	private final Set<E> entities;
@@ -30,6 +27,8 @@ public class FirstTakeEntityPool<E> implements EntityPool<E>
 		{
 			freeEntities.add(entity);
 			urgentlyFreeEntities.add(entity);
+			
+			System.out.println("Added " + entity);
 		}
 	}
 
@@ -39,7 +38,12 @@ public class FirstTakeEntityPool<E> implements EntityPool<E>
 		if (entities.contains(entity))
 		{
 			releaseEntity(entity, true);
+			
+			freeEntities.remove(entity);
+			urgentlyFreeEntities.remove(entity);
 			entities.remove(entity);
+			
+			System.out.println("Removed " + entity);
 		}
 	}
 	

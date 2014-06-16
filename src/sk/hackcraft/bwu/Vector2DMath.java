@@ -3,8 +3,8 @@ package sk.hackcraft.bwu;
 import java.util.Random;
 
 import jnibwapi.Position;
-import jnibwapi.Unit;
 import jnibwapi.Position.PosType;
+import jnibwapi.Unit;
 
 public class Vector2DMath
 {

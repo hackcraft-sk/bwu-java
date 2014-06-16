@@ -1,7 +1,8 @@
 package sk.hackcraft.bwu.controller;
 
+import jnibwapi.Position;
+import jnibwapi.Unit;
 import net.moergil.cortex.Actuator;
-import net.moergil.cortex.GenomeCreator;
 import net.moergil.cortex.NeuralNetwork;
 import net.moergil.cortex.Sensor;
 import sk.hackcraft.bwu.Drawable;
@@ -11,9 +12,6 @@ import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2DMath;
 import sk.hackcraft.bwu.selection.DistanceSelector;
 import sk.hackcraft.bwu.selection.NearestPicker;
-import sk.hackcraft.bwu.selection.UnitSet;
-import jnibwapi.Position;
-import jnibwapi.Unit;
 
 public class ScreamerAgent implements Updateable, Drawable
 {

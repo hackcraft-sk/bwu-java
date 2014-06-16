@@ -4,17 +4,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import sk.hackcraft.bwu.Updateable;
-import sk.hackcraft.bwu.resource.EntityPool.Contract;
-import sk.hackcraft.bwu.resource.EntityPool.ContractListener;
-import sk.hackcraft.bwu.selection.TypeSelector;
-import sk.hackcraft.bwu.selection.UnitSelector;
-import sk.hackcraft.bwu.selection.UnitSet;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
+import sk.hackcraft.bwu.Drawable;
+import sk.hackcraft.bwu.Graphics;
+import sk.hackcraft.bwu.Updateable;
+import sk.hackcraft.bwu.resource.EntityPool.Contract;
+import sk.hackcraft.bwu.resource.EntityPool.ContractListener;
+import sk.hackcraft.bwu.selection.UnitSelector;
+import sk.hackcraft.bwu.selection.UnitSet;
 
-public class LarvaProductionAgent implements Updateable
+public class LarvaProductionAgent implements Updateable, Drawable
 {
 	private final Set<Unit> hatcheries;
 	private final Set<Unit> larvae;
@@ -57,7 +58,7 @@ public class LarvaProductionAgent implements Updateable
 			hatcheries.add(hatchery);
 		}
 		
-		UnitSet notOwnedLarvae = new UnitSet(unitsContract.getAcquirableEntities(false)).where(new TypeSelector(UnitTypes.Zerg_Larva));
+		UnitSet notOwnedLarvae = new UnitSet(unitsContract.getAcquirableEntities(false)).whereType(UnitTypes.Zerg_Larva);
 		
 		for (final Unit larva : notOwnedLarvae)
 		{
@@ -81,7 +82,14 @@ public class LarvaProductionAgent implements Updateable
 			larvae.add(larva);
 		}
 	}
-	
+
+	@Override
+	public void draw(Graphics graphics)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 	public boolean produce(UnitType type)
 	{
 		if (larvae.isEmpty())

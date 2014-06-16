@@ -123,7 +123,7 @@ public class MiningAgent implements Updateable, Drawable
 				Vector2D resourceDepotVector = Convert.toPositionVector(resourceDepot.getPosition());
 				Vector2D resourceVector = Convert.toPositionVector(miner.getPosition());
 				
-				graphics.setColor(BWColor.Blue);
+				graphics.setColor(BWColor.Red);
 				graphics.drawLine(resourceDepotVector, resourceVector);
 			}
 			
@@ -181,7 +181,7 @@ public class MiningAgent implements Updateable, Drawable
 				Vector2D resourceDepotVector = Convert.toPositionVector(resourceDepot.getPosition());
 				Vector2D resourceVector = Convert.toPositionVector(miner.getPosition());
 				
-				graphics.setColor(BWColor.Blue);
+				graphics.setColor(BWColor.Red);
 				graphics.drawLine(resourceDepotVector, resourceVector);
 			}
 		}

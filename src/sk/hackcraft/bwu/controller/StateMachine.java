@@ -2,7 +2,6 @@ package sk.hackcraft.bwu.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 
 import sk.hackcraft.bwu.Updateable;
 

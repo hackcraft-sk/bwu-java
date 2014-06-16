@@ -7,24 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.ListModel;
 import javax.swing.Timer;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-
-import com.sun.prism.paint.Color;
 
 import sk.hackcraft.bwu.maplayer.Layer;
-import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerDrawable;
-import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
 public class SwingLayersVisualization
 {

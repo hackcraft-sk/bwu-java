@@ -2,8 +2,6 @@ package sk.hackcraft.bwu.maplayer;
 
 import java.util.Map;
 
-import jnibwapi.util.BWColor;
-
 public class MapExactColorAssigner<C> implements ColorAssigner<C>
 {
 	private final Map<Integer, C> colors;

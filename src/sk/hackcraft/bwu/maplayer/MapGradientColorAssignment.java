@@ -3,8 +3,6 @@ package sk.hackcraft.bwu.maplayer;
 import java.util.Map;
 import java.util.TreeMap;
 
-import jnibwapi.util.BWColor;
-
 public class MapGradientColorAssignment<C> implements ColorAssigner<C>
 {
 	private final TreeMap<Integer, C> colors;

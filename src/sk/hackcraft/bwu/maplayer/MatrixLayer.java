@@ -1,9 +1,5 @@
 package sk.hackcraft.bwu.maplayer;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import sk.hackcraft.bwu.maplayer.LayerIterator.IterateListener;
 
 public class MatrixLayer extends AbstractLayer
@@ -126,29 +122,11 @@ public class MatrixLayer extends AbstractLayer
 	{
 		return new LayerIterator(this, listener)
 		{
-			
 			@Override
 			public void iterateFeature()
 			{
 				iterateAll();
 			}
 		};
-	}
-	
-	private class MatrixLayerIterator implements Iterator<Integer>
-	{
-		int index = 0;
-
-		@Override
-		public boolean hasNext()
-		{
-			return index < matrix.length;
-		}
-
-		@Override
-		public Integer next()
-		{
-			return matrix[index];
-		}
 	}
 }

@@ -1,12 +1,10 @@
 package sk.hackcraft.bwu.maplayer.processors;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
 import sk.hackcraft.bwu.maplayer.Layer;
-import sk.hackcraft.bwu.maplayer.LayerIterator;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
 import sk.hackcraft.bwu.maplayer.LayerProcessor;
 import sk.hackcraft.bwu.maplayer.Layers;

@@ -1,10 +1,7 @@
 package sk.hackcraft.bwu.maplayer;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import jnibwapi.JNIBWAPI;
-import jnibwapi.Position;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;

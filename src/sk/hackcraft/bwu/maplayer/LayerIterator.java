@@ -1,6 +1,5 @@
 package sk.hackcraft.bwu.maplayer;
 
-import java.util.function.Predicate;
 
 public abstract class LayerIterator
 {

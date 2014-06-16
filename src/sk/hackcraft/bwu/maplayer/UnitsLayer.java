@@ -1,7 +1,5 @@
 package sk.hackcraft.bwu.maplayer;
 
-import java.awt.Point;
-
 import jnibwapi.Player;
 import jnibwapi.Unit;
 import sk.hackcraft.bwu.Convert;

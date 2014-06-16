@@ -1,8 +1,5 @@
 package sk.hackcraft.bwu.maplayer;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import sk.hackcraft.bwu.maplayer.LayerIterator.IterateListener;
 
 public interface Layer

@@ -3,13 +3,10 @@ package sk.hackcraft.bwu.maplayer.visualization;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.maplayer.ColorAssigner;

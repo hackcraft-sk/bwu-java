@@ -1,6 +1,5 @@
 package sk.hackcraft.bwu.maplayer;
 
-import jnibwapi.JNIBWAPI;
 import jnibwapi.Map;
 import jnibwapi.Position;
 import jnibwapi.Position.PosType;

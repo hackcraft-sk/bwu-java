@@ -1,10 +1,8 @@
 package net.moergil.cortex.evosim;
 
-import java.util.List;
-
-import sk.hackcraft.bwu.Updateable;
 import net.moergil.cortex.Genome;
 import net.moergil.cortex.NeuralNetwork;
+import sk.hackcraft.bwu.Updateable;
 
 public class Organism implements Updateable
 {

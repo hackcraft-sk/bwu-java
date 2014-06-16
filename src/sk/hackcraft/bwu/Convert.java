@@ -1,9 +1,9 @@
 package sk.hackcraft.bwu;
 
-import sk.hackcraft.bwu.maplayer.LayerDimension;
-import sk.hackcraft.bwu.maplayer.LayerPoint;
 import jnibwapi.Position;
 import jnibwapi.Position.PosType;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
 
 public class Convert
 {

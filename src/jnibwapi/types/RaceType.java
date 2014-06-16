@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import jnibwapi.types.UnitType.UnitTypes;
+
 /**
  * Represents a StarCraft race type.
  * 
@@ -68,8 +70,14 @@ public class RaceType {
 		return ID;
 	}
 	
+	@Deprecated
 	public int getWorkerID() {
 		return workerID;
+	}
+	
+	public UnitType getWorkerType()
+	{
+		return UnitTypes.getUnitType(workerID);
 	}
 	
 	public int getCenterID() {
