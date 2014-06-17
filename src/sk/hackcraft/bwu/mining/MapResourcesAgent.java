@@ -15,6 +15,8 @@ import jnibwapi.types.UnitType.UnitTypes;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
+import sk.hackcraft.bwu.production.BuildingConstructionAgent;
+import sk.hackcraft.bwu.production.BuildingConstructionAgent.ConstructionListener;
 import sk.hackcraft.bwu.resource.EntityPool.Contract;
 import sk.hackcraft.bwu.resource.EntityPool.ContractListener;
 import sk.hackcraft.bwu.selection.Pickers;
@@ -25,27 +27,36 @@ public class MapResourcesAgent implements Updateable, Drawable
 {
 	private final JNIBWAPI bwapi;
 	private final Contract<Unit> unitsContract;
+	private final BuildingConstructionAgent buildingConstructionAgent;
+	private final UnitType resourceDepotType;
 	
 	private final Set<MiningAgent> miningAgents;
-	private final Map<Unit, MiningAgent> resourceDepotsAssignments;
 	
 	private final Set<ExpandInfo> expandsInformations;
 	
 	private final Set<ExpandInfo> freeExpands;
-	private final Map<Unit, ExpandInfo> spawningMap;
+	private final Set<ExpandInfo> dangerousExpands;
 	
-	public MapResourcesAgent(JNIBWAPI bwapi, Contract<Unit> unitsContract)
+	private Position mainBasePosition;
+	
+	public MapResourcesAgent(JNIBWAPI bwapi, Contract<Unit> unitsContract, BuildingConstructionAgent buildingConstructionAgent, UnitType resourceDepotType)
 	{
 		this.bwapi = bwapi;
 		this.unitsContract = unitsContract;
+		this.buildingConstructionAgent = buildingConstructionAgent;
+		this.resourceDepotType = resourceDepotType;
 		
 		miningAgents = new HashSet<>();
-		resourceDepotsAssignments = new HashMap<>();
 		
 		expandsInformations = new HashSet<>();
+		dangerousExpands = new HashSet<>();
 		
 		freeExpands = new HashSet<>();
-		spawningMap = new HashMap<>();
+	}
+	
+	public void setMainBasePosition(Position mainBasePosition)
+	{
+		this.mainBasePosition = mainBasePosition;
 	}
 	
 	public void addExpand(ExpandInfo expand)
@@ -64,13 +75,37 @@ public class MapResourcesAgent implements Updateable, Drawable
 		return miningAgents;
 	}
 	
-	public boolean spawnMiningOperation(Unit worker)
-	{		
-		ExpandInfo targetExpand = getNearestExpand(worker.getPosition(), freeExpands);
+	public boolean spawnMiningOperation()
+	{
+		final ExpandInfo targetExpand = getNearestExpand(mainBasePosition, getFreeSafeExpands());
 		
 		if (targetExpand != null)
-		{			
-			spawningMap.put(worker, targetExpand);
+		{
+			ConstructionListener listener = new ConstructionListener()
+			{
+				private Unit resurceDepot;
+				
+				@Override
+				public void failed()
+				{
+					dangerousExpands.add(targetExpand);
+				}
+
+				@Override
+				public void buildingCreated(Unit building)
+				{
+					this.resurceDepot = building;
+				}
+
+				@Override
+				public void finished()
+				{
+					MiningAgent agent = new MiningAgent(bwapi ,resurceDepot, targetExpand.getResources());
+					miningAgents.add(agent);
+				}
+			};
+			
+			buildingConstructionAgent.construct(resourceDepotType, listener, true, targetExpand.getPosition(), null);
 			freeExpands.remove(targetExpand);
 			return true;
 		}
@@ -78,6 +113,34 @@ public class MapResourcesAgent implements Updateable, Drawable
 		{
 			return false;
 		}
+	}
+	
+	public boolean spawnMiningOperation(Unit resourceDepot)
+	{
+		final ExpandInfo targetExpand = getNearestExpand(mainBasePosition, getFreeSafeExpands());
+		
+		if (targetExpand == null)
+		{
+			return false;
+		}
+		
+		MiningAgent agent = new MiningAgent(bwapi, resourceDepot, targetExpand.getResources());
+		miningAgents.add(agent);
+		
+		freeExpands.remove(targetExpand);
+		
+		return true;
+	}
+	
+	private Set<ExpandInfo> getFreeSafeExpands()
+	{
+		Set<ExpandInfo> expands = new HashSet<>(freeExpands);
+		for (ExpandInfo dangerousExpand : dangerousExpands)
+		{
+			expands.remove(dangerousExpand);
+		}
+		
+		return expands;
 	}
 	
 	private ExpandInfo getNearestExpand(Position position, Collection<ExpandInfo> expands)
@@ -113,56 +176,27 @@ public class MapResourcesAgent implements Updateable, Drawable
 	{
 		checkFreeExpands();
 		
-		if (bwapi.getSelf().getMinerals() >= 300)
+		Set<MiningAgent> miningAgentsCopy = new HashSet<>(miningAgents);
+		for (final MiningAgent agent : miningAgentsCopy)
 		{
-			Map<Unit, ExpandInfo> spawningMapCopy = new HashMap<>(spawningMap);
-			for (Map.Entry<Unit, ExpandInfo> entry : spawningMapCopy.entrySet())
+			Unit resourceDepot = agent.getResourceDepot();
+			if (!resourceDepot.isExists())
 			{
-				Unit worker = entry.getKey();
-				ExpandInfo expandInfo = entry.getValue();
-				Position expandPosition = expandInfo.getPosition();
-				
-				if (worker.isIdle())
+				Set<Unit> miners = agent.getMiners();
+				for (Unit miner : miners)
 				{
-					worker.move(expandPosition, false);
+					unitsContract.returnEntity(miner);
 				}
+
+				miningAgents.remove(agent);
 				
-				Position workerPosition = worker.getPosition();
-				if (workerPosition.getPDistance(expandPosition) < 30 && !worker.isConstructing())
-				{
-					UnitType resourceDepotType = UnitTypes.Zerg_Hatchery;
-					
-					worker.build(expandPosition, resourceDepotType);
-					spawningMap.remove(worker);
-				}
+				Position position = resourceDepot.getPosition();
+				ExpandInfo expand = getNearestExpand(position, expandsInformations);
+				freeExpands.add(expand);
 			}
-		}
-		
-		UnitSet resourceDepots = new UnitSet(bwapi.getMyUnits()).where(UnitSelector.IS_RESOURCE_DEPOT);
-		for (Unit resourceDepot : resourceDepots)
-		{
-			if (resourceDepotsAssignments.containsKey(resourceDepot))
-			{
-				continue;
-			}
-			
-			ExpandInfo expand = getNearestExpand(resourceDepot.getPosition(), expandsInformations);
-			
-			if (expand == null)
-			{
-				continue;
-			}
-			
-			MiningAgent agent = new MiningAgent(resourceDepot, expand.getResources());
-			miningAgents.add(agent);
-			resourceDepotsAssignments.put(resourceDepot, agent);
-			freeExpands.remove(expand);
-		}
-		
-		for (final MiningAgent agent : miningAgents)
-		{
-			int saturationDifference = agent.getSaturationDifference();
-			if (saturationDifference > 0)
+
+			int saturationDeficit = agent.getSaturationDeficit();
+			if (saturationDeficit > 0)
 			{
 				UnitSet workers = new UnitSet(unitsContract.getAcquirableEntities(false)).where(UnitSelector.IS_WORKER);
 				
@@ -183,12 +217,13 @@ public class MapResourcesAgent implements Updateable, Drawable
 					agent.addMiner(worker);
 				}
 			}
-			else if (saturationDifference < 0)
+			else if (saturationDeficit < 0)
 			{
-				Set<Unit> agentFreeWorkers = agent.getFreeMiners();
+				Set<Unit> agentFreeWorkers = new HashSet<>(agent.getFreeMiners());
 				for (Unit worker : agentFreeWorkers)
 				{
 					unitsContract.returnEntity(worker);
+					agent.removeMiner(worker);
 				}
 			}
 
@@ -327,7 +362,7 @@ public class MapResourcesAgent implements Updateable, Drawable
 		int deficit = 0;
 		for (MiningAgent agent : miningAgents)
 		{
-			deficit += agent.getSaturationDifference();
+			deficit += agent.getSaturationDeficit();
 		}
 		
 		return deficit;

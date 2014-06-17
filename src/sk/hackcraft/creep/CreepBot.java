@@ -49,11 +49,13 @@ import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
 import sk.hackcraft.bwu.mining.MapResourcesAgent;
 import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
 import sk.hackcraft.bwu.production.BuildingConstructionAgent;
+import sk.hackcraft.bwu.production.BuildingConstructionAgent.ConstructionListener;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
 import sk.hackcraft.bwu.resource.EntityPool;
 import sk.hackcraft.bwu.resource.EntityPool.Contract;
 import sk.hackcraft.bwu.resource.FirstTakeEntityPool;
 import sk.hackcraft.bwu.selection.DistanceSelector;
+import sk.hackcraft.bwu.selection.Pickers;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
 
@@ -102,6 +104,10 @@ public class CreepBot extends AbstractBot
 	SwingLayersVisualization visualization;
 	LayersPainter layersPainter;
 	
+	// TODO temp
+	UnitSet knownBuildings = new UnitSet();
+	Unit lastKnownBuilding = null;
+	
 	public CreepBot(Game game)
 	{
 		super(game);
@@ -114,8 +120,16 @@ public class CreepBot extends AbstractBot
 		unitsPool = new FirstTakeEntityPool<>();
 		
 		{
+			EntityPool.Contract<Unit> contract = unitsPool.createContract("BuildingConstruction");
+			constructionAgent = new BuildingConstructionAgent(bwapi, time, contract);
+			updateables.add(constructionAgent);
+			drawables.add(constructionAgent);
+		}
+		
+		UnitType resourceDepotType = game.getSelf().getRace().getResourceDepotType();
+		{
 			Contract<Unit> contract = unitsPool.createContract("MapResources");
-			mapResourcesAgent = new MapResourcesAgent(bwapi, contract);
+			mapResourcesAgent = new MapResourcesAgent(bwapi, contract, constructionAgent, resourceDepotType);
 			updateables.add(mapResourcesAgent);
 			drawables.add(mapResourcesAgent);
 		}
@@ -148,16 +162,21 @@ public class CreepBot extends AbstractBot
 		for (Unit unit : myUnits)
 		{
 			unitsPool.add(unit);
+			
+			if (unit.getType().isBuilding())
+			{
+				if (lastKnownBuilding == null)
+				{
+					lastKnownBuilding = unit;
+				}
+				
+				knownBuildings.add(unit);
+			}
 		}
 		
 		Position startLocation = game.getSelf().getStartLocation();
-		
-		{
-			EntityPool.Contract<Unit> contract = unitsPool.createContract("BuildingConstruction");
-			constructionAgent = new BuildingConstructionAgent(bwapi, time, startLocation, contract);
-			updateables.add(constructionAgent);
-			drawables.add(constructionAgent);
-		}
+		constructionAgent.setCenterPosition(startLocation);
+		mapResourcesAgent.setMainBasePosition(startLocation);
 		
 		// map layers
 		
@@ -265,6 +284,12 @@ public class CreepBot extends AbstractBot
 			mapResourcesAgent.addExpand(expand);
 		}
 		
+		UnitSet resourceDepots = myUnits.where(UnitSelector.IS_RESOURCE_DEPOT);
+		for (Unit resourceDepot : resourceDepots)
+		{
+			mapResourcesAgent.spawnMiningOperation(resourceDepot);
+		}
+		
 		Random r = new Random();
 		ColorAssigner<Color> randomColorAssigner = new RandomColorAssigner<Color>(r)
 		{
@@ -306,22 +331,53 @@ public class CreepBot extends AbstractBot
 		
 		//////
 		
-		if (game.getFrameCount() % 500 == 0 && game.getSelf().getMinerals() >= 300)
+		if (game.getFrameCount() % 5000 == 0 && game.getSelf().getMinerals() >= 300)
 		{
-			//mapResourcesAgent.spawnMiningOperation();
+			mapResourcesAgent.spawnMiningOperation();
 		}
 		
-		if (!spawningPoolBuilt && game.getMyUnits().where(UnitSelector.IS_WORKER).size() >= 8)
+		if (!spawningPoolBuilt && game.getMyUnits().where(UnitSelector.IS_WORKER).size() >= 8 && game.getSelf().getMinerals() >= 175)
 		{
 			constructionAgent.construct(UnitTypes.Zerg_Spawning_Pool, new BuildingConstructionAgent.ConstructionListener()
 			{
 				@Override
-				public void onFailed()
+				public void failed()
 				{
 				}
-			}, true);
+
+				@Override
+				public void buildingCreated(Unit building)
+				{
+				}
+
+				@Override
+				public void finished()
+				{
+				}
+			}, true, null, null);
 			
 			spawningPoolBuilt = true;
+		}
+		
+		if (spawningPoolBuilt && game.getFrameCount() % 1000 == 0 && game.getMyUnits().where(UnitSelector.IS_SPAWNING_LARVAE).size() < 3 && game.getSelf().getMinerals() >= 350)
+		{
+			constructionAgent.construct(UnitTypes.Zerg_Hatchery, new ConstructionListener()
+			{
+				@Override
+				public void failed()
+				{
+				}
+
+				@Override
+				public void buildingCreated(Unit building)
+				{
+				}
+
+				@Override
+				public void finished()
+				{
+				}
+			}, true, null, null);
 		}
 		
 		int availableMinerals = game.getSelf().getMinerals(); 
@@ -331,7 +387,7 @@ public class CreepBot extends AbstractBot
 		{
 			if ((availableMinerals >= 50 && game.getFrameCount() < 3000) || availableMinerals >= 400)
 			{
-				boolean zerglings = new Random().nextBoolean();
+				boolean zerglings = new Random().nextInt(3) != 0;
 				
 				UnitType type;
 				if (zerglings && !spawningPools.isEmpty() || workers.size() > mapResourcesAgent.getWorkersDeficit() + 5)
@@ -399,12 +455,21 @@ public class CreepBot extends AbstractBot
 		bwapi.drawText(new Position(10, 30), "Zerglings: " + zerglings.size(), true);
 		
 		UnitSet buildingsUnderAttack = game.getMyUnits().where(UnitSelector.IS_BUILDING).where(UnitSelector.IS_UNDER_ATTACK);
+		UnitSet attackingUnits = game.getMyUnits().where(UnitSelector.IS_ATTACKING);
 
-		if (!buildingsUnderAttack.isEmpty())
+		if (!buildingsUnderAttack.isEmpty() || !attackingUnits.isEmpty())
 		{
 			game.setSpeed(25);
 			
-			Position defendPosition = buildingsUnderAttack.iterator().next().getPosition();
+			Unit unit = buildingsUnderAttack.pick(Pickers.FIRST);
+			
+			if (unit == null)
+			{
+				unit = attackingUnits.pick(Pickers.FIRST);
+			}
+			
+			Position defendPosition = unit.getPosition();
+			
 			UnitSet enemies = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(Convert.toPositionVector(defendPosition)), 1000);
 
 			Position attackPos = (!enemies.isEmpty()) ? enemies.iterator().next().getPosition() : defendPosition;
@@ -431,16 +496,26 @@ public class CreepBot extends AbstractBot
 		}
 		else
 		{
-			Position attackPosition = game.getMap().getSize();
-			attackPosition = new Position(attackPosition.getPX() / 2, attackPosition.getPY() / 2);
+			Position tp = lastKnownBuilding.getPosition();
 			
 			for (Unit zergling : zerglings)
 			{
-				if (zergling.isIdle())
+				if (zergling.isIdle() && zergling.getPosition().getPDistance(tp) > 1000)
 				{
-					zergling.attack(attackPosition, false);
+					int offsetX = random.nextInt(500) - 250;
+					int offsetY = random.nextInt(500) - 250;
+					zergling.attack(new Position(tp.getPX() + offsetX, tp.getPY() + offsetY), false);
 				}
 			}
+		}
+		
+		UnitSet myBuildings = game.getMyUnits().where(UnitSelector.IS_BUILDING);
+		UnitSet newBuildings = myBuildings.minus(knownBuildings);
+		
+		if (!newBuildings.isEmpty())
+		{
+			lastKnownBuilding = newBuildings.pick(Pickers.FIRST);
+			knownBuildings.addAll(newBuildings);
 		}
 		
 		unitsLayer.update();
@@ -544,6 +619,21 @@ public class CreepBot extends AbstractBot
 		for (Drawable drawable : drawables)
 		{
 			drawable.draw(graphics);
+		}
+		
+		if (!enemyBuildings.isEmpty())
+		{
+			Position pos = enemyBuildings.keySet().iterator().next();
+			
+			graphics.setColor(BWColor.Red);
+			graphics.drawCircle(Convert.toPositionVector(pos), 30);
+		}
+		
+		for (Unit unit : bwapi.getStaticNeutralUnits())
+		{
+			BWColor color = (unit.getType().isMineralField()) ? BWColor.Cyan : BWColor.Green;
+			graphics.setColor(color);
+			graphics.drawCircle(unit, 30);
 		}
 	}
 

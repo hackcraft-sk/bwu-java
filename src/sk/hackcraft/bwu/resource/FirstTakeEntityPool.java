@@ -27,8 +27,6 @@ public class FirstTakeEntityPool<E> implements EntityPool<E>
 		{
 			freeEntities.add(entity);
 			urgentlyFreeEntities.add(entity);
-			
-			System.out.println("Added " + entity);
 		}
 	}
 
@@ -42,8 +40,6 @@ public class FirstTakeEntityPool<E> implements EntityPool<E>
 			freeEntities.remove(entity);
 			urgentlyFreeEntities.remove(entity);
 			entities.remove(entity);
-			
-			System.out.println("Removed " + entity);
 		}
 	}
 	

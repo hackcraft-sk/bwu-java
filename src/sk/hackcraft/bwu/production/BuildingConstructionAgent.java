@@ -26,29 +26,35 @@ import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.resource.EntityPool;
 import sk.hackcraft.bwu.resource.EntityPool.ContractListener;
 import sk.hackcraft.bwu.selection.NearestPicker;
+import sk.hackcraft.bwu.selection.Pickers;
+import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
 
 public class BuildingConstructionAgent implements Updateable, Drawable
 {
-	private final JNIBWAPI jnibwapi;
+	private final JNIBWAPI bwapi;
 	private final EnvironmentTime time;
 	
-	private final Position center;
+	private Position center;
 	
 	private final EntityPool.Contract<Unit> unitsContract;
 	
 	private final Set<ConstructionTask> tasks;
 	private final Map<Unit, ConstructionTask> workersTasks;
 	
-	public BuildingConstructionAgent(JNIBWAPI jnibwapi, EnvironmentTime time, Position center, EntityPool.Contract<Unit> unitsContract)
+	public BuildingConstructionAgent(JNIBWAPI bwapi, EnvironmentTime time, EntityPool.Contract<Unit> unitsContract)
 	{
-		this.jnibwapi = jnibwapi;
+		this.bwapi = bwapi;
 		this.time = time;
-		this.center = center;
 		this.unitsContract = unitsContract;
 		
 		tasks = new HashSet<>();
 		workersTasks = new HashMap<Unit, ConstructionTask>();
+	}
+	
+	public void setCenterPosition(Position center)
+	{
+		this.center = center;
 	}
 	
 	@Override
@@ -57,7 +63,7 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 		Set<ConstructionTask> tasksCopy = new HashSet<>(tasks);
 		for (ConstructionTask task : tasksCopy)
 		{
-			if (!task.getStatus())
+			if (task.isEnded())
 			{
 				tasks.remove(task);
 				workersTasks.remove(task.getWorker());
@@ -68,6 +74,20 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 			if (task.getWorker() != null && task.isWorkerStillNeeded())
 			{
 				returnWorker(task);
+			}
+			
+			if (task.getActualState() == ConstructionTaskState.STARTING_CONSTRUCTION && task.getConstructedBuilding() == null)
+			{
+				Position buildPosition = task.getBuildPosition();
+				UnitSet unitsOnTile = new UnitSet(bwapi.getUnitsOnTile(buildPosition)).where(UnitSelector.IS_BUILDING);
+				
+				if (!unitsOnTile.isEmpty())
+				{
+					UnitType buildingType = task.getBuildingType();
+					Unit building = unitsOnTile.whereType(buildingType).pick(Pickers.FIRST);
+					
+					task.addConstructedBuilding(building);
+				}
 			}
 			
 			task.update();
@@ -90,37 +110,28 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 		unitsContract.returnEntity(worker);
 	}
 	
-	public boolean construct(UnitType buildingType, ConstructionListener listener, boolean urgent)
+	public boolean construct(UnitType buildingType, ConstructionListener listener, boolean urgent, Position position, Unit worker)
 	{
-		UnitType workerType = buildingType.getRaceType().getWorkerType();
-		UnitSet worker = new UnitSet(unitsContract.getAcquirableEntities(urgent)).whereType(workerType);
-
-		if (worker.isEmpty())
+		if (position == null)
 		{
-			return false;
+			position = selectBuildPosition(buildingType);
+			
+			if (position == null)
+			{
+				return false;
+			}
 		}
 		
-		Position buildPosition = pickBuildPositon(buildingType);
-		if (buildPosition == null)
+		if (worker == null)
 		{
-			return false;
+			worker = selectWorker(buildingType, position, urgent);
+			
+			if (worker == null)
+			{
+				return false;
+			}
 		}
 		
-		Unit drone = worker.pick(new NearestPicker(buildPosition));
-		
-		construct(buildPosition, drone, buildingType, listener, urgent);
-		return true;
-	}
-	
-	public void construct(Unit worker, UnitType buildingType, ConstructionListener listener, boolean urgent)
-	{
-		Position position = pickBuildPositon(buildingType);
-		
-		construct(position, worker, buildingType, listener, urgent);
-	}
-	
-	public void construct(Position position, Unit worker, UnitType buildingType, ConstructionListener listener, boolean urgent)
-	{
 		ContractListener<Unit> contractListener = new ContractListener<Unit>()
 		{
 			@Override
@@ -142,9 +153,24 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 		ConstructionTask task = new ConstructionTask(position, worker, buildingType, listener);
 		tasks.add(task);
 		workersTasks.put(worker, task);
+		
+		return true;
 	}
 	
-	private Position pickBuildPositon(UnitType buildingType)
+	private Unit selectWorker(UnitType buildingType, Position buildPosition, boolean urgent)
+	{
+		UnitType workerType = buildingType.getRaceType().getWorkerType();
+		UnitSet workers = new UnitSet(unitsContract.getAcquirableEntities(urgent)).whereType(workerType);
+
+		if (workers.isEmpty())
+		{
+			return null;
+		}
+		
+		return workers.pick(new NearestPicker(buildPosition));
+	}
+	
+	private Position selectBuildPosition(UnitType buildingType)
 	{
 		// TODO implement properly
 		Random random = new Random();
@@ -156,7 +182,7 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 			
 			Position position = new Position(x, y, PosType.BUILD);
 			
-			if (!jnibwapi.canBuildHere(position, buildingType, true))
+			if (!bwapi.canBuildHere(position, buildingType, true))
 			{
 				continue;
 			}
@@ -169,7 +195,9 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 	
 	public interface ConstructionListener
 	{
-		void onFailed();
+		void failed();
+		void buildingCreated(Unit building);
+		void finished();
 	}
 	
 	public enum ConstructionTaskState
@@ -222,6 +250,16 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 			worker.stop(false);
 		}
 		
+		public Position getBuildPosition()
+		{
+			return buildPosition;
+		}
+		
+		public UnitType getBuildingType()
+		{
+			return buildingType;
+		}
+		
 		public Unit getWorker()
 		{
 			return worker;
@@ -254,12 +292,31 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 			}
 		}
 		
+		public ConstructionTaskState getActualState()
+		{
+			return actualState;
+		}
+		
+		public Unit getConstructedBuilding()
+		{
+			return constructedBuilding;
+		}
+		
+		public void addConstructedBuilding(Unit building)
+		{
+			this.constructedBuilding = building;
+			actualState = ConstructionTaskState.CONSTRUCTING;
+			
+			constructionListener.buildingCreated(building);
+		}
+		
 		@Override
 		public void update()
 		{
-			if (constructionTerminated())
+			if (actualState != ConstructionTaskState.TERMINATED && constructionTerminated())
 			{
 				actualState = ConstructionTaskState.TERMINATED;
+				constructionListener.failed();
 				return;
 			}
 
@@ -280,15 +337,7 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 				}
 				case STARTING_CONSTRUCTION:
 				{
-					if (startedConstruction())
-					{
-						actualState = ConstructionTaskState.CONSTRUCTING;
-					}
-					else
-					{
-						commenceConstruction(time);
-					}
-					
+					commenceConstruction(time);
 					break;
 				}
 				case CONSTRUCTING:
@@ -296,6 +345,7 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 					if (finishedConstruction())
 					{
 						actualState = ConstructionTaskState.COMPLETED;
+						constructionListener.finished();
 					}
 					break;
 				}
@@ -317,7 +367,7 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 			{
 				Vector2D workerPositionVector = Convert.toPositionVector(worker.getPosition());
 				
-				graphics.setColor(BWColor.Blue);
+				graphics.setColor(BWColor.Yellow);
 				graphics.fillCircle(worker, 4);
 				
 				Vector2D buildCenterPositionVector = Convert.toPositionVector(buildCenterPosition);
@@ -325,12 +375,13 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 				
 				if (vectorToBuildPositon.getLength() > Constants.LINE_DRAW_VISUAL_LIMIT)
 				{
-					vectorToBuildPositon.normalize().scale((float)Constants.LINE_DRAW_VISUAL_LIMIT);
+					vectorToBuildPositon = vectorToBuildPositon.normalize().scale((float)Constants.LINE_DRAW_VISUAL_LIMIT);
+					buildCenterPositionVector = workerPositionVector.add(vectorToBuildPositon);
 				}
 				
 				graphics.drawLine(workerPositionVector, buildCenterPositionVector);
 				
-				graphics.drawText(worker, worker.getOrder().getName());
+				graphics.drawText(worker, actualState);
 			}
 			
 			graphics.setColor(BWColor.Yellow);
@@ -347,7 +398,16 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 		
 		private boolean constructionTerminated()
 		{
-			// TODO
+			if (constructedBuilding == null && workerDestroyed())
+			{
+				return true;
+			}
+			
+			if (constructedBuilding != null && buildingDestroyed())
+			{
+				return true;
+			}
+
 			return false;
 		}
 		
@@ -379,14 +439,7 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 
 		private boolean finishedConstruction()
 		{
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		private boolean startedConstruction()
-		{
-			// TOOD
-			return worker == null;
+			return constructedBuilding.isCompleted();
 		}
 
 		private boolean isInPosition()

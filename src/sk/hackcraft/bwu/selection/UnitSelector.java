@@ -285,6 +285,15 @@ public interface UnitSelector
 		}
 	};
 
+	static public final BooleanSelector IS_ATTACKING = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			return unit.isAttacking();
+		}
+	};
+	
 	static public final BooleanSelector IS_LOCKED_DOWN = new BooleanSelector()
 	{
 		@Override

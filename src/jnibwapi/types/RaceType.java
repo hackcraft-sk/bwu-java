@@ -80,6 +80,11 @@ public class RaceType {
 		return UnitTypes.getUnitType(workerID);
 	}
 	
+	public UnitType getResourceDepotType()
+	{
+		return UnitTypes.getUnitType(centerID);
+	}
+	
 	public int getCenterID() {
 		return centerID;
 	}

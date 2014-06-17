@@ -7,6 +7,7 @@ import java.util.Set;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
+import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
@@ -81,13 +82,32 @@ public class LarvaProductionAgent implements Updateable, Drawable
 			unitsContract.requestEntity(larva, listener, false);
 			larvae.add(larva);
 		}
+		
+		UnitSet larvaeCopy = new UnitSet(larvae);
+		for (Unit larva : larvaeCopy)
+		{
+			if (larva.getType() != UnitTypes.Zerg_Larva)
+			{
+				larvae.remove(larva);
+				unitsContract.returnEntity(larva);
+			} 
+		}
 	}
 
 	@Override
 	public void draw(Graphics graphics)
 	{
-		// TODO Auto-generated method stub
-		
+		for (Unit larva : larvae)
+		{
+			graphics.setColor(BWColor.Yellow);
+			
+			if (larva.getType() != UnitTypes.Zerg_Larva)
+			{
+				graphics.setColor(BWColor.Red);
+			}
+			
+			graphics.drawCircle(larva, 3);
+		}
 	}
 
 	public boolean produce(UnitType type)
@@ -109,14 +129,6 @@ public class LarvaProductionAgent implements Updateable, Drawable
 			throw new IllegalStateException("Production doesn't own this larva.");
 		}
 		
-		boolean result = larva.morph(type);
-		
-		if (result)
-		{
-			larvae.remove(larva);
-			unitsContract.returnEntity(larva);
-		}
-		
-		return result;
+		return larva.morph(type);
 	}
 }

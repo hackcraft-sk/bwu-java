@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jnibwapi.JNIBWAPI;
 import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.OrderType.OrderTypes;
@@ -14,10 +15,14 @@ import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.selection.Pickers;
 import sk.hackcraft.bwu.selection.UnitSelector;
+import sk.hackcraft.bwu.selection.UnitSet;
 
 public class MiningAgent implements Updateable, Drawable
 {
+	private final JNIBWAPI bwapi;
+	
 	private final Unit resourceDepot;
 	
 	private final Set<Unit> resources;
@@ -29,8 +34,10 @@ public class MiningAgent implements Updateable, Drawable
 	private final Map<Unit, Integer> actualSaturations;
 	private final Map<Unit, Integer> fullSaturations;
 	
-	public MiningAgent(Unit resourceDepot, Set<Unit> resources)
+	public MiningAgent(JNIBWAPI bwapi, Unit resourceDepot, Set<Unit> resources)
 	{
+		this.bwapi = bwapi;
+		
 		this.resourceDepot = resourceDepot;
 		this.resources = resources;
 
@@ -73,12 +80,17 @@ public class MiningAgent implements Updateable, Drawable
 		}
 	}
 	
+	public Set<Unit> getMiners()
+	{
+		return miners;
+	}
+	
 	public Set<Unit> getFreeMiners()
 	{
 		return freeMiners;
 	}
 
-	public int getSaturationDifference()
+	public int getSaturationDeficit()
 	{
 		return getFullSaturation() - getActualSaturation();
 	}
@@ -163,7 +175,7 @@ public class MiningAgent implements Updateable, Drawable
 			}
 		}
 		
-		graphics.drawText(resourceDepot, "A: " + miners.size() + " F: " + freeMiners.size());
+		graphics.drawText(resourceDepot, "A: " + miners.size() + "/" + getFullSaturation() + " F: " + freeMiners.size());
 		
 		if (resourceDepot.isSelected())
 		{
@@ -213,9 +225,15 @@ public class MiningAgent implements Updateable, Drawable
 	{
 		for (Unit miner : miners)
 		{
+			Unit resource = minersToResourcesAssignments.get(miner);
+			
+			if (resource == null)
+			{
+				continue;
+			}
+			
 			if (miner.isIdle())
 			{
-				Unit resource = minersToResourcesAssignments.get(miner);
 				miner.gather(resource, false);
 				continue;
 			}
@@ -224,10 +242,9 @@ public class MiningAgent implements Updateable, Drawable
 			
 			if (target != null && target.getType().isResourceContainer())
 			{
-				Unit assignedResource = minersToResourcesAssignments.get(miner);
-				if (!assignedResource.equals(target))
+				if (!resource.equals(target))
 				{
-					miner.gather(assignedResource, false);
+					miner.gather(resource, false);
 				}
 			}
 		}
@@ -238,12 +255,13 @@ public class MiningAgent implements Updateable, Drawable
 		Set<Unit> resourcesCopy = new HashSet<>(resources);
 		for (Unit resource : resourcesCopy)
 		{
-			if (!resource.isVisible())
+			if (!bwapi.isVisible(resource.getPosition()))
 			{
 				continue;
 			}
-			
-			if (resource.getResources() <= 0)
+
+			UnitSet resources =  new UnitSet(bwapi.getUnitsOnTile(resource.getPosition())).where(UnitSelector.IS_RESOURCE);
+			if (resources.isEmpty())
 			{
 				removeResource(resource);
 			}
@@ -252,19 +270,15 @@ public class MiningAgent implements Updateable, Drawable
 	
 	private void removeResource(Unit resource)
 	{
-		Unit miner = null;
-		
 		Map<Unit, Unit> assignmentsCopy = new HashMap<>(minersToResourcesAssignments);
 		for (Map.Entry<Unit, Unit> entry : assignmentsCopy.entrySet())
 		{
 			if (entry.getValue() == resource)
 			{
-				miner = entry.getKey();
-				break;
+				Unit miner = entry.getKey();
+				freeMiner(miner);
 			}
 		}
-		
-		freeMiner(miner);
 		
 		resources.remove(resource);
 		actualSaturations.remove(resource);
