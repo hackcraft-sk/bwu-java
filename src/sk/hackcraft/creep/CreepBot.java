@@ -35,6 +35,7 @@ import sk.hackcraft.bwu.maplayer.LayerColorDrawable;
 import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerDrawable;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
+import sk.hackcraft.bwu.maplayer.LayerUpdater;
 import sk.hackcraft.bwu.maplayer.Layers;
 import sk.hackcraft.bwu.maplayer.MapExactColorAssigner;
 import sk.hackcraft.bwu.maplayer.MapGradientColorAssignment;
@@ -44,6 +45,7 @@ import sk.hackcraft.bwu.maplayer.processors.BorderLayerProcessor;
 import sk.hackcraft.bwu.maplayer.processors.GradientFloodFillProcessor;
 import sk.hackcraft.bwu.maplayer.processors.ValueFloodFillProcessor;
 import sk.hackcraft.bwu.maplayer.processors.ValuesChangerLayerProcessor;
+import sk.hackcraft.bwu.maplayer.updaters.TemperatureLayerUpdater;
 import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
 import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
 import sk.hackcraft.bwu.mining.MapResourcesAgent;
@@ -107,6 +109,8 @@ public class CreepBot extends AbstractBot
 	// TODO temp
 	UnitSet knownBuildings = new UnitSet();
 	Unit lastKnownBuilding = null;
+	
+	private LayerUpdater heatUpdater;
 	
 	public CreepBot(Game game)
 	{
@@ -300,6 +304,8 @@ public class CreepBot extends AbstractBot
 			}
 		};
 		layersPainter.addLayer(resourcesPartitioningLayer, randomColorAssigner);
+		
+		heatUpdater = new TemperatureLayerUpdater(resourcesPartitioningLayer, 1, 100, 0, 1000);
 	}
 
 	@Override
@@ -319,6 +325,7 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
+		heatUpdater.update();
 		game.setSpeed(0);
 		bwapi.setFrameSkip(0);
 		
@@ -439,7 +446,7 @@ public class CreepBot extends AbstractBot
 			{
 				Unit unit = enemyBuildings.get(position);
 				
-				if (!unit.isExists())
+				if (!unit.isExists() || !unit.getPlayer().isEnemy())
 				{
 					enemyBuildings.remove(position);
 				}
@@ -470,7 +477,7 @@ public class CreepBot extends AbstractBot
 			
 			Position defendPosition = unit.getPosition();
 			
-			UnitSet enemies = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(Convert.toPositionVector(defendPosition)), 1000);
+			UnitSet enemies = game.getEnemyUnits().whereNot(UnitSelector.IS_FLYER).whereLessOrEqual(new DistanceSelector(Convert.toPositionVector(defendPosition)), 1000);
 
 			Position attackPos = (!enemies.isEmpty()) ? enemies.iterator().next().getPosition() : defendPosition;
 
