@@ -111,6 +111,8 @@ public class CreepBot extends AbstractBot
 	Unit lastKnownBuilding = null;
 	
 	private LayerUpdater heatUpdater;
+
+	private boolean spawnedGas;
 	
 	public CreepBot(Game game)
 	{
@@ -337,6 +339,12 @@ public class CreepBot extends AbstractBot
 		}
 		
 		//////
+		
+		if (game.getFrameCount() < 10000 && game.getMyUnits().where(UnitSelector.IS_WORKER).size() > 10 && !spawnedGas)
+		{
+			mapResourcesAgent.buildGasEverywhere();
+			spawnedGas = true;
+		}
 		
 		if (game.getFrameCount() % 5000 == 0 && game.getSelf().getMinerals() >= 300)
 		{

@@ -9,6 +9,7 @@ import jnibwapi.JNIBWAPI;
 import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.OrderType.OrderTypes;
+import jnibwapi.types.UnitType.UnitTypes;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Drawable;
@@ -25,10 +26,10 @@ public class MiningAgent implements Updateable, Drawable
 	
 	private final Unit resourceDepot;
 	
-	private final Set<Unit> resources;
+	private final UnitSet resources;
 
-	private final Set<Unit> miners;
-	private final Set<Unit> freeMiners;
+	private final UnitSet miners;
+	private final UnitSet freeMiners;
 	private final Map<Unit, Unit> minersToResourcesAssignments;
 	
 	private final Map<Unit, Integer> actualSaturations;
@@ -39,10 +40,10 @@ public class MiningAgent implements Updateable, Drawable
 		this.bwapi = bwapi;
 		
 		this.resourceDepot = resourceDepot;
-		this.resources = resources;
+		this.resources = new UnitSet(resources);
 
-		this.miners = new HashSet<>();
-		this.freeMiners = new HashSet<>();
+		this.miners = new UnitSet();
+		this.freeMiners = new UnitSet();
 		
 		this.minersToResourcesAssignments = new HashMap<>();
 		this.actualSaturations = new HashMap<>();
@@ -51,13 +52,25 @@ public class MiningAgent implements Updateable, Drawable
 		for (Unit resource : resources)
 		{
 			actualSaturations.put(resource, 0);
-			fullSaturations.put(resource, 2);
+			
+			int fullSaturation = (resource.getType() == UnitTypes.Resource_Vespene_Geyser) ? 0 : 3;
+			fullSaturations.put(resource, fullSaturation);
 		}
 	}
 	
 	public Unit getResourceDepot()
 	{
 		return resourceDepot;
+	}
+	
+	public UnitSet getResources()
+	{
+		return resources;
+	}
+	
+	public UnitSet getUnusedGeysers()
+	{
+		return resources.where(UnitSelector.IS_GAS_GEYSER);
 	}
 
 	public void addMiner(Unit miner)
@@ -116,6 +129,7 @@ public class MiningAgent implements Updateable, Drawable
 	public void update()
 	{
 		checkResources();
+		checkGasProcessing();
 		checkWorkersAssignments();
 		checkWorkers();
 	}
@@ -199,6 +213,31 @@ public class MiningAgent implements Updateable, Drawable
 		}
 	}
 	
+	private void checkGasProcessing()
+	{
+		UnitSet refineries = resources.where(UnitSelector.IS_GAS_EXTRACTION_BUILDING).where(UnitSelector.IS_COMPLETED);
+		for (Unit refinery : refineries)
+		{
+			int fullSaturation = fullSaturations.get(refinery);
+			
+			if (fullSaturation == 0)
+			{
+				fullSaturations.put(refinery, 3);
+			}
+		}
+		
+		UnitSet geysers = resources.where(UnitSelector.IS_GAS_GEYSER);
+		for (Unit geyser : geysers)
+		{
+			int fullSaturation = fullSaturations.get(geyser);
+			
+			if (fullSaturation != 0)
+			{
+				fullSaturations.put(geyser, 0);
+			}
+		}
+	}
+	
 	private void checkWorkersAssignments()
 	{
 		Set<Unit> freeMinersCopy = new HashSet<>(freeMiners);
@@ -255,17 +294,27 @@ public class MiningAgent implements Updateable, Drawable
 		Set<Unit> resourcesCopy = new HashSet<>(resources);
 		for (Unit resource : resourcesCopy)
 		{
+			if (UnitSelector.IS_GAS_SOURCE.isTrueFor(resource))
+			{
+				continue;
+			}
+
 			if (!bwapi.isVisible(resource.getPosition()))
 			{
 				continue;
 			}
 
-			UnitSet resources =  new UnitSet(bwapi.getUnitsOnTile(resource.getPosition())).where(UnitSelector.IS_RESOURCE);
-			if (resources.isEmpty())
+			if (isResourceDepleted(resource))
 			{
 				removeResource(resource);
 			}
 		}
+	}
+	
+	private boolean isResourceDepleted(Unit resource)
+	{
+		UnitSet resourcesOnTile =  new UnitSet(bwapi.getUnitsOnTile(resource.getPosition())).where(UnitSelector.IS_RESOURCE);
+		return resourcesOnTile.isEmpty();
 	}
 	
 	private void removeResource(Unit resource)
@@ -299,19 +348,26 @@ public class MiningAgent implements Updateable, Drawable
 
 	private Unit selectResourceForAssignment()
 	{
+		UnitSet refineries = resources.where(UnitSelector.IS_GAS_EXTRACTION_BUILDING);
+		Unit resource = getLeastSaturatedResource(refineries);
+		
+		if (resource == null)
+		{
+			UnitSet minerals = resources.where(UnitSelector.IS_MINERAL);
+			resource = getLeastSaturatedResource(minerals);
+		}
+		
+		return resource;
+	}
+	
+	private Unit getLeastSaturatedResource(UnitSet resources)
+	{
 		Unit leastSaturatedResource = null;
 		int lowestSaturation = Integer.MAX_VALUE;
 		
-		for (Map.Entry<Unit, Integer> entry : actualSaturations.entrySet())
+		for (Unit resource : resources)
 		{
-			Unit resource = entry.getKey();
-			
-			if (!UnitSelector.IS_MINERAL.isTrueFor(resource))
-			{
-				continue;
-			}
-			
-			int actualSaturation = entry.getValue();
+			int actualSaturation = actualSaturations.get(resource);
 			
 			int fullSaturation = fullSaturations.get(resource);
 			

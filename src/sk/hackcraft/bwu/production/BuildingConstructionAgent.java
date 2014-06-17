@@ -86,7 +86,10 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 					UnitType buildingType = task.getBuildingType();
 					Unit building = unitsOnTile.whereType(buildingType).pick(Pickers.FIRST);
 					
-					task.addConstructedBuilding(building);
+					if (building != null)
+					{
+						task.addConstructedBuilding(building);
+					}
 				}
 			}
 			
@@ -223,6 +226,8 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 	
 	private class ConstructionTask implements Updateable, Drawable
 	{
+		private static final double NEAR_BUILD_POSITION = 100;
+		
 		private final Position buildPosition;
 		private final Position buildCenterPosition;
 		private final UnitType buildingType;
@@ -445,7 +450,7 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 		private boolean isInPosition()
 		{
 			double distance = worker.getPosition().getPDistance(buildCenterPosition);
-			return distance < Constants.IN_POSITION_DELTA;
+			return distance < NEAR_BUILD_POSITION;
 		}
 		
 		public boolean isEnded()

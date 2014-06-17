@@ -75,6 +75,38 @@ public class MapResourcesAgent implements Updateable, Drawable
 		return miningAgents;
 	}
 	
+	public void buildGasEverywhere()
+	{
+		for (MiningAgent agent : miningAgents)
+		{
+			UnitSet geysers = agent.getUnusedGeysers();
+			
+			for (Unit geyser : geysers)
+			{
+				ConstructionListener listener = new ConstructionListener()
+				{
+					@Override
+					public void finished()
+					{
+					}
+					
+					@Override
+					public void failed()
+					{
+					}
+					
+					@Override
+					public void buildingCreated(Unit building)
+					{
+					}
+				};
+				
+				UnitType refineryType = bwapi.getSelf().getRace().getRefinery();
+				buildingConstructionAgent.construct(refineryType, listener, true, geyser.getTilePosition(), null);
+			}
+		}
+	}
+	
 	public boolean spawnMiningOperation()
 	{
 		final ExpandInfo targetExpand = getNearestExpand(mainBasePosition, getFreeSafeExpands());
@@ -83,7 +115,7 @@ public class MapResourcesAgent implements Updateable, Drawable
 		{
 			ConstructionListener listener = new ConstructionListener()
 			{
-				private Unit resurceDepot;
+				private Unit resourceDepot;
 				
 				@Override
 				public void failed()
@@ -94,19 +126,19 @@ public class MapResourcesAgent implements Updateable, Drawable
 				@Override
 				public void buildingCreated(Unit building)
 				{
-					this.resurceDepot = building;
+					this.resourceDepot = building;
 				}
 
 				@Override
 				public void finished()
 				{
-					MiningAgent agent = new MiningAgent(bwapi ,resurceDepot, targetExpand.getResources());
-					miningAgents.add(agent);
+					createMiningAgent(resourceDepot, targetExpand.getResources(), true);
 				}
 			};
 			
 			buildingConstructionAgent.construct(resourceDepotType, listener, true, targetExpand.getPosition(), null);
 			freeExpands.remove(targetExpand);
+
 			return true;
 		}
 		else
@@ -123,13 +155,45 @@ public class MapResourcesAgent implements Updateable, Drawable
 		{
 			return false;
 		}
-		
-		MiningAgent agent = new MiningAgent(bwapi, resourceDepot, targetExpand.getResources());
-		miningAgents.add(agent);
-		
+
+		createMiningAgent(resourceDepot, targetExpand.getResources(), false);
 		freeExpands.remove(targetExpand);
 		
 		return true;
+	}
+	
+	private void createMiningAgent(Unit resourceDepot, Set<Unit> resources, boolean constructGas)
+	{
+		MiningAgent agent = new MiningAgent(bwapi, resourceDepot, resources);
+		miningAgents.add(agent);
+		
+		// TODO temp
+		if (constructGas)
+		{
+			for (Unit geyser : agent.getUnusedGeysers())
+			{
+				ConstructionListener listener = new ConstructionListener()
+				{
+					@Override
+					public void finished()
+					{
+					}
+					
+					@Override
+					public void failed()
+					{
+					}
+					
+					@Override
+					public void buildingCreated(Unit building)
+					{
+					}
+				};
+				
+				UnitType refineryType = bwapi.getSelf().getRace().getRefinery();
+				buildingConstructionAgent.construct(refineryType, listener, true, geyser.getTilePosition(), null);
+			}
+		}
 	}
 	
 	private Set<ExpandInfo> getFreeSafeExpands()
@@ -292,7 +356,7 @@ public class MapResourcesAgent implements Updateable, Drawable
 			UnitSet minerals = resources.where(UnitSelector.IS_MINERAL);
 			mineralsAvailable = !minerals.isEmpty();
 						
-			UnitSet geysers = resources.where(UnitSelector.IS_VESPENE_GEYSER);
+			UnitSet geysers = resources.where(UnitSelector.IS_GAS_GEYSER);
 			gasAvailable = !geysers.isEmpty();
 		}
 		

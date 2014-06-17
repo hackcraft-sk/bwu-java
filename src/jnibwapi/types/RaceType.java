@@ -89,8 +89,13 @@ public class RaceType {
 		return centerID;
 	}
 	
+	@Deprecated
 	public int getRefineryID() {
 		return refineryID;
+	}
+	
+	public UnitType getRefinery() {
+		return UnitTypes.getUnitType(refineryID);
 	}
 	
 	public int getTransportID() {

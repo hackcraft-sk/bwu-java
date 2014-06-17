@@ -329,6 +329,15 @@ public interface UnitSelector
 			return unit.getType().isBuilding();
 		}
 	};
+	
+	static public final BooleanSelector IS_COMPLETED = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			return unit.isCompleted();
+		}
+	};
 
 	static public final BooleanSelector CAN_ATTACK_AIR = new BooleanSelector()
 	{
@@ -380,9 +389,7 @@ public interface UnitSelector
 		@Override
 		public boolean isTrueFor(Unit unit)
 		{
-			UnitType type = unit.getType();
-			
-			return IS_MINERAL.isTrueFor(unit) || IS_VESPENE_GEYSER.isTrueFor(unit);
+			return IS_MINERAL.isTrueFor(unit) || IS_GAS_GEYSER.isTrueFor(unit);
 		}
 	};
 	
@@ -397,7 +404,16 @@ public interface UnitSelector
 		}
 	};
 	
-	static public final BooleanSelector IS_VESPENE_GEYSER = new BooleanSelector()
+	static public final BooleanSelector IS_GAS_SOURCE = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			return IS_GAS_GEYSER.isTrueFor(unit) || IS_GAS_EXTRACTION_BUILDING.isTrueFor(unit);
+		}
+	};
+	
+	static public final BooleanSelector IS_GAS_GEYSER = new BooleanSelector()
 	{
 		@Override
 		public boolean isTrueFor(Unit unit)
@@ -408,7 +424,7 @@ public interface UnitSelector
 		}
 	};
 	
-	static public final BooleanSelector IS_VESPENE_EXTRACTOR_BUILDING = new BooleanSelector()
+	static public final BooleanSelector IS_GAS_EXTRACTION_BUILDING = new BooleanSelector()
 	{
 		@Override
 		public boolean isTrueFor(Unit unit)
