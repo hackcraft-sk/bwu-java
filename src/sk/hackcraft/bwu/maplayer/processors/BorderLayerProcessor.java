@@ -3,10 +3,9 @@ package sk.hackcraft.bwu.maplayer.processors;
 import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.LayerProcessor;
 import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
-public class BorderLayerProcessor implements LayerProcessor
+public class BorderLayerProcessor
 {
 	private final int newValue, sourceValue;
 	
@@ -15,8 +14,7 @@ public class BorderLayerProcessor implements LayerProcessor
 		this.newValue = newValue;
 		this.sourceValue = sourceValue;
 	}
-	
-	@Override
+
 	public Layer process(Layer layer)
 	{
 		Layer newLayer = new MatrixLayer(layer.getDimension());

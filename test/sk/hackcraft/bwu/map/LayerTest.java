@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import sk.hackcraft.bwu.maplayer.LayerDimension;
-import sk.hackcraft.bwu.maplayer.Layers;
+import sk.hackcraft.bwu.maplayer.LayerUtil;
 import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
 public class LayerTest
@@ -24,7 +24,7 @@ public class LayerTest
 		MatrixLayer layer = new MatrixLayer(new LayerDimension(3, 2));
 		
 		MatrixLayer layer2 = new MatrixLayer(layer.getDimension());
-		Layers.copy(layer, layer2);
+		LayerUtil.copy(layer, layer2);
 		
 		assertEquals(3, layer2.getDimension().getWidth());
 		assertEquals(2, layer2.getDimension().getHeight());
@@ -40,7 +40,7 @@ public class LayerTest
 		layer.set(2, 3, 4);
 		
 		MatrixLayer layer2 = new MatrixLayer(new LayerDimension(2, 2));
-		Layers.copy(layer, layer2, 1, 2, 1, 2);
+		LayerUtil.copy(layer, layer2, 1, 2, 1, 2);
 		
 		assertEquals(2, layer2.getDimension().getWidth());
 		assertEquals(2, layer2.getDimension().getHeight());

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
+import sk.hackcraft.bwu.Comparison;
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Vector2D;
 
@@ -125,7 +126,7 @@ public class UnitSet extends HashSet<Unit>
 	 */
 	public UnitSet whereGreatherOrEqual(UnitSelector.IntegerSelector selector, int value)
 	{
-		return where(new IntegerComparisonSelector(selector, value, Comparison.GREATHER_OR_EQUAL));
+		return where(new IntegerComparisonSelector(selector, value, Comparison.GREATER_OR_EQUAL));
 	}
 
 	/**
@@ -140,7 +141,7 @@ public class UnitSet extends HashSet<Unit>
 	 */
 	public UnitSet whereGreatherOrEqual(UnitSelector.RealSelector selector, double value)
 	{
-		return where(new RealComparisonSelector(selector, value, Comparison.GREATHER_OR_EQUAL));
+		return where(new RealComparisonSelector(selector, value, Comparison.GREATER_OR_EQUAL));
 	}
 
 	/**

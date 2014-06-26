@@ -48,8 +48,11 @@ public class LarvaProductionAgent implements Updateable, Drawable
 					List<Unit> hatcheryLarvae = entity.getLarva();
 					for (Unit larva : hatcheryLarvae)
 					{
-						larvae.remove(larva);
-						unitsContract.returnEntity(larva);
+						if (larvae.contains(larva))
+						{
+							larvae.remove(larva);
+							unitsContract.returnEntity(larva);
+						}
 					}
 				}
 			};

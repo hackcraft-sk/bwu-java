@@ -90,43 +90,8 @@ public class SwingLayersVisualization
 		window.dispose();
 	}
 	
-	/*private class LayersListModel implements ListModel<String>
+	public boolean isVisible()
 	{
-		private final List<Layer> backingList;
-		
-		private final List<ListDataListener> listDataListeners;
-
-		public LayersListModel(List<Layer> layers)
-		{
-			this.backingList = layers;
-			this.listDataListeners = new ArrayList<>();
-		}
-		
-		@Override
-		public int getSize()
-		{
-			return backingList.size();
-			
-			listDataListeners.get(0).
-		}
-
-		@Override
-		public String getElementAt(int index)
-		{
-			Layer layer = backingList.get(index);
-			return layersNames.get(layer);
-		}
-
-		@Override
-		public void addListDataListener(ListDataListener l)
-		{
-			listDataListeners.add(l);
-		}
-
-		@Override
-		public void removeListDataListener(ListDataListener l)
-		{
-			listDataListeners.remove(l);
-		}
-	}*/
+		return window.isVisible();
+	}
 }

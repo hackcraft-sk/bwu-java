@@ -5,10 +5,9 @@ import java.util.Map;
 import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerIterator;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.LayerProcessor;
 import sk.hackcraft.bwu.maplayer.MatrixLayer;
 
-public class ValuesChangerLayerProcessor implements LayerProcessor
+public class ValuesChangerLayerProcessor
 {
 	private final Map<Integer, Integer> changeMap;
 
@@ -17,7 +16,6 @@ public class ValuesChangerLayerProcessor implements LayerProcessor
 		this.changeMap = changeMap;
 	}
 
-	@Override
 	public Layer process(Layer layer)
 	{
 		final MatrixLayer newLayer = new MatrixLayer(layer.getDimension());

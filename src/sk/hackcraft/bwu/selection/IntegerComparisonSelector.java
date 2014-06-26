@@ -1,6 +1,7 @@
 package sk.hackcraft.bwu.selection;
 
 import jnibwapi.Unit;
+import sk.hackcraft.bwu.Comparison;
 import sk.hackcraft.bwu.selection.UnitSelector.BooleanSelector;
 import sk.hackcraft.bwu.selection.UnitSelector.IntegerSelector;
 
@@ -29,22 +30,6 @@ public class IntegerComparisonSelector implements BooleanSelector
 	@Override
 	public boolean isTrueFor(Unit unit)
 	{
-		if (comparison == Comparison.GREATHER_OR_EQUAL)
-		{
-			return selector.getValue(unit) >= value;
-		}
-		else if (comparison == Comparison.GREATHER)
-		{
-			return selector.getValue(unit) > value;
-		}
-		else if (comparison == Comparison.LESS)
-		{
-			return selector.getValue(unit) < value;
-		}
-		else if (comparison == Comparison.LESS_OR_EQUAL)
-		{
-			return selector.getValue(unit) <= value;
-		}
-		return false;
+		return comparison.compare(selector.getValue(unit), value);
 	}
 }

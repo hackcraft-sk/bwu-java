@@ -63,17 +63,15 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 		Set<ConstructionTask> tasksCopy = new HashSet<>(tasks);
 		for (ConstructionTask task : tasksCopy)
 		{
+			if (task.getWorker() != null && task.isWorkerStillNeeded())
+			{
+				returnWorker(task);
+			}
+			
 			if (task.isEnded())
 			{
 				tasks.remove(task);
 				workersTasks.remove(task.getWorker());
-				
-				continue;
-			}
-			
-			if (task.getWorker() != null && task.isWorkerStillNeeded())
-			{
-				returnWorker(task);
 			}
 			
 			if (task.getActualState() == ConstructionTaskState.STARTING_CONSTRUCTION && task.getConstructedBuilding() == null)

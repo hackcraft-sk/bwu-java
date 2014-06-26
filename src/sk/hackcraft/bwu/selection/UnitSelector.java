@@ -344,8 +344,25 @@ public interface UnitSelector
 		@Override
 		public boolean isTrueFor(Unit unit)
 		{
-			// TODO Is this correct selection?
-			return unit.getType().getAirWeapon().isTargetsAir();
+			return unit.getType().getAirWeapon().isTargetsAir() || unit.getType().getGroundWeapon().isTargetsAir();
+		}
+	};
+	
+	static public final BooleanSelector CAN_ATTACK_GROUND = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			return unit.getType().getAirWeapon().isTargetsGround() || unit.getType().getGroundWeapon().isTargetsGround();
+		}
+	};
+	
+	static public final BooleanSelector CAN_ATTACK = new BooleanSelector()
+	{
+		@Override
+		public boolean isTrueFor(Unit unit)
+		{
+			return unit.getType().isAttackCapable();
 		}
 	};
 	

@@ -3,8 +3,15 @@ package sk.hackcraft.bwu.maplayer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Layers
+public class LayerUtil
 {
+	public static final LayerPoint[] DIRECTIONS = {
+			new LayerPoint( 1,  0),
+			new LayerPoint( 0,  1),
+			new LayerPoint(-1,  0),
+			new LayerPoint( 0, -1)
+	};
+	
 	public static void copy(Layer from, Layer to, int offsetX, int lengthX, int offsetY, int lengthY)
 	{
 		int thisX = 0, thisY = 0;

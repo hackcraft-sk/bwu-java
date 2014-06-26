@@ -1,70 +1,99 @@
 package sk.hackcraft.bwu.maplayer.processors;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+import sk.hackcraft.bwu.Comparison;
 import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.LayerProcessor;
-import sk.hackcraft.bwu.maplayer.Layers;
-import sk.hackcraft.bwu.maplayer.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.LayerUtil;
 
-public abstract class GradientFloodFillProcessor implements LayerProcessor
+public class GradientFloodFillProcessor
 {
-	private final Set<LayerPoint> startPoints;
-	private final int addFactor;
-	
-	public GradientFloodFillProcessor(Set<LayerPoint> startPoints, int addFactor)
+	public static void floodFill(Layer layer, int value, Set<LayerPoint> startPoints)
 	{
-		this.startPoints = startPoints;
-		this.addFactor = addFactor;
+		for (LayerPoint point : startPoints)
+		{
+			layer.set(point, value);
+		}
+		
+		floodFill(layer, startPoints);
 	}
 	
-	@Override
-	public Layer process(Layer layer)
+	public static void floodFill(Layer layer, Set<LayerPoint> startPoints)
 	{
-		final Layer newLayer = new MatrixLayer(layer.getDimension());
-		Layers.copy(layer, newLayer);
-		
-		final Queue<LayerPoint> continuePoints = new LinkedList<>(startPoints);
-
-		LayerPoint[] directions = {
-				new LayerPoint( 1,  0),
-				new LayerPoint( 0,  1),
-				new LayerPoint(-1,  0),
-				new LayerPoint( 0, -1)
-		};
+		Queue<LayerPoint> continuePoints = new LinkedList<LayerPoint>(startPoints);
 		
 		while (!continuePoints.isEmpty())
 		{
 			LayerPoint point = continuePoints.remove();
 			
-			int actualValue = newLayer.get(point);
+			int actualValue = layer.get(point);
 			
-			int newValue = actualValue + addFactor;
+			int newValue = actualValue - 1;
 			
-			for (LayerPoint direction : directions)
+			for (LayerPoint direction : LayerUtil.DIRECTIONS)
 			{
 				LayerPoint cellPosition = point.add(direction);
 				
-				if (!newLayer.isValid(cellPosition))
+				if (!layer.isValid(cellPosition))
 				{
 					continue;
 				}
 				
-				int cellValue = newLayer.get(cellPosition);
+				int cellValue = layer.get(cellPosition);
 				
-				if (fillCell(cellValue, newValue))
+				if (cellValue < newValue)
 				{
-					newLayer.set(cellPosition, newValue);
+					layer.set(cellPosition, newValue);
 					continuePoints.add(cellPosition);
 				}
 			}
 		}
-		
-		return newLayer;
 	}
 	
-	protected abstract boolean fillCell(int cellValue, int newValue);
+	public static Set<LayerPoint> floodDefill(Layer layer, int clearValue, Set<LayerPoint> startPoints)
+	{
+		Set<LayerPoint> borderPoints = new HashSet<>();
+		Queue<LayerPoint> continuePoints = new LinkedList<LayerPoint>(startPoints);
+		
+		while (!continuePoints.isEmpty())
+		{
+			LayerPoint point = continuePoints.remove();
+			
+			int actualValue = layer.get(point);
+			
+			for (LayerPoint direction : LayerUtil.DIRECTIONS)
+			{
+				LayerPoint cellPosition = point.add(direction);
+				
+				if (!layer.isValid(cellPosition))
+				{
+					continue;
+				}
+				
+				int cellValue = layer.get(cellPosition);
+				
+				if (cellValue == clearValue)
+				{
+					continue;
+				}
+				
+				if (cellValue < actualValue)
+				{
+					continuePoints.add(cellPosition);
+				}
+				else
+				{
+					borderPoints.add(cellPosition);
+				}
+			}
+			
+			layer.set(point, clearValue);
+		}
+		
+		return borderPoints;
+	}
 }

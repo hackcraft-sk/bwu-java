@@ -3,7 +3,6 @@ package sk.hackcraft.bwu.maplayer.updaters;
 import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerIterator;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.LayerProcessor;
 import sk.hackcraft.bwu.maplayer.LayerUpdater;
 
 public class TemperatureLayerUpdater implements LayerUpdater

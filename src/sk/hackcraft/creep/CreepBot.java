@@ -20,6 +20,7 @@ import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.AbstractBot;
 import sk.hackcraft.bwu.BWU;
 import sk.hackcraft.bwu.Bot;
+import sk.hackcraft.bwu.Comparison;
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.EnvironmentTime;
@@ -36,7 +37,7 @@ import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerDrawable;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
 import sk.hackcraft.bwu.maplayer.LayerUpdater;
-import sk.hackcraft.bwu.maplayer.Layers;
+import sk.hackcraft.bwu.maplayer.LayerUtil;
 import sk.hackcraft.bwu.maplayer.MapExactColorAssigner;
 import sk.hackcraft.bwu.maplayer.MapGradientColorAssignment;
 import sk.hackcraft.bwu.maplayer.RandomColorAssigner;
@@ -201,17 +202,9 @@ public class CreepBot extends AbstractBot
 		changeMap.put(1, 0);
 		plainsLayer = new ValuesChangerLayerProcessor(changeMap).process(plainsLayer);
 
-		Set<LayerPoint> startPoints = Layers.getPointsWithValue(plainsLayer, maxDistance);
-		GradientFloodFillProcessor gradientFloofFillProcessor = new GradientFloodFillProcessor(startPoints, -1)
-		{
-			@Override
-			protected boolean fillCell(int cellValue, int newValue)
-			{
-				return cellValue < newValue;
-			}
-		};
+		Set<LayerPoint> startPoints = LayerUtil.getPointsWithValue(plainsLayer, maxDistance);
 		
-		plainsLayer = gradientFloofFillProcessor.process(plainsLayer);
+		GradientFloodFillProcessor.floodFill(plainsLayer, maxDistance, startPoints);
 		
 		TreeMap<Integer, BWColor> colors = new TreeMap<>();
 		colors.put(maxDistance + 1, BWColor.Red);
@@ -327,6 +320,12 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
+		if (game.getFrameCount() > 500000)
+		{
+			System.out.println("Too long, exiting.");
+			bwapi.leaveGame();
+		}
+
 		heatUpdater.update();
 		game.setSpeed(0);
 		bwapi.setFrameSkip(0);
