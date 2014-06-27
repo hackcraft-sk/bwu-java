@@ -24,6 +24,11 @@ public class GradientFloodFillProcessor
 	
 	public static void floodFill(Layer layer, Set<LayerPoint> startPoints)
 	{
+		floodFill(layer, startPoints, -1, Comparison.LESS);
+	}
+	
+	public static void floodFill(Layer layer, Set<LayerPoint> startPoints, int step, Comparison comparison)
+	{
 		Queue<LayerPoint> continuePoints = new LinkedList<LayerPoint>(startPoints);
 		
 		while (!continuePoints.isEmpty())
@@ -32,7 +37,7 @@ public class GradientFloodFillProcessor
 			
 			int actualValue = layer.get(point);
 			
-			int newValue = actualValue - 1;
+			int newValue = actualValue + step;
 			
 			for (LayerPoint direction : LayerUtil.DIRECTIONS)
 			{
@@ -45,7 +50,7 @@ public class GradientFloodFillProcessor
 				
 				int cellValue = layer.get(cellPosition);
 				
-				if (cellValue < newValue)
+				if (comparison.compare(cellValue, newValue))
 				{
 					layer.set(cellPosition, newValue);
 					continuePoints.add(cellPosition);

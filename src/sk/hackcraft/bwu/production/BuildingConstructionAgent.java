@@ -63,15 +63,21 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 		Set<ConstructionTask> tasksCopy = new HashSet<>(tasks);
 		for (ConstructionTask task : tasksCopy)
 		{
-			if (task.getWorker() != null && task.isWorkerStillNeeded())
+			Unit worker = task.getWorker();
+			if (worker != null && !task.isWorkerStillNeeded())
 			{
 				returnWorker(task);
+				workersTasks.remove(worker);
 			}
 			
 			if (task.isEnded())
 			{
 				tasks.remove(task);
-				workersTasks.remove(task.getWorker());
+				
+				if (worker != null)
+				{
+					workersTasks.remove(task.getWorker());
+				}
 			}
 			
 			if (task.getActualState() == ConstructionTaskState.STARTING_CONSTRUCTION && task.getConstructedBuilding() == null)
@@ -283,15 +289,15 @@ public class BuildingConstructionAgent implements Updateable, Drawable
 			RaceType raceType = buildingType.getRaceType();
 			if (raceType == RaceTypes.Protoss)
 			{
-				return actualState.getOrder() >= ConstructionTaskState.CONSTRUCTING.getOrder();
+				return actualState.getOrder() < ConstructionTaskState.CONSTRUCTING.getOrder();
 			}
 			else if (raceType == RaceTypes.Terran)
 			{
-				return actualState.getOrder() >= ConstructionTaskState.COMPLETED.getOrder();
+				return actualState.getOrder() < ConstructionTaskState.COMPLETED.getOrder();
 			}
 			else
 			{
-				return worker.getType() == buildingType;
+				return worker.getType() != buildingType;
 			}
 		}
 		

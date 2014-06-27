@@ -87,6 +87,15 @@ public interface EntityPool<E>
 		 * @return all entities accessible to this contract
 		 */
 		Set<E> getAcquirableEntities(boolean urgent);
+		
+		/**
+		 * Checks if it's possible to acquire specified entity.
+		 * 
+		 * @param entity entity to acquire
+		 * @param urgent if request is urgent
+		 * @return <code>true</code> if it's possible to acquire entity, <code>false</code> otherwise
+		 */
+		boolean canAcquire(E entity, boolean urgent);
 
 		/**
 		 * Request specified entity. Caller can call this only with entities

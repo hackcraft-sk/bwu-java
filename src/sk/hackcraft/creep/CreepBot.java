@@ -27,6 +27,7 @@ import sk.hackcraft.bwu.EnvironmentTime;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.GameEnvironmentTime;
 import sk.hackcraft.bwu.Graphics;
+import sk.hackcraft.bwu.UnitOwning;
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.maplayer.ColorAssigner;
@@ -53,6 +54,7 @@ import sk.hackcraft.bwu.mining.MapResourcesAgent;
 import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
 import sk.hackcraft.bwu.production.BuildingConstructionAgent;
 import sk.hackcraft.bwu.production.BuildingConstructionAgent.ConstructionListener;
+import sk.hackcraft.bwu.production.LarvaProductionAgent.ProductionStatus;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
 import sk.hackcraft.bwu.resource.EntityPool;
 import sk.hackcraft.bwu.resource.EntityPool.Contract;
@@ -143,7 +145,7 @@ public class CreepBot extends AbstractBot
 		
 		{
 			Contract<Unit> contract = unitsPool.createContract("Production");
-			productionAgent = new LarvaProductionAgent(contract);
+			productionAgent = new LarvaProductionAgent();
 			updateables.add(productionAgent);
 			drawables.add(productionAgent);
 		}
@@ -403,7 +405,7 @@ public class CreepBot extends AbstractBot
 			{
 				boolean zerglings = new Random().nextInt(3) != 0;
 				
-				UnitType type;
+				final UnitType type;
 				if (zerglings && !spawningPools.isEmpty() || workers.size() > mapResourcesAgent.getWorkersDeficit() + 5)
 				{
 					type = UnitTypes.Zerg_Zergling;
@@ -413,11 +415,49 @@ public class CreepBot extends AbstractBot
 					type = UnitTypes.Zerg_Drone;
 				}
 				
-				boolean result = productionAgent.produce(type);
+				boolean result = productionAgent.produce(type, new LarvaProductionAgent.ProductionListener()
+				{
+					@Override
+					public void terminated()
+					{
+						bwapi.printText(type.getName() + " production terminated.");
+					}
+					
+					@Override
+					public void started(ProductionStatus productionStatus)
+					{
+						bwapi.printText(type.getName() + " production started.");
+					}
+					
+					@Override
+					public void finished()
+					{
+						bwapi.printText(type.getName() + " production finished.");
+					}
+				});
 				
 				if (!result && availableMinerals > 100)
 				{
-					productionAgent.produce(UnitTypes.Zerg_Overlord);
+					productionAgent.produce(UnitTypes.Zerg_Overlord, new LarvaProductionAgent.ProductionListener()
+					{
+						@Override
+						public void terminated()
+						{
+							bwapi.printText(UnitTypes.Zerg_Overlord.getName() + " production terminated.");
+						}
+						
+						@Override
+						public void started(ProductionStatus productionStatus)
+						{
+							bwapi.printText(UnitTypes.Zerg_Overlord.getName() + " production started.");
+						}
+						
+						@Override
+						public void finished()
+						{
+							bwapi.printText(UnitTypes.Zerg_Overlord.getName() + " production finished.");
+						}
+					});
 				}
 			}
 		}
@@ -568,8 +608,15 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitDiscovered(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (unit.getType().equals(UnitTypes.Zerg_Hatchery))
+		{
+			UnitOwning hatcheriesOwning = productionAgent.getHatcheriesOwning();
+			
+			if (!hatcheriesOwning.owns(unit))
+			{
+				hatcheriesOwning.addUnit(unit);
+			}
+		}
 	}
 
 	@Override
@@ -584,8 +631,15 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitEvaded(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
+		if (unit.getType().equals(UnitTypes.Zerg_Hatchery))
+		{
+			UnitOwning hatcheriesOwning = productionAgent.getHatcheriesOwning();
+			
+			if (hatcheriesOwning.owns(unit))
+			{
+				hatcheriesOwning.removeUnit(unit);
+			}
+		}
 	}
 
 	@Override
@@ -605,12 +659,20 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitMorphed(Unit unit)
 	{
+		if (unit.getType().equals(UnitTypes.Zerg_Hatchery))
+		{
+			UnitOwning hatcheriesOwning = productionAgent.getHatcheriesOwning();
+			
+			if (!hatcheriesOwning.owns(unit))
+			{
+				hatcheriesOwning.addUnit(unit);
+			}
+		}
 	}
 
 	@Override
 	public void unitShowed(Unit unit)
 	{
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -10,6 +10,7 @@ import jnibwapi.types.UnitType.UnitTypes;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
+import sk.hackcraft.bwu.UnitOwning;
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.resource.EntityPool.Contract;
 import sk.hackcraft.bwu.resource.EntityPool.ContractListener;
@@ -18,89 +19,94 @@ import sk.hackcraft.bwu.selection.UnitSet;
 
 public class LarvaProductionAgent implements Updateable, Drawable
 {
-	private final Set<Unit> hatcheries;
-	private final Set<Unit> larvae;
-
-	private final Contract<Unit> unitsContract;
+	private final UnitOwning hatcheriesOwning;
 	
-	public LarvaProductionAgent(Contract<Unit> unitsContract)
+	private final Set<Unit> hatcheries;
+	
+	private final Set<Unit> availableLarvae;
+	
+	private final Set<MorphProductionTask> productionTasks;
+	
+	public LarvaProductionAgent()
 	{
-		this.hatcheries = new HashSet<>();
-		this.larvae = new HashSet<>();
+		this.hatcheriesOwning = new UnitOwning()
+		{
+			@Override
+			public void unitRemoved(Unit unit)
+			{
+				hatcheries.remove(unit);
+			}
+			
+			@Override
+			public void unitAdded(Unit unit)
+			{
+				hatcheries.add(unit);
+			}
+			
+			@Override
+			public boolean owns(Unit unit)
+			{
+				return hatcheries.contains(unit);
+			}
+		};
 		
-		this.unitsContract = unitsContract;
+		this.hatcheries = new HashSet<>();
+		
+		this.availableLarvae = new HashSet<>();
+		
+		this.productionTasks = new HashSet<>();
+	}
+	
+	public UnitOwning getHatcheriesOwning()
+	{
+		return hatcheriesOwning;
 	}
 	
 	@Override
 	public void update()
 	{
-		UnitSet notOwnedHacheries = new UnitSet(unitsContract.getAcquirableEntities(false)).where(UnitSelector.IS_SPAWNING_LARVAE);
-		
-		for (final Unit hatchery : notOwnedHacheries)
+		Set<MorphProductionTask> productionTasksCopy = new HashSet<>(productionTasks);
+		for (MorphProductionTask productionTask : productionTasksCopy)
 		{
-			ContractListener<Unit> listener = new ContractListener<Unit>()
+			productionTask.update();
+			
+			if (productionTask.isEnded())
 			{
-				@Override
-				public void entityRemoved(Unit entity)
-				{
-					hatcheries.remove(entity);
-					
-					List<Unit> hatcheryLarvae = entity.getLarva();
-					for (Unit larva : hatcheryLarvae)
-					{
-						if (larvae.contains(larva))
-						{
-							larvae.remove(larva);
-							unitsContract.returnEntity(larva);
-						}
-					}
-				}
-			};
-			
-			unitsContract.requestEntity(hatchery, listener, false);
-			
-			hatcheries.add(hatchery);
-		}
-		
-		UnitSet notOwnedLarvae = new UnitSet(unitsContract.getAcquirableEntities(false)).whereType(UnitTypes.Zerg_Larva);
-		
-		for (final Unit larva : notOwnedLarvae)
-		{
-			Unit homeHatchery = larva.getHatchery();
-			
-			if (!hatcheries.contains(homeHatchery))
-			{
-				continue;
+				productionTasks.remove(productionTask);
 			}
-			
-			ContractListener<Unit> listener = new ContractListener<Unit>()
-			{
-				@Override
-				public void entityRemoved(Unit entity)
-				{
-					larvae.remove(entity);
-				}
-			};
-			
-			unitsContract.requestEntity(larva, listener, false);
-			larvae.add(larva);
 		}
-		
-		UnitSet larvaeCopy = new UnitSet(larvae);
-		for (Unit larva : larvaeCopy)
+
+		availableLarvae.clear();
+		for (Unit hatchery : hatcheries)
 		{
-			if (larva.getType() != UnitTypes.Zerg_Larva)
-			{
-				larvae.remove(larva);
-				unitsContract.returnEntity(larva);
-			} 
+			availableLarvae.addAll(hatchery.getLarva());
+		}
+	}
+	
+	public void addNewlyCreatedUnit()
+	{
+		for (MorphProductionTask task : productionTasks)
+		{
+			
+		}
+	}
+	
+	public int getAvailableProductionCapacity(UnitType type)
+	{
+		if (type.getWhatBuild() == UnitTypes.Zerg_Larva)
+		{
+			return availableLarvae.size();
+		}
+		else
+		{
+			return 0;
 		}
 	}
 
 	@Override
 	public void draw(Graphics graphics)
 	{
-		for (Unit larva : larvae)
+		for (Unit larva : availableLarvae)
 		{
 			graphics.setColor(BWColor.Yellow);
 			
@@ -112,9 +118,16 @@ public class LarvaProductionAgent implements Updateable, Drawable
 			graphics.drawCircle(larva, 3);
 		}
 	}
+	
+	public Set<Unit> getAvailableLarvae()
+	{
+		return availableLarvae;
+	}
 
 	public boolean produce(UnitType type)
 	{
+		Set<Unit> larvae = availableLarvae;
+		
 		if (larvae.isEmpty())
 		{
 			return false;
@@ -125,13 +138,102 @@ public class LarvaProductionAgent implements Updateable, Drawable
 		return produce(type, larva);
 	}
 	
-	public boolean produce(UnitType type, Unit larva)
+	public boolean produce(UnitType type, Unit producer)
 	{
-		if (!larvae.contains(larva))
+		Set<Unit> larvae = availableLarvae;
+		
+		if (!larvae.contains(producer))
 		{
 			throw new IllegalStateException("Production doesn't own this larva.");
 		}
 		
-		return larva.morph(type);
+		return producer.morph(type);
+	}
+	
+	public boolean produce(UnitType type, ProductionListener listener)
+	{
+		Set<Unit> larvae = availableLarvae;
+		
+		if (larvae.isEmpty())
+		{
+			return false;
+		}
+		
+		Unit larva = larvae.iterator().next();
+		
+		boolean result = larva.morph(type);
+		
+		if (result)
+		{
+			availableLarvae.remove(larva);
+
+			MorphProductionTask task = new MorphProductionTask(type, larva, listener);
+			
+			productionTasks.add(task);
+		}
+		
+		return result;
+	}
+	
+	public interface ProductionListener
+	{
+		void started(ProductionStatus productionStatus);
+		void finished();
+		void terminated();
+	}
+	
+	public abstract class ProductionStatus
+	{
+		public abstract int getPercentage();
+	}
+	
+	private class MorphProductionTask implements Updateable
+	{
+		private final UnitType typeToProduce;
+		private final Unit sourceUnit;
+		private final ProductionListener listener;
+
+		private boolean ended;
+		
+		public MorphProductionTask(UnitType typeToProduce, final Unit sourceUnit, ProductionListener listener)
+		{
+			this.typeToProduce = typeToProduce;
+			this.sourceUnit = sourceUnit;
+			this.listener = listener;
+			
+			final int buildTime = typeToProduce.getBuildTime();
+			
+			ProductionStatus productionStatus = new ProductionStatus()
+			{
+				@Override
+				public int getPercentage()
+				{
+					return buildTime * sourceUnit.getRemainingBuildTimer() / 100;
+				}
+			};
+
+			listener.started(productionStatus);
+		}
+		
+		public boolean isEnded()
+		{
+			return ended;
+		}
+		
+		@Override
+		public void update()
+		{
+			if (sourceUnit.getType().equals(typeToProduce))
+			{
+				listener.finished();
+				ended = true;
+			}
+			
+			if (!sourceUnit.isExists())
+			{
+				listener.terminated();
+				ended = true;
+			}
+		}
 	}
 }
