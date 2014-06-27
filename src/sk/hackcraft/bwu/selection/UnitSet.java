@@ -10,6 +10,8 @@ import jnibwapi.types.UnitType;
 import sk.hackcraft.bwu.Comparison;
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Vector2D;
+import sk.hackcraft.bwu.selection.aggregators.AverageRealAggregator;
+import sk.hackcraft.bwu.selection.aggregators.MeanVector2DAggregator;
 
 /**
  * Represents a set of units and helper operations for unit selection.
@@ -202,14 +204,7 @@ public class UnitSet extends HashSet<Unit>
 	 */
 	public double getAverageDistanceFrom(Vector2D point)
 	{
-		double accumulated = 0;
-
-		for (Unit unit : this)
-		{
-			accumulated += point.sub(Convert.toPositionVector(unit.getPosition())).length;
-		}
-
-		return accumulated / size();
+		return (new AverageRealAggregator(new DistanceSelector(point))).aggregate(this);
 	}
 
 	/**

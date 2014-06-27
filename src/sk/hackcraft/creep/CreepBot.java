@@ -52,10 +52,11 @@ import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
 import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
 import sk.hackcraft.bwu.mining.MapResourcesAgent;
 import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
+import sk.hackcraft.bwu.moving.FlockingManager;
 import sk.hackcraft.bwu.production.BuildingConstructionAgent;
 import sk.hackcraft.bwu.production.BuildingConstructionAgent.ConstructionListener;
-import sk.hackcraft.bwu.production.LarvaProductionAgent.ProductionStatus;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
+import sk.hackcraft.bwu.production.LarvaProductionAgent.ProductionStatus;
 import sk.hackcraft.bwu.resource.EntityPool;
 import sk.hackcraft.bwu.resource.EntityPool.Contract;
 import sk.hackcraft.bwu.resource.FirstTakeEntityPool;
@@ -70,8 +71,8 @@ public class CreepBot extends AbstractBot
 	
 	public static void main(String[] args)
 	{
-		while (true)
-		{
+		/*while (true)
+		{*/
 			BWU bwu = new BWU()
 			{
 				@Override
@@ -82,7 +83,7 @@ public class CreepBot extends AbstractBot
 			};
 			
 			bwu.start();
-		}
+		//}
 	}
 	
 	private final EnvironmentTime time;
@@ -114,6 +115,8 @@ public class CreepBot extends AbstractBot
 	Unit lastKnownBuilding = null;
 	
 	private LayerUpdater heatUpdater;
+	
+	private FlockingManager flockingManager;
 
 	private boolean spawnedGas;
 	
@@ -144,10 +147,15 @@ public class CreepBot extends AbstractBot
 		}
 		
 		{
-			Contract<Unit> contract = unitsPool.createContract("Production");
 			productionAgent = new LarvaProductionAgent();
 			updateables.add(productionAgent);
 			drawables.add(productionAgent);
+		}
+		
+		{
+			flockingManager = new FlockingManager(game, new UnitSelector.UnitTypeSelector(UnitTypes.Zerg_Zergling));
+			updateables.add(flockingManager);
+			drawables.add(flockingManager);
 		}
 		
 		enemyBuildings = new HashMap<>();
@@ -224,7 +232,7 @@ public class CreepBot extends AbstractBot
 		ColorAssigner<Color> colorAssigner2 = new MapGradientColorAssignment<>(colors2);
 		//layersPainter.addLayer(plainsLayer, colorAssigner2);
 		
-		visualization.start();
+		//visualization.start();
 
 		unitsLayer = new UnitsLayer(dimension, game);
 		
@@ -300,7 +308,7 @@ public class CreepBot extends AbstractBot
 				return new Color(r, g, b);
 			}
 		};
-		layersPainter.addLayer(resourcesPartitioningLayer, randomColorAssigner);
+		//layersPainter.addLayer(resourcesPartitioningLayer, randomColorAssigner);
 		
 		heatUpdater = new TemperatureLayerUpdater(resourcesPartitioningLayer, 1, 100, 0, 1000);
 	}
@@ -631,15 +639,8 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitEvaded(Unit unit)
 	{
-		if (unit.getType().equals(UnitTypes.Zerg_Hatchery))
-		{
-			UnitOwning hatcheriesOwning = productionAgent.getHatcheriesOwning();
-			
-			if (hatcheriesOwning.owns(unit))
-			{
-				hatcheriesOwning.removeUnit(unit);
-			}
-		}
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -673,6 +674,7 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitShowed(Unit unit)
 	{
+		// TODO Auto-generated method stub
 		
 	}
 
