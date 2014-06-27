@@ -51,6 +51,7 @@ import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
 import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
 import sk.hackcraft.bwu.mining.MapResourcesAgent;
 import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
+import sk.hackcraft.bwu.moving.FlockingManager;
 import sk.hackcraft.bwu.production.BuildingConstructionAgent;
 import sk.hackcraft.bwu.production.BuildingConstructionAgent.ConstructionListener;
 import sk.hackcraft.bwu.production.LarvaProductionAgent;
@@ -68,8 +69,8 @@ public class CreepBot extends AbstractBot
 	
 	public static void main(String[] args)
 	{
-		while (true)
-		{
+		/*while (true)
+		{*/
 			BWU bwu = new BWU()
 			{
 				@Override
@@ -80,7 +81,7 @@ public class CreepBot extends AbstractBot
 			};
 			
 			bwu.start();
-		}
+		//}
 	}
 	
 	private final EnvironmentTime time;
@@ -112,6 +113,8 @@ public class CreepBot extends AbstractBot
 	Unit lastKnownBuilding = null;
 	
 	private LayerUpdater heatUpdater;
+	
+	private FlockingManager flockingManager;
 
 	private boolean spawnedGas;
 	
@@ -146,6 +149,12 @@ public class CreepBot extends AbstractBot
 			productionAgent = new LarvaProductionAgent(contract);
 			updateables.add(productionAgent);
 			drawables.add(productionAgent);
+		}
+		
+		{
+			flockingManager = new FlockingManager(game, new UnitSelector.UnitTypeSelector(UnitTypes.Zerg_Zergling));
+			updateables.add(flockingManager);
+			drawables.add(flockingManager);
 		}
 		
 		enemyBuildings = new HashMap<>();
@@ -222,7 +231,7 @@ public class CreepBot extends AbstractBot
 		ColorAssigner<Color> colorAssigner2 = new MapGradientColorAssignment<>(colors2);
 		//layersPainter.addLayer(plainsLayer, colorAssigner2);
 		
-		visualization.start();
+		//visualization.start();
 
 		unitsLayer = new UnitsLayer(dimension, game);
 		
@@ -298,7 +307,7 @@ public class CreepBot extends AbstractBot
 				return new Color(r, g, b);
 			}
 		};
-		layersPainter.addLayer(resourcesPartitioningLayer, randomColorAssigner);
+		//layersPainter.addLayer(resourcesPartitioningLayer, randomColorAssigner);
 		
 		heatUpdater = new TemperatureLayerUpdater(resourcesPartitioningLayer, 1, 100, 0, 1000);
 	}
