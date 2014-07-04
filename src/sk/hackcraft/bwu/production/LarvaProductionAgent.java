@@ -57,6 +57,10 @@ public class LarvaProductionAgent implements Updateable, Drawable
 		this.productionTasks = new HashSet<>();
 	}
 	
+	/**
+	 * Gets {@link UnitOwning} for hatcheries.
+	 * @return {@link UnitOwning} for hatcheries
+	 */
 	public UnitOwning getHatcheriesOwning()
 	{
 		return hatcheriesOwning;
@@ -83,14 +87,11 @@ public class LarvaProductionAgent implements Updateable, Drawable
 		}
 	}
 	
-	public void addNewlyCreatedUnit()
-	{
-		for (MorphProductionTask task : productionTasks)
-		{
-			
-		}
-	}
-	
+	/**
+	 * Returns available production capacity. That means, for how many units of specified type can production start immediately.
+	 * @param type specified type
+	 * @return production capacity
+	 */
 	public int getAvailableProductionCapacity(UnitType type)
 	{
 		if (type.getWhatBuild() == UnitTypes.Zerg_Larva)
@@ -119,11 +120,20 @@ public class LarvaProductionAgent implements Updateable, Drawable
 		}
 	}
 	
+	/**
+	 * Returns available larvae.
+	 * @return available larvae
+	 */
 	public Set<Unit> getAvailableLarvae()
 	{
 		return availableLarvae;
 	}
 
+	/**
+	 * Issue producton of specified unit type.
+	 * @param type specified unit type
+	 * @return <code>true</code> if producton was started, <code>false</code> otherwise
+	 */
 	public boolean produce(UnitType type)
 	{
 		Set<Unit> larvae = availableLarvae;
@@ -138,6 +148,12 @@ public class LarvaProductionAgent implements Updateable, Drawable
 		return produce(type, larva);
 	}
 	
+	/**
+	 * Issue producton of specified unit type with specified production unit.
+	 * @param type specified unit type
+	 * @param producer unit used for producton
+	 * @return <code>true</code> if producton was started, <code>false</code> otherwise
+	 */
 	public boolean produce(UnitType type, Unit producer)
 	{
 		Set<Unit> larvae = availableLarvae;
@@ -150,6 +166,12 @@ public class LarvaProductionAgent implements Updateable, Drawable
 		return producer.morph(type);
 	}
 	
+	/**
+	 * Issue producton of specified unit type with specified listener.
+	 * @param type specified unit type
+	 * @param producer production listener
+	 * @return <code>true</code> if producton was started, <code>false</code> otherwise
+	 */
 	public boolean produce(UnitType type, ProductionListener listener)
 	{
 		Set<Unit> larvae = availableLarvae;
@@ -175,15 +197,35 @@ public class LarvaProductionAgent implements Updateable, Drawable
 		return result;
 	}
 	
+	/**
+	 * Production listener.
+	 */
 	public interface ProductionListener
 	{
+		/**
+		 * Called when production was started.
+		 * @param productionStatus production status for produced unit
+		 */
 		void started(ProductionStatus productionStatus);
+		/**
+		 * Called when production was finished.
+		 */
 		void finished();
+		/**
+		 * Called when production was terminated.
+		 */
 		void terminated();
 	}
 	
+	/**
+	 * Production status.
+	 */
 	public abstract class ProductionStatus
 	{
+		/**
+		 * Returns production percentage status.
+		 * @return production percentage status
+		 */
 		public abstract int getPercentage();
 	}
 	

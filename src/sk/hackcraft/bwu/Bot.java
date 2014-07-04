@@ -3,183 +3,218 @@ package sk.hackcraft.bwu;
 import jnibwapi.Player;
 import jnibwapi.Unit;
 
+/**
+ * <p>
+ * Interface providing callbacks received from BWAPI inteface.
+ * </p>
+ * 
+ * <p>
+ * For player view, game can be run in two modes: complete or incomplete map
+ * informaton. When complete map information mode is active, all enemy units and
+ * theirs data are available to player. Callbacks are also influenced, for
+ * example callbacks dealing with unit visibility are called right when unit is
+ * created or destroyed, as fog of war is non-existing in this mode. In
+ * incomplete mode, non-player units are accessible only when they are visible
+ * to the player, and even only som informations about them are available, as
+ * hit points or resources count (others, as training units or energy are still
+ * unavailable).
+ * </p>
+ */
 public interface Bot
 {
 	/**
-	 * BWAPI calls this at the start of a match. Typically an AI will execute 
-	 * set up code in this method (initialize data structures, load build orders, etc).
+	 * Called when game starts. During this callback all game informations
+	 * regaded to actual match are accessible and valid.
 	 */
-	abstract public void gameStarted();
+	void gameStarted();
 
 	/**
-	 * BWAPI calls this at the end of the match. isWinner will be true if the AIModule 
-	 * won the game. If the game is a replay, isWinner will always be false.
+	 * Called when game ends. This callback can be used for saving data gathered
+	 * during the match.
 	 * 
-	 * @param isWinner indicator, whether your bot won the match or not
+	 * @param <code>true</code> if bot is winner, <code>false</code> otherwise
 	 */
-	abstract public void gameEnded(boolean isWinner);
+	void gameEnded(boolean isWinner);
 
 	/**
-	 * BWAPI calls this on every logical frame in the game.
+	 * Called every logical frame. This is used for updating bot state.
 	 */
-	abstract public void gameUpdated();
+	void gameUpdated();
 
 	/**
-	 * Key is pressed through StarCraft User Interface.
+	 * Called when key is pressed.
 	 * 
-	 * @param keyCode code identification of the key that was pressed
+	 * @param keyCode
+	 *            code identification of pressed key
 	 */
-	abstract public void keyPressed(int keyCode);
+	void keyPressed(int keyCode);
 
 	/**
-	 * BWAPI calls this when a player leaves the game.
-	 * 
-	 * @param player
-	 */
-	abstract public void playerLeft(Player player);
-
-	/**
-	 * Certain player was dropped from the current match.
+	 * Called when player lefts the game.
 	 * 
 	 * @param player
+	 *            player which left
 	 */
-	abstract public void playerDropped(Player player);
+	void playerLeft(Player player);
 
 	/**
-	 * BWAPI calls this when a nuclear launch has been detected. 
-	 * If the target position is visible, or if Complete Map Information 
-	 * is enabled, the target position will also be provided. If Complete 
-	 * Map Information is disabled and the target position is not visible, 
-	 * target will be set to <code>null</code>.
+	 * Called when player was dropped from the game.
 	 * 
-	 * @param position position of nuke or null if not available
+	 * @param player
+	 *            player which was dropped
 	 */
-	abstract public void nukeDetected(Vector2D target);
+	void playerDropped(Player player);
 
 	/**
-	 * BWAPI calls this when a unit becomes accessible. If 
-	 * Complete Map Information is enabled, this will be called 
-	 * at the same time as <code>onUnitCreated()</code>, otherwise it 
-	 * will be called at the same time as <code>onUnitShown()</code>.
+	 * <p>
+	 * Called when nuclear strike is detected. If it is visible for player, its
+	 * position will also be provided.
+	 * </p>
 	 * 
-	 * @param unit that was discovered
+	 * <p>
+	 * BWAPI calls this when a nuclear launch has been detected.
+	 * </p>
+	 * 
+	 * @param position
+	 *            position of nuclear strike, or <code>null</code> if strike
+	 *            information is unavailable for player
 	 */
-	abstract public void unitDiscovered(Unit unit);
+	void nukeDetected(Vector2D target);
 
 	/**
-	 * BWAPI calls this when a unit dies or otherwise removed from the 
-	 * game (i.e. a mined out mineral patch). When a Zerg drone 
-	 * becomes an extractor, the Vespene geyser changes to the 
-	 * Zerg Extractor type and the drone is destroyed. If the 
-	 * unit is not accessible at the time of destruction, (i.e. 
-	 * if the unit is invisible and Complete Map Information is 
-	 * disabled), then this callback will NOT be called. If 
-	 * the unit was visible at the time of destruction, 
-	 * <code>onUnitHidden()</code> will also be called.
+	 * Called when a unit becomes accessible. This is called after
+	 * {@link #unitShowed(Unit)} or {@link #unitCreated(Unit)} callbacks.
 	 * 
-	 * @param unit that was destroyed
+	 * @param unit
+	 *            unit that was discovered
 	 */
-	abstract public void unitDestroyed(Unit unit);
+	void unitDiscovered(Unit unit);
 
 	/**
-	 * BWAPI calls this right before a unit becomes inaccessible. 
-	 * If Complete Map Information is enabled, this will be called 
-	 * at the same time as <code>onUnitDestroyed()</code>, otherwise it 
-	 * will be called at the same time as <code>onUnitHidden</code>.
+	 * <p>
+	 * Called when unit is destroyed or removed from the game.
+	 * </p>
 	 * 
-	 * @param unit that was evaded
+	 * <p>
+	 * If unit information was available to the player at the time of
+	 * destruction, {@link #unitHid(Unit)} will also be called.
+	 * </p>
+	 * 
+	 * <p>
+	 * <b>Note:</b> Some operations which looks like unit destruction/removing
+	 * are actually not removing unit; examples are morphing unitss, when unit
+	 * is actually changed to another unit. Exception is morphing of zerg extractor
+	 * building, when actually drone is destroyed and vespene geyser is changed
+	 * to extractor.
+	 * </p>
+	 * 
+	 * @param unit
+	 *            unit that was destroyed
 	 */
-	abstract public void unitEvaded(Unit unit);
+	void unitDestroyed(Unit unit);
 
 	/**
-	 * BWAPI calls this when an accessible unit is created. Note that this 
-	 * is NOT called when a unit changes type (such as larva into 
-	 * egg or egg into drone). Building a refinery/assimilator/extractor 
-	 * will not produce an onUnitCreate call since the vespene 
-	 * geyser changes to the unit type of the refinery/assimilator/extractor. 
-	 * If the unit is not accessible at the time of creation (i.e. if the 
-	 * unit is invisible and Complete Map Information is disabled), then 
-	 * this callback will NOT be called. If the unit is visible at the 
-	 * time of creation, <code>onUnitShown()</code> will also be called.
+	 * Called when unit becomes inaccessible. This is called after
+	 * {@link #unitHid(Unit)} or {@link #unitDestroyed(Unit)} callbacks.
 	 * 
-	 * @param unit that was created
+	 * @param unit
+	 *            unit that was evaded
 	 */
-	abstract public void unitCreated(Unit unit);
+	void unitEvaded(Unit unit);
 
 	/**
-	 * No BWAPI documentation available.
+	 * <p>
+	 * Called when accessible unit is created.
+	 * </p>
 	 * 
-	 * @param unit that was completed
+	 * <p>
+	 * <b>Note:</b> this is not called when unit is changing type, as when zerg
+	 * unit is morphing, or vespene geyser is changed to gas extracting
+	 * building.
+	 * </p>
+	 * 
+	 * @param unit
+	 *            unit that was created
+	 * 
+	 * @see #unitShowed(Unit)
 	 */
-	abstract public void unitCompleted(Unit unit);
+	void unitCreated(Unit unit);
 
 	/**
-	 * BWAPI calls this when an accessible unit changes type, such as from a 
-	 * Zerg Drone to a Zerg Hatchery, or from a Terran Siege Tank Tank Mode 
-	 * to Terran Siege Tank Siege Mode. This is not called when the type 
-	 * changes to or from <code>UnitType.UnitTypes.Unknown</code> (which happens when a unit is 
-	 * transitioning to or from inaccessibility).
+	 * Called when unit construction or training is completed. This doesn't count morphed units.
 	 * 
-	 * @param unit that was morphed
+	 * @param unit
+	 *            unit that was completed
 	 */
-	abstract public void unitMorphed(Unit unit);
+	void unitCompleted(Unit unit);
 
 	/**
-	 * BWAPI calls this when a unit becomes visible. If Complete Map 
-	 * Information is disabled, this also means that the unit has 
-	 * just become accessible.
+	 * Called when unit is morphed (changed it's type) to another unit type.
 	 * 
-	 * @param unit that was shown
+	 * @param unit
+	 *            unit that was morphed
 	 */
-	abstract public void unitShowed(Unit unit);
+	void unitMorphed(Unit unit);
 
 	/**
-	 * BWAPI calls this right before a unit becomes invisible. If Complete 
-	 * Map Information is disabled, this also means that the unit is 
-	 * about to become inaccessible.
+	 * Called when unit becomes visible to player.
 	 * 
-	 * @param unit that was hidden
+	 * @param unit
+	 *            unit that was shown
 	 */
-	abstract public void unitHid(Unit unit);
+	void unitShowed(Unit unit);
 
 	/**
-	 * BWAPI calls this when an accessible unit changes ownership.
+	 * Called when unit becomes invisible to player.
 	 * 
-	 * @param unit that renegaded
+	 * @param unit
+	 *            unit that was hidden
 	 */
-	abstract public void unitRenegaded(Unit unit);
+	void unitHid(Unit unit);
 
 	/**
-	 * BWU calls this when graphics is enabled in this bot and this is called
-	 * after each <code>onGameUpdate()<code> call.
+	 * Called when unit changes its ownership.
 	 * 
-	 * @param graphics state machine for drawing
+	 * @param unit
+	 *            unit that renegaded
 	 */
-	abstract public void draw(Graphics graphics);
-	
-	/**
-	 * If <code>Game.enableUserInput()</code> is enabled, BWAPI will call this each time a user 
-	 * enters a message into the chat. If you want the message to actually 
-	 * show up in chat, you can use <code>Game.sendMessage()</code> to send the message to 
-	 * other players (if the game is multiplayer), or use <code>Bot.getPrintStream()</code> if 
-	 * you want the message to just show up locally.
-	 * 
-	 * @param message message to send
-	 */
-	abstract public void messageSent(String message);
+	void unitRenegaded(Unit unit);
 
 	/**
-	 * BWAPI calls this each time it receives a message from another player in the chat.
+	 * Called after each {@link #gameUpdated()} call, if drawing is enabled.
 	 * 
-	 * @param message message that was sent
+	 * @param graphics
+	 *            state machine for drawing
 	 */
-	abstract public void messageReceived(String message);
-	
+	void draw(Graphics graphics);
+
 	/**
-	 * BWAPI calls this when the user saves the match. The gameName will 
-	 * be the name that the player entered in the save game screen.
+	 * If <code>Game.enableUserInput()</code> is enabled, BWAPI will call this
+	 * each time a user enters a message into the chat. If you want the message
+	 * to actually show up in chat, you can use <code>Game.sendMessage()</code>
+	 * to send the message to other players (if the game is multiplayer), or use
+	 * <code>Bot.getPrintStream()</code> if you want the message to just show up
+	 * locally.
+	 * 
+	 * @param message
+	 *            message to send
+	 */
+	void messageSent(String message);
+
+	/**
+	 * BWAPI calls this each time it receives a message from another player in
+	 * the chat.
+	 * 
+	 * @param message
+	 *            message that was sent
+	 */
+	void messageReceived(String message);
+
+	/**
+	 * BWAPI calls this when the user saves the match. The gameName will be the
+	 * name that the player entered in the save game screen.
 	 * 
 	 * @param gameName
 	 */
-	abstract public void gameSaved(String gameName);
+	void gameSaved(String gameName);
 }

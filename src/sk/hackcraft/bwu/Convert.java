@@ -1,5 +1,7 @@
 package sk.hackcraft.bwu;
 
+import java.util.Map;
+
 import jnibwapi.Position;
 import jnibwapi.Position.PosType;
 import sk.hackcraft.bwu.maplayer.LayerDimension;

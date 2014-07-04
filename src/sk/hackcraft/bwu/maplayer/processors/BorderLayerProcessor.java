@@ -3,7 +3,7 @@ package sk.hackcraft.bwu.maplayer.processors;
 import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.layers.MatrixLayer;
 
 public class BorderLayerProcessor
 {

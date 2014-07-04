@@ -1,5 +1,10 @@
-package sk.hackcraft.bwu.maplayer;
+package sk.hackcraft.bwu.maplayer.layers;
 
+import sk.hackcraft.bwu.maplayer.AbstractLayer;
+import sk.hackcraft.bwu.maplayer.Layer;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerIterator;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
 import sk.hackcraft.bwu.maplayer.LayerIterator.IterateListener;
 
 public class MatrixLayer extends AbstractLayer

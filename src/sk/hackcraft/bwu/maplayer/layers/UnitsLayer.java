@@ -1,10 +1,12 @@
-package sk.hackcraft.bwu.maplayer;
+package sk.hackcraft.bwu.maplayer.layers;
 
 import jnibwapi.Player;
 import jnibwapi.Unit;
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Updateable;
+import sk.hackcraft.bwu.maplayer.LayerDimension;
+import sk.hackcraft.bwu.maplayer.LayerPoint;
 import sk.hackcraft.bwu.selection.UnitSet;
 
 public class UnitsLayer extends SparseLayer implements Updateable

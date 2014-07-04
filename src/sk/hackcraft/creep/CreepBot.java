@@ -42,10 +42,10 @@ import sk.hackcraft.bwu.maplayer.LayerUtil;
 import sk.hackcraft.bwu.maplayer.MapExactColorAssigner;
 import sk.hackcraft.bwu.maplayer.MapGradientColorAssignment;
 import sk.hackcraft.bwu.maplayer.RandomColorAssigner;
-import sk.hackcraft.bwu.maplayer.UnitsLayer;
+import sk.hackcraft.bwu.maplayer.layers.UnitsLayer;
 import sk.hackcraft.bwu.maplayer.processors.BorderLayerProcessor;
-import sk.hackcraft.bwu.maplayer.processors.GradientFloodFillProcessor;
-import sk.hackcraft.bwu.maplayer.processors.ValueFloodFillProcessor;
+import sk.hackcraft.bwu.maplayer.processors.DrawProcessor;
+import sk.hackcraft.bwu.maplayer.processors.FloodFillProcessor;
 import sk.hackcraft.bwu.maplayer.processors.ValuesChangerLayerProcessor;
 import sk.hackcraft.bwu.maplayer.updaters.TemperatureLayerUpdater;
 import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
@@ -71,19 +71,16 @@ public class CreepBot extends AbstractBot
 	
 	public static void main(String[] args)
 	{
-		/*while (true)
-		{*/
-			BWU bwu = new BWU()
+		BWU bwu = new BWU()
+		{
+			@Override
+			protected Bot createBot(Game game)
 			{
-				@Override
-				protected Bot createBot(Game game)
-				{
-					return new CreepBot(game);
-				}
-			};
-			
-			bwu.start();
-		//}
+				return new CreepBot(game);
+			}
+		};
+		
+		bwu.start();
 	}
 	
 	private final EnvironmentTime time;
@@ -213,8 +210,8 @@ public class CreepBot extends AbstractBot
 		plainsLayer = new ValuesChangerLayerProcessor(changeMap).process(plainsLayer);
 
 		Set<LayerPoint> startPoints = LayerUtil.getPointsWithValue(plainsLayer, maxDistance);
-		
-		GradientFloodFillProcessor.floodFill(plainsLayer, maxDistance, startPoints);
+		DrawProcessor.putValue(plainsLayer, startPoints, maxDistance);
+		FloodFillProcessor.fillGradient(plainsLayer, startPoints, -1, Comparison.LESS);
 		
 		TreeMap<Integer, BWColor> colors = new TreeMap<>();
 		colors.put(maxDistance + 1, BWColor.Red);
@@ -247,9 +244,11 @@ public class CreepBot extends AbstractBot
 		
 		Layer resourcesPartitioningLayer = GameLayerFactory.createLowResWalkableLayer(map);
 		List<BaseLocation> baseLocations = map.getBaseLocations();
-		final Set<LayerPoint> startPoints2 = new HashSet<>();
+		final Map<LayerPoint, Integer> startPoints2 = new HashMap<>();
 		Map<Integer, BaseLocation> baseLocationsIndex = new HashMap<>();
-		int value = 2;
+		// 0 and 1 is not assigned or unbuildable terrain
+		int resourceLayersNumberinStart = 2;
+		int value = resourceLayersNumberinStart;
 		for (BaseLocation baseLocation : baseLocations)
 		{
 			Position position = baseLocation.getCenter();
@@ -261,14 +260,15 @@ public class CreepBot extends AbstractBot
 			
 			LayerPoint point = Convert.toLayerPoint(position);
 			
-			startPoints2.add(point);
+			startPoints2.put(point, value);
 			
 			resourcesPartitioningLayer.set(point, value);
 			baseLocationsIndex.put(value, baseLocation);
 			value++;
 		}
 		
-		resourcesPartitioningLayer = new ValueFloodFillProcessor(startPoints2, 1).process(resourcesPartitioningLayer);
+		FloodFillProcessor.fillValue(resourcesPartitioningLayer, startPoints2, 0);
+		
 		Map<BaseLocation, Set<Unit>> resourceClusters = new HashMap<>();
 		for (Unit unit : game.getStaticNeutralUnits().where(UnitSelector.IS_RESOURCE))
 		{
@@ -588,29 +588,21 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void keyPressed(int keyCode)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void playerLeft(Player player)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void playerDropped(Player player)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void nukeDetected(Vector2D target)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -639,8 +631,6 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitEvaded(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -674,15 +664,11 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void unitShowed(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void unitHid(Unit unit)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -707,6 +693,11 @@ public class CreepBot extends AbstractBot
 			graphics.drawCircle(Convert.toPositionVector(pos), 30);
 		}
 		
+		for (Unit unit : game.getEnemyUnits())
+		{
+			graphics.drawText(unit, unit.getID());
+		}
+		
 		for (Unit unit : bwapi.getStaticNeutralUnits())
 		{
 			BWColor color = (unit.getType().isMineralField()) ? BWColor.Cyan : BWColor.Green;
@@ -718,21 +709,15 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void messageSent(String message)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void messageReceived(String message)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void gameSaved(String gameName)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 }

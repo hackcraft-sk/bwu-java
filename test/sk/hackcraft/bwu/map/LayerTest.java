@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerUtil;
-import sk.hackcraft.bwu.maplayer.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.layers.MatrixLayer;
 
 public class LayerTest
 {

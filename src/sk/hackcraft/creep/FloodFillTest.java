@@ -3,13 +3,15 @@ package sk.hackcraft.creep;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
+
 import sk.hackcraft.bwu.maplayer.GradientColorAssigner;
 import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerDimension;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
 import sk.hackcraft.bwu.maplayer.LayerUtil;
-import sk.hackcraft.bwu.maplayer.MatrixLayer;
-import sk.hackcraft.bwu.maplayer.processors.GradientFloodFillProcessor;
+import sk.hackcraft.bwu.maplayer.layers.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.processors.FloodFillProcessor;
 import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
 import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
 
@@ -33,23 +35,21 @@ public class FloodFillTest
 			{
 				Set<LayerPoint> startPoints = new HashSet<>();
 				startPoints.add(new LayerPoint(x, y));
-				GradientFloodFillProcessor.floodDefill(l, 0, startPoints);
+				FloodFillProcessor.defillGradient(l, 0, startPoints);
 			}
 			
 			x = (x + 1) % 256;
 			y = (y + 1) % 256;
-			
-			
+	
 			{
 				Set<LayerPoint> startPoints = new HashSet<>();
 				startPoints.add(new LayerPoint(x, y));
-				GradientFloodFillProcessor.floodFill(l, 40, startPoints);
+				// TODO
+				//GradientFloodFillProcessor.floodFill(l, 40, startPoints);
 			}
 			
 			lp.update();
-			
-			
-			
+
 			/*try
 			{
 				Thread.sleep(10);

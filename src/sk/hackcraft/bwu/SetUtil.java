@@ -3,7 +3,7 @@ package sk.hackcraft.bwu;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SetCreator
+public class SetUtil
 {
 	@SafeVarargs
 	public static <T> Set<T> create(T... objects)

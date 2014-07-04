@@ -1,5 +1,7 @@
 package sk.hackcraft.bwu.maplayer;
 
+import sk.hackcraft.bwu.maplayer.layers.MatrixLayer;
+
 public abstract class AbstractLayer implements Layer
 {	
 	protected final LayerDimension dimension;

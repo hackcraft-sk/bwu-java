@@ -5,7 +5,7 @@ import java.util.Map;
 import sk.hackcraft.bwu.maplayer.Layer;
 import sk.hackcraft.bwu.maplayer.LayerIterator;
 import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.MatrixLayer;
+import sk.hackcraft.bwu.maplayer.layers.MatrixLayer;
 
 public class ValuesChangerLayerProcessor
 {

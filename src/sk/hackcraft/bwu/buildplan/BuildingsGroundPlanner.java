@@ -2,14 +2,15 @@ package sk.hackcraft.bwu.buildplan;
 
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Game;
-import sk.hackcraft.bwu.SetCreator;
+import sk.hackcraft.bwu.SetUtil;
 import sk.hackcraft.bwu.maplayer.GameLayerFactory;
 import sk.hackcraft.bwu.maplayer.Layer;
-import sk.hackcraft.bwu.maplayer.processors.GradientFloodFillProcessor;
+import sk.hackcraft.bwu.maplayer.processors.FloodFillProcessor;
 import jnibwapi.Map;
 import jnibwapi.Position;
 import jnibwapi.types.UnitType;
 
+// TODO
 public class BuildingsGroundPlanner
 {
 	public static BuildingsGroundPlanner createFromGameData(Position baseCenter, Map map)
@@ -19,7 +20,7 @@ public class BuildingsGroundPlanner
 		
 		Layer groundDistanceLayer = GameLayerFactory.createLowResWalkableLayer(map);
 		
-		GradientFloodFillProcessor.floodFill(groundDistanceLayer, SetCreator.create(Convert.toLayerPoint(baseCenter)));
+		FloodFillProcessor.fillGradient(groundDistanceLayer, SetUtil.create(Convert.toLayerPoint(baseCenter)));
 		
 		return new BuildingsGroundPlanner(buildableLayer, groundDistanceLayer);
 	}
