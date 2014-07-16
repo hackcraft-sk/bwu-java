@@ -1,8 +1,8 @@
 package sk.hackcraft.bwu.selection.aggregators;
 
 import jnibwapi.Unit;
-import sk.hackcraft.bwu.selection.UnitSet;
 import sk.hackcraft.bwu.selection.UnitSelector.RealSelector;
+import sk.hackcraft.bwu.selection.UnitSet;
 
 public class AverageRealAggregator implements Aggregator<Double>
 {

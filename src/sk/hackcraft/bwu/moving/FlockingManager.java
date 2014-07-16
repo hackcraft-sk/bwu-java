@@ -3,8 +3,6 @@ package sk.hackcraft.bwu.moving;
 import java.util.HashSet;
 import java.util.Set;
 
-import jnibwapi.Map;
-import jnibwapi.Unit;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Game;
@@ -14,8 +12,8 @@ import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSelector.BooleanSelector;
-import sk.hackcraft.bwu.selection.aggregators.MeanVector2DAggregator;
 import sk.hackcraft.bwu.selection.UnitSet;
+import sk.hackcraft.bwu.selection.aggregators.MeanVector2DAggregator;
 import sk.hackcraft.bwu.util.Clustering;
 import sk.hackcraft.bwu.util.Clustering.Cluster;
 

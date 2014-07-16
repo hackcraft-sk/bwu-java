@@ -1,13 +1,12 @@
 package sk.hackcraft.bwu.selection;
 
-import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.Vector2DMath;
 import jnibwapi.Player;
 import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
 import jnibwapi.types.WeaponType;
+import sk.hackcraft.bwu.Vector2D;
 
 /**
  * Conatiner for UnitSelectors by boolean, integer or real information

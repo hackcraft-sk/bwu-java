@@ -1,7 +1,6 @@
 package sk.hackcraft.bwu.production;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jnibwapi.Unit;
@@ -12,10 +11,6 @@ import sk.hackcraft.bwu.Drawable;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.UnitOwning;
 import sk.hackcraft.bwu.Updateable;
-import sk.hackcraft.bwu.resource.EntityPool.Contract;
-import sk.hackcraft.bwu.resource.EntityPool.ContractListener;
-import sk.hackcraft.bwu.selection.UnitSelector;
-import sk.hackcraft.bwu.selection.UnitSet;
 
 public class LarvaProductionAgent implements Updateable, Drawable
 {

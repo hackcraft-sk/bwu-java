@@ -2,8 +2,8 @@ package sk.hackcraft.bwu.selection.aggregators;
 
 import jnibwapi.Unit;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.selection.UnitSet;
 import sk.hackcraft.bwu.selection.UnitSelector.Vector2DSelector;
+import sk.hackcraft.bwu.selection.UnitSet;
 
 public class MeanVector2DAggregator implements Aggregator<Vector2D>
 {

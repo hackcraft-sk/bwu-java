@@ -3,10 +3,10 @@ package sk.hackcraft.bwu.intelligence;
 import java.util.Map;
 import java.util.Set;
 
-import sk.hackcraft.bwu.ResourceType;
-import sk.hackcraft.bwu.Updateable;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
+import sk.hackcraft.bwu.ResourceType;
+import sk.hackcraft.bwu.Updateable;
 
 public interface EnemyIntelligence extends Updateable
 {

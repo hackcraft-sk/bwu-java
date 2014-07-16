@@ -64,13 +64,13 @@ public class MiningAgent implements Updateable, Drawable
 			@Override
 			public void entityRemoved(Unit entity)
 			{
-				addMiner(entity);
+				removeMiner(entity);
 			}
 
 			@Override
 			public void entityAdded(Unit entity)
 			{
-				removeMiner(entity);
+				addMiner(entity);
 			}
 		});
 	}

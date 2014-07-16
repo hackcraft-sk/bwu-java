@@ -30,26 +30,26 @@ import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.UnitOwning;
 import sk.hackcraft.bwu.Updateable;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.maplayer.ColorAssigner;
-import sk.hackcraft.bwu.maplayer.GameLayerFactory;
-import sk.hackcraft.bwu.maplayer.Layer;
-import sk.hackcraft.bwu.maplayer.LayerColorDrawable;
-import sk.hackcraft.bwu.maplayer.LayerDimension;
-import sk.hackcraft.bwu.maplayer.LayerDrawable;
-import sk.hackcraft.bwu.maplayer.LayerPoint;
-import sk.hackcraft.bwu.maplayer.LayerUpdater;
-import sk.hackcraft.bwu.maplayer.LayerUtil;
-import sk.hackcraft.bwu.maplayer.MapExactColorAssigner;
-import sk.hackcraft.bwu.maplayer.MapGradientColorAssignment;
-import sk.hackcraft.bwu.maplayer.RandomColorAssigner;
-import sk.hackcraft.bwu.maplayer.layers.UnitsLayer;
-import sk.hackcraft.bwu.maplayer.processors.BorderLayerProcessor;
-import sk.hackcraft.bwu.maplayer.processors.DrawProcessor;
-import sk.hackcraft.bwu.maplayer.processors.FloodFillProcessor;
-import sk.hackcraft.bwu.maplayer.processors.ValuesChangerLayerProcessor;
-import sk.hackcraft.bwu.maplayer.updaters.TemperatureLayerUpdater;
-import sk.hackcraft.bwu.maplayer.visualization.LayersPainter;
-import sk.hackcraft.bwu.maplayer.visualization.SwingLayersVisualization;
+import sk.hackcraft.bwu.grid.GameLayerFactory;
+import sk.hackcraft.bwu.grid.Grid;
+import sk.hackcraft.bwu.grid.GridDimension;
+import sk.hackcraft.bwu.grid.GridPoint;
+import sk.hackcraft.bwu.grid.GridUpdater;
+import sk.hackcraft.bwu.grid.GridUtil;
+import sk.hackcraft.bwu.grid.grids.UnitsLayer;
+import sk.hackcraft.bwu.grid.processors.BorderLayerProcessor;
+import sk.hackcraft.bwu.grid.processors.DrawProcessor;
+import sk.hackcraft.bwu.grid.processors.FloodFillProcessor;
+import sk.hackcraft.bwu.grid.processors.ValuesChangerLayerProcessor;
+import sk.hackcraft.bwu.grid.updaters.TemperatureLayerUpdater;
+import sk.hackcraft.bwu.grid.visualization.ColorAssigner;
+import sk.hackcraft.bwu.grid.visualization.LayerColorDrawable;
+import sk.hackcraft.bwu.grid.visualization.LayerDrawable;
+import sk.hackcraft.bwu.grid.visualization.colorassigners.MapExactColorAssigner;
+import sk.hackcraft.bwu.grid.visualization.colorassigners.MapGradientColorAssignment;
+import sk.hackcraft.bwu.grid.visualization.colorassigners.RandomColorAssigner;
+import sk.hackcraft.bwu.grid.visualization.swing.LayersPainter;
+import sk.hackcraft.bwu.grid.visualization.swing.SwingLayersVisualization;
 import sk.hackcraft.bwu.mining.MapResourcesAgent;
 import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
 import sk.hackcraft.bwu.moving.FlockingManager;
@@ -98,7 +98,7 @@ public class CreepBot extends AbstractBot
 	
 	private final Map<Position, Unit> enemyBuildings;
 	
-	private Layer plainsLayer;
+	private Grid plainsLayer;
 	private UnitsLayer unitsLayer;
 	private LayerDrawable plainsLayerDrawable;
 	
@@ -111,7 +111,7 @@ public class CreepBot extends AbstractBot
 	UnitSet knownBuildings = new UnitSet();
 	Unit lastKnownBuilding = null;
 	
-	private LayerUpdater heatUpdater;
+	private GridUpdater heatUpdater;
 	
 	private FlockingManager flockingManager;
 
@@ -161,13 +161,15 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameStarted()
 	{
+		// creating layers visualizations
+		
 		jnibwapi.Map map = game.getMap();
-		LayerDimension dimension = Convert.toLayerDimension(map.getSize());
+		GridDimension dimension = Convert.toLayerDimension(map.getSize());
 				
 		layersPainter = new LayersPainter(dimension);
 		visualization = new SwingLayersVisualization(layersPainter);
 		
-		// ---
+		// setting up game parameters
 		
 		game.enableUserInput();
 		game.setSpeed(0);
@@ -197,9 +199,8 @@ public class CreepBot extends AbstractBot
 		int maxDistance = 5;
 		
 		plainsLayer = GameLayerFactory.createLowResWalkableLayer(game.getMap());
-		
-		BorderLayerProcessor borderLayerProcessor = new BorderLayerProcessor(2, 0);
-		Layer bordersLayer = borderLayerProcessor.process(plainsLayer);
+
+		Grid bordersLayer = BorderLayerProcessor.createBorder(plainsLayer, 2, 0, plainsLayer);
 		
 		plainsLayer = plainsLayer.add(bordersLayer);
 
@@ -209,7 +210,7 @@ public class CreepBot extends AbstractBot
 		changeMap.put(1, 0);
 		plainsLayer = new ValuesChangerLayerProcessor(changeMap).process(plainsLayer);
 
-		Set<LayerPoint> startPoints = LayerUtil.getPointsWithValue(plainsLayer, maxDistance);
+		Set<GridPoint> startPoints = GridUtil.getPointsWithValue(plainsLayer, maxDistance);
 		DrawProcessor.putValue(plainsLayer, startPoints, maxDistance);
 		FloodFillProcessor.fillGradient(plainsLayer, startPoints, -1, Comparison.LESS);
 		
@@ -242,9 +243,9 @@ public class CreepBot extends AbstractBot
 		ColorAssigner<Color> colorAssigner3 = new MapExactColorAssigner<>(colors3);
 		//layersPainter.addLayer(unitsLayer, colorAssigner3);
 		
-		Layer resourcesPartitioningLayer = GameLayerFactory.createLowResWalkableLayer(map);
+		Grid resourcesPartitioningLayer = GameLayerFactory.createLowResWalkableLayer(map);
 		List<BaseLocation> baseLocations = map.getBaseLocations();
-		final Map<LayerPoint, Integer> startPoints2 = new HashMap<>();
+		final Map<GridPoint, Integer> startPoints2 = new HashMap<>();
 		Map<Integer, BaseLocation> baseLocationsIndex = new HashMap<>();
 		// 0 and 1 is not assigned or unbuildable terrain
 		int resourceLayersNumberinStart = 2;
@@ -258,7 +259,7 @@ public class CreepBot extends AbstractBot
 				continue;
 			}
 			
-			LayerPoint point = Convert.toLayerPoint(position);
+			GridPoint point = Convert.toLayerPoint(position);
 			
 			startPoints2.put(point, value);
 			
@@ -267,12 +268,12 @@ public class CreepBot extends AbstractBot
 			value++;
 		}
 		
-		FloodFillProcessor.fillValue(resourcesPartitioningLayer, startPoints2, 0);
+		FloodFillProcessor.fillValue(resourcesPartitioningLayer, startPoints2, 1);
 		
 		Map<BaseLocation, Set<Unit>> resourceClusters = new HashMap<>();
 		for (Unit unit : game.getStaticNeutralUnits().where(UnitSelector.IS_RESOURCE))
 		{
-			LayerPoint coordinates = Convert.toLayerPoint(unit.getPosition());
+			GridPoint coordinates = Convert.toLayerPoint(unit.getPosition());
 			
 			int resourceGroup = resourcesPartitioningLayer.get(coordinates);
 			BaseLocation baseLocation = baseLocationsIndex.get(resourceGroup);
@@ -299,15 +300,8 @@ public class CreepBot extends AbstractBot
 			mapResourcesAgent.spawnMiningOperation(resourceDepot);
 		}
 		
-		Random r = new Random();
-		ColorAssigner<Color> randomColorAssigner = new RandomColorAssigner<Color>(r)
-		{
-			@Override
-			protected Color createColor(int r, int g, int b)
-			{
-				return new Color(r, g, b);
-			}
-		};
+		Random random = new Random();
+		ColorAssigner<Color> randomColorAssigner = new RandomColorAssigner<Color>(random, (int r, int g, int b, int a) -> new Color(r, g, b, a));
 		//layersPainter.addLayer(resourcesPartitioningLayer, randomColorAssigner);
 		
 		heatUpdater = new TemperatureLayerUpdater(resourcesPartitioningLayer, 1, 100, 0, 1000);
@@ -507,7 +501,7 @@ public class CreepBot extends AbstractBot
 				}
 				else
 				{
-					bwapi.drawText(position, unit.isExists() + " " + unit.getHitPoints(), false);
+					bwapi.drawText(position, unit.isExists() + " " + unit.getHitPoints() + " " + unit.getID(), false);
 				}
 			}
 		}

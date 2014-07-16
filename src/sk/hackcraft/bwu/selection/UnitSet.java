@@ -11,7 +11,6 @@ import sk.hackcraft.bwu.Comparison;
 import sk.hackcraft.bwu.Convert;
 import sk.hackcraft.bwu.Vector2D;
 import sk.hackcraft.bwu.selection.aggregators.AverageRealAggregator;
-import sk.hackcraft.bwu.selection.aggregators.MeanVector2DAggregator;
 
 /**
  * Represents a set of units and helper operations for unit selection.

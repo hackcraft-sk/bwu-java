@@ -13,7 +13,6 @@ import jnibwapi.Unit;
 import jnibwapi.types.RaceType;
 import jnibwapi.types.RaceType.RaceTypes;
 import jnibwapi.types.UnitType;
-import jnibwapi.types.UnitType.UnitTypes;
 import jnibwapi.util.BWColor;
 import sk.hackcraft.bwu.Constants;
 import sk.hackcraft.bwu.Convert;

@@ -2,7 +2,7 @@ package sk.hackcraft.bwu.util;
 
 public class IdGenerator
 {
-	private int nextId = 0;
+	private int nextId = Integer.MIN_VALUE;
 	
 	public int generateId()
 	{

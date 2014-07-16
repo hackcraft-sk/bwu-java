@@ -11,9 +11,7 @@ import jnibwapi.JNIBWAPI;
 import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
-import jnibwapi.types.UnitType.UnitTypes;
 import sk.hackcraft.bwu.Drawable;
-import sk.hackcraft.bwu.EntitiesContract;
 import sk.hackcraft.bwu.EntitiesServerContract;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Updateable;
@@ -33,7 +31,7 @@ public class MapResourcesAgent implements Updateable, Drawable
 	private final UnitType resourceDepotType;
 	
 	private final Set<MiningAgent> miningAgents;
-	private final Map<MiningAgent, EntitiesContract<Unit>> miningAgentsMinerContracts;
+	private final Map<MiningAgent, EntitiesServerContract<Unit>> miningAgentsMinerContracts;
 	
 	private final Set<ExpandInfo> expandsInformations;
 	
@@ -168,17 +166,18 @@ public class MapResourcesAgent implements Updateable, Drawable
 	
 	private void createMiningAgent(Unit resourceDepot, Set<Unit> resources, boolean constructGas)
 	{
-		EntitiesContract<Unit> contract = null;
-		MiningAgent agent = new MiningAgent(bwapi, resourceDepot, resources, contract);
-		miningAgents.add(agent);
-		miningAgentsMinerContracts.put(agent, new EntitiesServerContract<Unit>()
+		EntitiesServerContract<Unit> contract = new EntitiesServerContract<Unit>()
 		{
 			@Override
 			public void entityReturned(Unit entity)
 			{
-				// TODO
+				unitsContract.returnEntity(entity);
 			}
-		});
+		};
+		
+		MiningAgent agent = new MiningAgent(bwapi, resourceDepot, resources, contract);
+		miningAgents.add(agent);
+		miningAgentsMinerContracts.put(agent, contract);
 		
 		// TODO temp
 		if (constructGas)
@@ -286,25 +285,15 @@ public class MapResourcesAgent implements Updateable, Drawable
 						@Override
 						public void entityRemoved(Unit entity)
 						{
-							// TODO remove entity from agent
-							//agent.getMinerContract().entityRemoved(entity);
+							EntitiesServerContract<Unit> contract = miningAgentsMinerContracts.get(agent);
+							contract.removeEntity(worker);
 						}
 					};
 					unitsContract.requestEntity(worker, listener, false);
 					
-					// TODO add entity to agent
-					//agent.getMinerContract().entityAdded(worker);
+					EntitiesServerContract<Unit> contract = miningAgentsMinerContracts.get(agent);
+					contract.addEntity(worker);
 				}
-			}
-			else if (saturationDeficit < 0)
-			{
-				// TODO
-				/*Set<Unit> agentFreeWorkers = new HashSet<>(agent.getFreeMiners());
-				for (Unit worker : agentFreeWorkers)
-				{
-					unitsContract.returnEntity(worker);
-					agent.removeMiner(worker);
-				}*/
 			}
 
 			agent.update();
