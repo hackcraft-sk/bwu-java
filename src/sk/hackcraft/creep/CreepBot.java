@@ -53,6 +53,7 @@ import sk.hackcraft.bwu.grid.visualization.colorassigners.MapGradientColorAssign
 import sk.hackcraft.bwu.grid.visualization.colorassigners.RandomColorAssigner;
 import sk.hackcraft.bwu.grid.visualization.swing.LayersPainter;
 import sk.hackcraft.bwu.grid.visualization.swing.SwingLayersVisualization;
+import sk.hackcraft.bwu.intelligence.EnemyIntelligence;
 import sk.hackcraft.bwu.mining.MapResourcesAgent;
 import sk.hackcraft.bwu.mining.MiningAgent;
 import sk.hackcraft.bwu.mining.MapResourcesAgent.ExpandInfo;
@@ -90,12 +91,13 @@ public class CreepBot extends AbstractBot
 		bwu.start();
 	}
 
+	private final Random random;
 	private final EnvironmentTime time;
 
 	private final List<Updateable> updateables;
 	private final List<Drawable> drawables;
 
-	private final Scout scout;
+	private Scout scout;
 
 	private MiningAgent miningAgent;
 	private EntitiesServerContract<Unit> minersContract;
@@ -103,41 +105,18 @@ public class CreepBot extends AbstractBot
 	private SpawningPoolConstructor spawningPoolConstructor;
 	
 	private Unit resourceDepot;
+	
+	private Position attackPosition;
 
 	public CreepBot(Game game)
 	{
 		super(game);
 
+		random = new Random(0);
 		time = new GameEnvironmentTime(game);
 
 		updateables = new ArrayList<>();
 		drawables = new ArrayList<>();
-
-		Position startPosition = game.getSelf().getStartLocation();
-		Set<Position> scoutPositions = new HashSet<>();
-		for (BaseLocation bl : game.getMap().getStartLocations())
-		{
-			scoutPositions.add(bl.getCenter());
-		}
-		Position nearestPositionToStartPosition = PositionUtils.getNearest(scoutPositions, startPosition);
-		scoutPositions.remove(nearestPositionToStartPosition);
-
-		scout = new Scout(bwapi, startPosition, scoutPositions)
-		{
-			@Override
-			protected void enemyPositionFound(Position position)
-			{
-				game.sendMessage("Found enemy at " + position);
-			}
-			
-			@Override
-			protected void droneReturned(Unit unit)
-			{
-			}
-		};
-
-		updateables.add(scout);
-		drawables.add(scout);
 	}
 
 	@Override
@@ -168,9 +147,39 @@ public class CreepBot extends AbstractBot
 		
 		EnvironmentTime environmentTime = new GameEnvironmentTime(game);
 		Position referencePosition = game.getSelf().getStartLocation();
-		spawningPoolConstructor = new SpawningPoolConstructor(game, referencePosition, environmentTime);
+		spawningPoolConstructor = new SpawningPoolConstructor(game, bwapi, referencePosition, environmentTime);
 		updateables.add(spawningPoolConstructor);
 		drawables.add(spawningPoolConstructor);
+		
+		Position startPosition = game.getSelf().getStartLocation();
+		Set<Position> scoutPositions = new HashSet<>();
+		for (BaseLocation bl : game.getMap().getStartLocations())
+		{
+			scoutPositions.add(bl.getCenter());
+		}
+		Position nearestPositionToStartPosition = PositionUtils.getNearest(scoutPositions, startPosition);
+		scoutPositions.remove(nearestPositionToStartPosition);
+
+		scout = new Scout(bwapi, startPosition, scoutPositions)
+		{
+			@Override
+			protected void enemyPositionFound(Position position)
+			{
+				game.sendMessage("Found enemy at " + position);
+				
+				attackPosition = position;
+			}
+			
+			@Override
+			protected void droneReturned(Unit unit)
+			{
+				unit.stop(false);
+				minersContract.addEntity(unit);
+			}
+		};
+
+		updateables.add(scout);
+		drawables.add(scout);
 	}
 
 	@Override
@@ -188,8 +197,8 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
-		game.setSpeed(10);
-		bwapi.setFrameSkip(0);
+		game.setSpeed(0);
+		bwapi.setFrameSkip(16);
 
 		bwapi.drawText(new Position(10, 10), "Frame: " + game.getFrameCount(), true);
 
@@ -220,10 +229,46 @@ public class CreepBot extends AbstractBot
 			scout.addDrone(drone);
 		}
 		
+		Unit spawningPool = game.getMyUnits().whereType(UnitTypes.Zerg_Spawning_Pool).pick(Pickers.FIRST);
+		
 		if (game.getSelf().getMinerals() >= 190 && !spawningPoolConstructor.isConstructing())
 		{
 			Unit drone = game.getMyUnits().where(UnitSelector.IS_WORKER).whereLessOrEqual(new DistanceSelector(resourceDepot), 300).pick(Pickers.FIRST);
-			spawningPoolConstructor.construct(drone);
+			
+			if (drone != null)
+			{
+				spawningPoolConstructor.construct(drone);
+			}
+		}
+		
+		if (spawningPool != null && spawningPool.isCompleted())
+		{
+			UnitSet larvae = game.getMyUnits().whereType(UnitTypes.Zerg_Larva);
+			
+			larvae.forEach(l -> l.morph(UnitTypes.Zerg_Zergling));
+		}
+
+		if (attackPosition != null)
+		{
+			Position lingAttackPosition;
+			
+			Unit enemyBuilding = game.getEnemyUnits().where(UnitSelector.IS_BUILDING).pick(Pickers.FIRST);
+			if (enemyBuilding != null)
+			{
+				lingAttackPosition = enemyBuilding.getPosition();
+			}
+			else
+			{
+				int range = 300;
+				int x = attackPosition.getPX() + random.nextInt(range) - range / 2;
+				int y = attackPosition.getPY() + random.nextInt(range) - range / 2;
+				lingAttackPosition = new Position(x, y);
+			}
+			
+			UnitSet zerglings = game.getMyUnits().whereType(UnitTypes.Zerg_Zergling);
+			zerglings.stream()
+			.filter(u -> u.isIdle())
+			.forEach(u -> u.attack(lingAttackPosition, false));
 		}
 	}
 

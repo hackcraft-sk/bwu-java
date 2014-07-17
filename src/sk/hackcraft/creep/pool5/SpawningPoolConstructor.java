@@ -31,6 +31,7 @@ import jnibwapi.util.BWColor;
 public class SpawningPoolConstructor implements Updateable, Drawable
 {
 	private final Game game;
+	private final JNIBWAPI bwapi;
 	private final Position referencePosition;
 	private final EnvironmentTime time;
 
@@ -41,9 +42,10 @@ public class SpawningPoolConstructor implements Updateable, Drawable
 
 	private final LayerDrawable buildableGridDrawable;
 
-	public SpawningPoolConstructor(Game game, Position referencePosition, EnvironmentTime time)
+	public SpawningPoolConstructor(Game game, JNIBWAPI bwapi, Position referencePosition, EnvironmentTime time)
 	{
 		this.game = game;
+		this.bwapi = bwapi;
 		this.referencePosition = referencePosition;
 		this.time = time;
 
@@ -179,6 +181,12 @@ public class SpawningPoolConstructor implements Updateable, Drawable
 				}
 				
 				if (buildableGrid.get(bx, by) != 1)
+				{
+					buildable = false;
+					break;
+				}
+				
+				if (!bwapi.hasCreep(new Position(bx, by, PosType.BUILD)))
 				{
 					buildable = false;
 					break;
