@@ -3,6 +3,7 @@ package sk.hackcraft.bwu.selection;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.function.Function;
 
 import jnibwapi.Position;
 import jnibwapi.Unit;

@@ -75,11 +75,6 @@ public class MiningAgent implements Updateable, Drawable
 		});
 	}
 
-	public EntitiesContract<Unit> getMinerContract()
-	{
-		return minersContract;
-	}
-
 	public Unit getResourceDepot()
 	{
 		return resourceDepot;

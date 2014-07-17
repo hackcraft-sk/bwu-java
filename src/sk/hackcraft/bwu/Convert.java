@@ -24,7 +24,7 @@ public class Convert
 		return new Position(x, y);		
 	}
 	
-	public static GridPoint toLayerPoint(Position position)
+	public static GridPoint toGridPoint(Position position)
 	{
 		int x = position.getBX();
 		int y = position.getBY();
@@ -32,7 +32,7 @@ public class Convert
 		return new GridPoint(x, y);
 	}
 
-	public static GridPoint toLayerPoint(Vector2D vector, float scaleX, float scaleY)
+	public static GridPoint toGridPoint(Vector2D vector, float scaleX, float scaleY)
 	{
 		int x = (int)(vector.getX() * scaleX);
 		int y = (int)(vector.getY() * scaleY);
@@ -40,15 +40,15 @@ public class Convert
 		return new GridPoint(x, y);
 	}
 	
-	public static GridPoint toLayerPoint(Vector2D vector, Vector2D scale)
+	public static GridPoint toGridPoint(Vector2D vector, Vector2D scale)
 	{
 		float scaleX = scale.getX();
 		float scaleY = scale.getY();
 
-		return toLayerPoint(vector, scaleX, scaleY);
+		return toGridPoint(vector, scaleX, scaleY);
 	}
 	
-	public static GridDimension toLayerDimension(Position position)
+	public static GridDimension toGridDimension(Position position)
 	{
 		int width = position.getBX();
 		int height = position.getBY();
