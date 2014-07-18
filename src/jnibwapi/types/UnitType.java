@@ -416,6 +416,11 @@ public class UnitType {
 		return whatBuildID;
 	}
 	
+	public UnitType getWhatBuild()
+	{
+		return UnitTypes.getUnitType(whatBuildID);
+	}
+	
 	public int getRequiredTechID() {
 		return requiredTechID;
 	}

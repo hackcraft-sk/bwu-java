@@ -2,6 +2,7 @@ package sk.hackcraft.bwu.util;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import jnibwapi.Map;
 import jnibwapi.Unit;
@@ -293,6 +294,15 @@ public class Clustering
 		return bestCluster;
 	}
 
+	/**
+	 * Get current clusters snapshot
+	 * @return clusters snapshot
+	 */
+	public Set<Cluster> getClusters()
+	{
+		return new HashSet<>(clusters);
+	}
+	
 	/**
 	 * Draws the current clustering (with cluster centers and units correspondence) to the
 	 * minimap.

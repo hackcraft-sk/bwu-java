@@ -143,6 +143,19 @@ public class FirstTakeEntityPool<E> implements EntityPool<E>
 					return freeEntities;
 				}
 			}
+
+			@Override
+			public boolean canAcquire(E entity, boolean urgent)
+			{
+				if (urgent)
+				{
+					return urgentlyFreeEntities.contains(entity);
+				}
+				else
+				{
+					return freeEntities.contains(entity);
+				}
+			}
 		};
 	}
 	

@@ -1,10 +1,12 @@
 package sk.hackcraft.bwu.selection;
 
 import jnibwapi.Player;
+import jnibwapi.Position;
 import jnibwapi.Unit;
 import jnibwapi.types.UnitType;
 import jnibwapi.types.UnitType.UnitTypes;
 import jnibwapi.types.WeaponType;
+import sk.hackcraft.bwu.Vector2D;
 
 /**
  * Conatiner for UnitSelectors by boolean, integer or real information
@@ -49,7 +51,7 @@ public interface UnitSelector
 	}
 
 	/**
-	 * Selector for real information form a unit
+	 * Selector for real information from a unit
 	 * 
 	 * @author nixone
 	 * 
@@ -65,6 +67,21 @@ public interface UnitSelector
 		public double getValue(Unit unit);
 	}
 
+	/**
+	 * Selector for some vector information from a unit
+	 *
+	 */
+	public interface Vector2DSelector
+	{
+		/**
+		 * Get a value for this selector from a unit
+		 * 
+		 * @param unit
+		 * @return
+		 */
+		public Vector2D getValue(Unit unit);
+	}
+	
 	public abstract class ObjectEqualitySelector<C> implements BooleanSelector
 	{
 		private C toBeEqualTo;
@@ -460,6 +477,45 @@ public interface UnitSelector
 			UnitType type = unit.getType();
 			
 			return type == UnitTypes.Zerg_Hatchery || type == UnitTypes.Zerg_Lair || type == UnitTypes.Zerg_Hive;
+		}
+	};
+	
+	static public final Vector2DSelector POSITION = new Vector2DSelector()
+	{
+		@Override
+		public Vector2D getValue(Unit unit)
+		{
+			Position position = unit.getPosition();
+			
+			if(position != null)
+			{
+				return new Vector2D(position.getPX(), position.getPY());
+			}
+			
+			return null;
+		}
+	};
+	
+	static public final Vector2DSelector TARGET_POSITION = new Vector2DSelector()
+	{
+		@Override
+		public Vector2D getValue(Unit unit)
+		{
+			Unit targetUnit = unit.getTarget();
+			
+			if(targetUnit != null)
+			{
+				return targetUnit.getPositionVector();
+			}
+			
+			Position targetPosition = unit.getTargetPosition();
+			
+			if(targetPosition != null)
+			{
+				return new Vector2D(targetPosition.getPX(), targetPosition.getPY());
+			}
+			
+			return null;
 		}
 	};
 }
