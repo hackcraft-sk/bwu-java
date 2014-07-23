@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import jnibwapi.BaseLocation;
 import jnibwapi.Player;
@@ -66,6 +68,7 @@ import sk.hackcraft.bwu.resource.EntityPool;
 import sk.hackcraft.bwu.resource.EntityPool.Contract;
 import sk.hackcraft.bwu.resource.FirstTakeEntityPool;
 import sk.hackcraft.bwu.selection.DistanceSelector;
+import sk.hackcraft.bwu.selection.NearestPicker;
 import sk.hackcraft.bwu.selection.Pickers;
 import sk.hackcraft.bwu.selection.UnitSelector;
 import sk.hackcraft.bwu.selection.UnitSet;
@@ -159,6 +162,12 @@ public class CreepBot extends AbstractBot
 		}
 		Position nearestPositionToStartPosition = PositionUtils.getNearest(scoutPositions, startPosition);
 		scoutPositions.remove(nearestPositionToStartPosition);
+		
+		if (scoutPositions.isEmpty())
+		{
+			System.out.println("Strange map data, 0 start locations, leaving game...");
+			System.exit(0);
+		}
 
 		scout = new Scout(bwapi, startPosition, scoutPositions)
 		{
@@ -174,7 +183,15 @@ public class CreepBot extends AbstractBot
 			protected void droneReturned(Unit unit)
 			{
 				unit.stop(false);
-				minersContract.addEntity(unit);
+				
+				if (unit.getType().isWorker())
+				{
+					minersContract.addEntity(unit);
+				}
+				else
+				{
+					unit.move(game.getSelf().getStartLocation(), false);
+				}
 			}
 		};
 
@@ -197,8 +214,15 @@ public class CreepBot extends AbstractBot
 	@Override
 	public void gameUpdated()
 	{
-		game.setSpeed(0);
-		bwapi.setFrameSkip(16);
+		if (!game.getMyUnits().where(UnitSelector.IS_UNDER_ATTACK).isEmpty())
+		{
+			game.setSpeed(20);
+		}
+		else
+		{
+			game.setSpeed(0);
+			bwapi.setFrameSkip(16);
+		}
 
 		bwapi.drawText(new Position(10, 10), "Frame: " + game.getFrameCount(), true);
 
@@ -247,8 +271,18 @@ public class CreepBot extends AbstractBot
 			
 			larvae.forEach(l -> l.morph(UnitTypes.Zerg_Zergling));
 		}
+		
+		Player self = game.getSelf();
+		int supplyTotal = self.getSupplyTotal();
+		int supplyUsed = self.getSupplyUsed();
+		if (supplyTotal - supplyUsed == 0 && self.getMinerals() > 100)
+		{
+			UnitSet larvae = game.getMyUnits().whereType(UnitTypes.Zerg_Larva);
+			
+			larvae.forEach(l -> l.morph(UnitTypes.Zerg_Overlord));
+		}
 
-		if (attackPosition != null)
+		if (attackPosition != null && game.getFrameCount() % 30 == 0)
 		{
 			Position lingAttackPosition;
 			
@@ -266,9 +300,50 @@ public class CreepBot extends AbstractBot
 			}
 			
 			UnitSet zerglings = game.getMyUnits().whereType(UnitTypes.Zerg_Zergling);
-			zerglings.stream()
-			.filter(u -> u.isIdle())
-			.forEach(u -> u.attack(lingAttackPosition, false));
+			List<Unit> idleZerglings = zerglings.stream()
+			.filter(u -> !u.isAttackFrame())
+			.collect(Collectors.toList());
+			
+			for (Unit ling : idleZerglings)
+			{
+				UnitSet enemyUnits = game.getEnemyUnits().whereLessOrEqual(new DistanceSelector(ling), 1000);
+				
+				if (enemyUnits.isEmpty())
+				{
+					ling.attack(lingAttackPosition, false);
+				}
+				else
+				{
+					Unit unit = enemyUnits.where(UnitSelector.CAN_ATTACK_GROUND).whereNot(UnitSelector.IS_WORKER).pick(new NearestPicker(ling));
+					
+					if (unit != null)
+					{
+						ling.attack(unit, false);
+					}
+					else
+					{
+						unit = enemyUnits.where(UnitSelector.IS_WORKER).pick(new NearestPicker(ling));
+						
+						if (unit != null)
+						{
+							ling.attack(unit, false);
+						}
+						else
+						{
+							unit = enemyUnits.whereType(UnitTypes.Protoss_Pylon).pick(new NearestPicker(ling));
+							
+							if (unit != null)
+							{
+								ling.attack(unit, false);
+							}
+							else
+							{
+								ling.attack(lingAttackPosition, false);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -343,6 +418,17 @@ public class CreepBot extends AbstractBot
 		for (Drawable drawable : drawables)
 		{
 			drawable.draw(graphics);
+		}
+		
+		for (Unit unit : game.getMyUnits().whereType(UnitTypes.Zerg_Zergling))
+		{
+			graphics.setGameCoordinates();
+			graphics.setColor(BWColor.Red);
+			
+			if (unit.getOrderTarget() != null)
+			{
+				graphics.drawLine(unit.getPositionVector(), unit.getOrderTarget().getPositionVector());
+			}
 		}
 	}
 

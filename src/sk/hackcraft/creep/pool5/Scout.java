@@ -143,17 +143,8 @@ public abstract class Scout implements Updateable, Drawable
 			}
 			else
 			{
-				if (u.getType() == UnitTypes.Zerg_Drone)
-				{
-					droneReturned(u);
-					it.remove();
-				}
-				
-				// TODO add some dancing for overlord
-				if (u.isIdle())
-				{
-					u.move(p, false);
-				}
+				droneReturned(u);
+				it.remove();
 			}
 		}
 	}
