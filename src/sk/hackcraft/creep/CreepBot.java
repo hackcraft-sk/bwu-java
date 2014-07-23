@@ -82,16 +82,21 @@ public class CreepBot extends AbstractBot
 
 	public static void main(String[] args)
 	{
-		BWU bwu = new BWU()
+		while (true)
 		{
-			@Override
-			protected Bot createBot(Game game)
+			System.out.println("Starting BWU");
+			
+			BWU bwu = new BWU()
 			{
-				return new CreepBot(game);
-			}
-		};
-
-		bwu.start();
+				@Override
+				protected Bot createBot(Game game)
+				{
+					return new CreepBot(game);
+				}
+			};
+	
+			bwu.start();
+		}
 	}
 
 	private final Random random;
@@ -166,7 +171,7 @@ public class CreepBot extends AbstractBot
 		if (scoutPositions.isEmpty())
 		{
 			System.out.println("Strange map data, 0 start locations, leaving game...");
-			System.exit(0);
+			bwapi.leaveGame();
 		}
 
 		scout = new Scout(bwapi, startPosition, scoutPositions)
@@ -293,7 +298,7 @@ public class CreepBot extends AbstractBot
 			}
 			else
 			{
-				int range = 300;
+				int range = 1000;
 				int x = attackPosition.getPX() + random.nextInt(range) - range / 2;
 				int y = attackPosition.getPY() + random.nextInt(range) - range / 2;
 				lingAttackPosition = new Position(x, y);

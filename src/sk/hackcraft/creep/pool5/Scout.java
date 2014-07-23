@@ -61,6 +61,11 @@ public abstract class Scout implements Updateable, Drawable
 
 	public void addDrone(Unit drone)
 	{
+		if (positions.isEmpty())
+		{
+			return;
+		}
+		
 		drone.stop(false);
 
 		Position scoutPosition;
@@ -78,6 +83,11 @@ public abstract class Scout implements Updateable, Drawable
 
 	public void addOverlord(Unit overlord)
 	{
+		if (positions.isEmpty())
+		{
+			return;
+		}
+		
 		overlord.stop(false);
 		scoutUnits.put(overlord, positions.get(0));
 	}
