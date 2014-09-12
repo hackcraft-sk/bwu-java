@@ -61,6 +61,11 @@ public abstract class Scout implements Updateable, Drawable
 
 	public void addDrone(Unit drone)
 	{
+		if (positions.isEmpty())
+		{
+			return;
+		}
+		
 		drone.stop(false);
 
 		Position scoutPosition;
@@ -78,6 +83,11 @@ public abstract class Scout implements Updateable, Drawable
 
 	public void addOverlord(Unit overlord)
 	{
+		if (positions.isEmpty())
+		{
+			return;
+		}
+		
 		overlord.stop(false);
 		scoutUnits.put(overlord, positions.get(0));
 	}
@@ -143,17 +153,8 @@ public abstract class Scout implements Updateable, Drawable
 			}
 			else
 			{
-				if (u.getType() == UnitTypes.Zerg_Drone)
-				{
-					droneReturned(u);
-					it.remove();
-				}
-				
-				// TODO add some dancing for overlord
-				if (u.isIdle())
-				{
-					u.move(p, false);
-				}
+				droneReturned(u);
+				it.remove();
 			}
 		}
 	}
