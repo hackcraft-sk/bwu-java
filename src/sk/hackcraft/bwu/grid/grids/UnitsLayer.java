@@ -34,7 +34,7 @@ public class UnitsLayer extends SparseLayer implements Updateable
 
 		for (Unit unit : units)
 		{
-			GridPoint coordinates = Convert.toLayerPoint(unit.getPosition());
+			GridPoint coordinates = Convert.toGridPoint(unit.getPosition());
 			
 			Player unitPlayer = unit.getPlayer();
 			

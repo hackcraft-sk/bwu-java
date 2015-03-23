@@ -78,14 +78,14 @@ public class BuildingsKnowledge
 	{
 		UnitType buildingType = building.getType();
 
-		GridPoint position = Convert.toLayerPoint(building.getPosition());
+		GridPoint position = Convert.toGridPoint(building.getPosition());
 		GridDimension size = new GridDimension(buildingType.getTileWidth(), buildingType.getTileHeight());
 		paintBuilding(position, size, building.getID());
 	}
 	
 	public void unpaintBuilding(Position position)
 	{
-		GridPoint layerPosition = Convert.toLayerPoint(position);
+		GridPoint layerPosition = Convert.toGridPoint(position);
 		
 		FloodFillProcessor.fillValue(buildingsLayer, SetUtil.create(layerPosition), 0);
 	}

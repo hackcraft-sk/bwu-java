@@ -23,7 +23,7 @@ public class UnitFieldEmitter implements FieldEmitter<Unit>
 	@Override
 	public GridPoint getPosition()
 	{
-		return Convert.toLayerPoint(unit.getPosition());
+		return Convert.toGridPoint(unit.getPosition());
 	}
 
 	@Override

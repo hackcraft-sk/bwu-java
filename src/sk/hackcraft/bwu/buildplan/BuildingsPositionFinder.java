@@ -18,7 +18,7 @@ public class BuildingsPositionFinder
 	{		
 		Grid groundDistanceLayer = GameLayerFactory.createLowResWalkableLayer(map);
 		
-		FloodFillProcessor.fillGradient(groundDistanceLayer, SetUtil.create(Convert.toLayerPoint(baseCenter)));
+		FloodFillProcessor.fillGradient(groundDistanceLayer, SetUtil.create(Convert.toGridPoint(baseCenter)));
 		
 		return new BuildingsPositionFinder(buildableLayer, groundDistanceLayer);
 	}

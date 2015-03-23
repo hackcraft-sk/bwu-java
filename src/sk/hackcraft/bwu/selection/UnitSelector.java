@@ -22,6 +22,7 @@ public interface UnitSelector
 	 * @author nixone
 	 * 
 	 */
+	@FunctionalInterface
 	public interface BooleanSelector
 	{
 		/**
@@ -39,6 +40,7 @@ public interface UnitSelector
 	 * @author nixone
 	 * 
 	 */
+	@FunctionalInterface
 	public interface IntegerSelector
 	{
 		/**
@@ -56,6 +58,7 @@ public interface UnitSelector
 	 * @author nixone
 	 * 
 	 */
+	@FunctionalInterface
 	public interface RealSelector
 	{
 		/**
@@ -71,6 +74,7 @@ public interface UnitSelector
 	 * Selector for some vector information from a unit
 	 *
 	 */
+	@FunctionalInterface
 	public interface Vector2DSelector
 	{
 		/**
