@@ -8,10 +8,8 @@ import sk.hackcraft.bwu.Bot;
 import sk.hackcraft.bwu.Game;
 import sk.hackcraft.bwu.Graphics;
 import sk.hackcraft.bwu.Vector2D;
-import sk.hackcraft.bwu.Vector2DMath;
-import sk.hackcraft.bwu.selection.UnitSet;
 
-public class SampleBot extends AbstractBot
+public class EmptyBot extends AbstractBot
 {
 	static public void main(String[] arguments)
 	{
@@ -27,27 +25,13 @@ public class SampleBot extends AbstractBot
 		bwu.start();
 	}
 	
-	public SampleBot(Game game)
+	public EmptyBot(Game game)
 	{
 		super(game);
 	}
 
 	@Override
-	public void gameUpdated()
-	{
-		UnitSet myUnits = game.getMyUnits();
-
-		for (Unit unit : myUnits)
-		{
-			if (unit.isIdle() || unit.isStuck())
-			{
-				// generate new position
-				Vector2D position = Vector2DMath.randomVector().scale(game.getMap());
-				// attack move!
-				unit.attack(position);
-			}
-		}
-	}
+	public void gameUpdated() {}
 
 	@Override
 	public void gameStarted() {}
