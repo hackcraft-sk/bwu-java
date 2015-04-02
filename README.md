@@ -32,8 +32,6 @@ This repository contains few other things apart from pure *BWU-Java* (package ``
 
 *	Pure **JNIBWAPI** which bwu-java uses as a backbone, package ``jnibwapi``
 *	**Sample bot** as a sample for random bot walk thorugh the map in package ``sk.hackcraft.bwu.sample``
-*	**MicroQueen 4**, full micro bot that was a competitor in [StarCraft Micro AI Tournament 4](http://scmai.hackcraft.sk),
-	in package ``sk.nixone.scmai4``
 
 ## Code samples
 
