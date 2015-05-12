@@ -43,4 +43,9 @@ abstract public class AbstractBot implements Bot
 	{
 		return printStream;
 	}
+	
+	public Game getGame()
+	{
+		return game;
+	}
 }
